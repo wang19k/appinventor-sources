@@ -1,0 +1,115 @@
+<!DOCTYPE YACodeBlocks SYSTEM "support/save_format.dtd">
+<YACodeBlocks ya-version="54" lang-version="17">
+<Pages><Page page-name=" " page-color="237 245 211" page-width="1440" page-height="1600" page-drawer="My Definitions" >
+<PageBlocks>
+<Block id="1081" genus-name="text" has-focus="yes" >
+<Location><X>773</X><Y>418</Y></Location>
+<Label>9997</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1077" ></BlockConnector></Plug>
+</Block>
+<Block id="1079" genus-name="text" >
+<Location><X>773</X><Y>390</Y></Location>
+<Label>port</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1077" ></BlockConnector></Plug>
+</Block>
+<Block id="1077" genus-name="make-list" >
+<Location><X>720</X><Y>365</Y></Location>
+<Label>make a list</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1061" ></BlockConnector></Plug>
+<Sockets num-sockets="3" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1079" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1081" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="1075" genus-name="text" >
+<Location><X>773</X><Y>309</Y></Location>
+<Label>ipaddrgoeshere</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1071" ></BlockConnector></Plug>
+</Block>
+<Block id="1073" genus-name="text" >
+<Location><X>773</X><Y>281</Y></Location>
+<Label>ipaddr</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1071" ></BlockConnector></Plug>
+</Block>
+<Block id="1071" genus-name="make-list" >
+<Location><X>720</X><Y>256</Y></Location>
+<Label>make a list</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1061" ></BlockConnector></Plug>
+<Sockets num-sockets="3" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1073" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1075" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>code.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1069" genus-name="componentGetter" >
+<Location><X>773</X><Y>200</Y></Location>
+<Label>code.Text</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1065" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1067" genus-name="text" >
+<Location><X>773</X><Y>172</Y></Location>
+<Label>key</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1065" ></BlockConnector></Plug>
+</Block>
+<Block id="949" genus-name="Button-Click" >
+<Location><X>231</X><Y>86</Y></Location>
+<Label>Button1.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1063" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="1063" genus-name="Web-PostText" >
+<Location><X>261</X><Y>119</Y></Location>
+<Label>Web1.PostText</Label>
+<BeforeBlockId>949</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="text" position-type="single" con-block-id="1059" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="1059" genus-name="Web-BuildPostData" >
+<Location><X>445</X><Y>122</Y></Location>
+<Label>Web1.BuildPostData</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1063" ></BlockConnector></Plug>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="list" position-type="single" con-block-id="1061" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="1061" genus-name="make-list" >
+<Location><X>667</X><Y>122</Y></Location>
+<Label>make a list</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1059" ></BlockConnector></Plug>
+<Sockets num-sockets="4" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1065" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1071" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1077" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="1065" genus-name="make-list" >
+<Location><X>720</X><Y>147</Y></Location>
+<Label>make a list</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1061" ></BlockConnector></Plug>
+<Sockets num-sockets="3" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1067" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" con-block-id="1069" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="item" is-expandable="yes" is-indented="yes" position-type="single" ></BlockConnector>
+</Sockets>
+</Block>
+</PageBlocks>
+</Page>
+
+</Pages><YoungAndroidMaps><YoungAndroidUuidMap>
+<YoungAndroidUuidEntry uuid="-333340163" component-id="Label1" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1363356191" component-id="HorizontalArrangement1" component-genus="HorizontalArrangement" component-version="1" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1902677450" component-id="Web1" component-genus="Web" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="0" component-id="Screen1" component-genus="Form" component-version="0" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-28249960" component-id="Label2" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="933636264" component-id="Button1" component-genus="Button" component-version="4" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="2091318480" component-id="code" component-genus="TextBox" component-version="4" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1890222609" component-id="HorizontalArrangement2" component-genus="HorizontalArrangement" component-version="1" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1435778230" component-id="iplabel" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+</YoungAndroidUuidMap>
+</YoungAndroidMaps>
+</YACodeBlocks>
