@@ -57,7 +57,7 @@ public class PhoneCommManager {
   public static final String REPL_ENCODED_CLOSE_BRACKET = REPL_ESCAPE + "2";
 
   private static final String YAIL_NEWLINE = "(newline)";
-  private static final String LOCALHOST = "127.0.0.1";
+  private String ipAddress = "127.0.0.1";
 
   // This message to runtime.scm establishes the strings used to punctuate
   // messages it sends back here. Check setup-repl-environment carefully to
@@ -196,9 +196,15 @@ public class PhoneCommManager {
       }});
   }
 
-  private void initReplController() {
+  // Used by the Wireless code to let us know the actual address of the phone
+  public void setPhoneIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+  }
+
+  // JIS: Make this public for the Wireless code
+  public void initReplController() {
     setReplController(new DeviceReplCommController(
-        LOCALHOST,
+        ipAddress,						   
         REPL_COMMUNICATION_PORT,
         androidController,
         new DeviceReplCommController.PostProcessor() {
@@ -415,6 +421,8 @@ public class PhoneCommManager {
           } catch (IOException e) {
             if (DEBUG) {
               System.out.println("^^^^^^^^ regular send failed, will try kick: " + e.getMessage());
+	      e.printStackTrace(System.out);
+	      System.out.println("androidController = " + androidController);
             }
             setConnectedToPhone(false);
           }
@@ -851,7 +859,8 @@ public class PhoneCommManager {
     }
   }
 
-  private void setConnectedToPhone(boolean newSetting) {
+  // JIS: Made public so CWirelessButton can use it for Wifi Connection (KLUDGE)  
+  public void setConnectedToPhone(boolean newSetting) {
     synchronized(statusLock) {
       if (newSetting == connectedToPhone) return;
       connectedToPhone = newSetting;
