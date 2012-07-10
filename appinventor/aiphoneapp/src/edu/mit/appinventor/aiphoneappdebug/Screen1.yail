@@ -1,0 +1,117 @@
+#|
+$Source $Yail
+|#
+
+(define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+(def expiration 1343779200000)
+
+(def expired #f)
+
+(def (PostData)
+(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
+)
+ '( any any)
+ "make a list")
+ (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (get-server-address-from-wifi))
+ '( any any)
+ "make a list")
+ (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9997")
+ '( any any)
+ "make a list")
+)
+ '( any any any)
+ "make a list")
+)
+ '( list)
+)
+)
+ '( text)
+)
+
+(call-component-method 'code 'HideKeyboard (*list-for-runtime*)
+ '())
+ (let ((topform Screen1:topform))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
+   (topform:startServices))
+
+ )
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
+)
+(define-event Screen1 Initialize()
+ (set-this-form)
+ (if (call-yail-primitive <= (*list-for-runtime* (get-var expiration)
+ (call-component-method 'Clock1 'SystemTime (*list-for-runtime*)
+ '())
+)
+ '( number number)
+ "<=")
+ (begin (set-var! expired  #t)
+
+)
+)
+
+(if (get-var expired)
+ (begin (set-and-coerce-property! 'expirewarning 'Text "This version of App Inventor has expired." 'text)
+
+(set-and-coerce-property! 'expirewarning 'TextColor -65536 'number)
+
+)
+ (begin (set-and-coerce-property! 'expirewarning 'Text (call-yail-primitive string-append (*list-for-runtime* "This version of App Inventor expires on " (call-yail-primitive string-append (*list-for-runtime* (call-component-method 'Clock1 'FormatDateTime (*list-for-runtime* (call-component-method 'Clock1 'MakeInstantFromMillis (*list-for-runtime* (get-var expiration)
+)
+ '( number)
+)
+)
+ '( InstantInTime)
+)
+ ".")
+ '( text text)
+ "join")
+)
+ '( text text)
+ "join")
+ 'text)
+
+)
+)
+
+)
+;;; HorizontalArrangement2
+(add-component Screen1 HorizontalArrangement HorizontalArrangement2 )
+;;; Label1
+(add-component HorizontalArrangement2 Label Label1 (set-and-coerce-property! 'Label1 'Text "Your IP Address: " 'text)
+)
+;;; iplabel
+(add-component HorizontalArrangement2 Label iplabel (set-and-coerce-property! 'iplabel 'Text (get-server-address-from-wifi) 'text)
+)
+;;; Label2
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Enter Displayed Code" 'text)
+)
+;;; HorizontalArrangement1
+(add-component Screen1 HorizontalArrangement HorizontalArrangement1 )
+;;; code
+(add-component HorizontalArrangement1 TextBox code (set-and-coerce-property! 'code 'Hint "Enter Your Code" 'text)
+)
+;;; Button1
+(add-component HorizontalArrangement1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Go!" 'text)
+)
+(define-event Button1 Click()
+ (set-this-form)
+ (if (call-yail-primitive yail-not (*list-for-runtime* (get-var expired)
+)
+ '( boolean)
+ "not")
+ (begin ((get-var PostData))
+
+)
+)
+
+)
+;;; expirewarning
+(add-component Screen1 Label expirewarning )
+;;; Web1
+(add-component Screen1 Web Web1 (set-and-coerce-property! 'Web1 'Url "http://osiris.mit.edu/rendezvous/" 'text)
+)
+;;; Clock1
+(add-component Screen1 Clock Clock1 )
+(init-runtime)
