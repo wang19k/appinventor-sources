@@ -64,7 +64,8 @@ public class ReplForm extends Form {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    formReplCommController.destroy();
+    if (formReplCommController != null)
+    	formReplCommController.destroy();
     if (assetServer != null) {
 	assetServer.stop();
 	assetServer = null;
