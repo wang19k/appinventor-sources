@@ -73,6 +73,10 @@ public class CWirelessButton extends CSaveButton{
 	              InputStream in = con.getInputStream();
 	              BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 	              String jsonString = reader.readLine();
+		      if (jsonString == null || jsonString.equals("")) {
+			  showError("Did not receive the code from your phone.<br/>Please restart the Debug App on your phone and try again.");
+			  return;
+		      }
 	              JSONObject jsonObject = new JSONObject(jsonString);
 	              String ipAddress = (String) jsonObject.get("ipaddr");
 		      System.out.println("CWirelessButton: ipaddr = " + ipAddress);
@@ -87,12 +91,19 @@ public class CWirelessButton extends CSaveButton{
 		      pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
 	              }catch(Exception e){
 	            	  System.out.println("It did not work." + e.toString());//return 
+			  e.printStackTrace(System.out);
 	              }
 	              
 	            }
 	          });
 	        }});
 	}
+        private void showError(String message) {
+	        HTMLPane htmlMsg = new HTMLPane(message);
+		String title = "Error";
+		JOptionPane.showMessageDialog(frame, htmlMsg, title, JOptionPane.PLAIN_MESSAGE);
+        }
+
 	private void showWirelessNotice() {
 		String title = "Starting the wireless connection.";
 		String msgText = "This is your 5 digit code: " + CONNECTING_MSG;
