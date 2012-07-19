@@ -64,38 +64,53 @@ public class CWirelessButton extends CSaveButton{
 	        @Override
 	        public void actionPerformed(ActionEvent e) {
 	          javax.swing.SwingUtilities.invokeLater(new Runnable() {
-	            public void run() {
-		      wc = (WorkspaceController) WorkspaceControllerHolder.get();
-	              showWirelessNotice();
-	              try{
-	              URL url = new URL(theUrl + CONNECTING_MSG);
-	              URLConnection con = url.openConnection();
-	              InputStream in = con.getInputStream();
-	              BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-	              String jsonString = reader.readLine();
-		      if (jsonString == null || jsonString.equals("")) {
-			  showError("Did not receive the code from your phone.<br/>Please restart the Debug App on your phone and try again.");
-			  return;
-		      }
-	              JSONObject jsonObject = new JSONObject(jsonString);
-	              String ipAddress = (String) jsonObject.get("ipaddr");
-		      System.out.println("CWirelessButton: ipaddr = " + ipAddress);
-		      WifiAndroidController ac = new WifiAndroidController();
-		      ac.setIpAddress(ipAddress);
-		      wc.setupWirelessConnection(ac, ipAddress);
-		      pcm = wc.getPhoneCommManager();
-		      pcm.setAndroidController(ac);
-		      pcm.setConnectedToPhone(true); // Kludge -- no USB cable, so implicitly connected
-		      System.out.println("CWirelessButton: Set Connected to Phone.");
-		      pcm.initReplController();
-		      pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
-	              }catch(Exception e){
-	            	  System.out.println("It did not work." + e.toString());//return 
-			  e.printStackTrace(System.out);
-	              }
-	              
-	            }
-	          });
+			  public void run() {
+			      wc = (WorkspaceController) WorkspaceControllerHolder.get();
+			      showWirelessNotice();
+			      System.out.println("Let's show that notice!");
+			      try {
+				  System.out.println("Well, I tried.");
+				  URL url = new URL(theUrl + CONNECTING_MSG);
+				  URLConnection con = url.openConnection();
+				  System.out.println("Opening a URL connection");
+				  InputStream in = con.getInputStream();
+				  System.out.println("Well, input stream worked fine.");
+				  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				  System.out.println("BufferedReader worked fine.");
+				  String jsonString = reader.readLine();
+				  while (jsonString == null) {
+				      url = new URL(theUrl + CONNECTING_MSG);
+				      con = url.openConnection();
+				      System.out.println("Opening a URL connection");
+				      in = con.getInputStream();
+				      System.out.println("Well, input stream worked fine.");
+				      reader = new BufferedReader(new InputStreamReader(in));
+				      System.out.println("BufferedReader worked fine.");
+				      jsonString = reader.readLine();
+				      System.out.println("JSON read the line");
+				      Thread.sleep(100);
+				  }
+				  System.out.println("Cool, it stopped being NULL and connected");
+				  JSONObject jsonObject = new JSONObject(jsonString);
+				  System.out.println("Made the JSON object");
+				  String ipAddress = (String) jsonObject.get("ipaddr");
+				  System.out.println("CWirelessButton: ipaddr = " + ipAddress);
+				  WifiAndroidController ac = new WifiAndroidController();
+				  ac.setIpAddress(ipAddress);
+				  wc.setupWirelessConnection(ac, ipAddress);
+				  pcm = wc.getPhoneCommManager();
+				  pcm.setAndroidController(ac);
+				  pcm.setConnectedToPhone(true); // Kludge -- no USB cable, so implicitly connected
+				  System.out.println("CWirelessButton: Set Connected to Phone.");
+				  pcm.initReplController();
+				  pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
+			      } catch(Exception e) {
+				  System.out.println("It did not work." + e.toString());//return 
+				  e.printStackTrace(System.out);
+			      }
+			      
+			  }
+		      });
 	        }});
 	}
         private void showError(String message) {
