@@ -23,6 +23,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.NetworkInfo.State;
 
 
 /**
@@ -37,6 +40,7 @@ public class ReplForm extends Form {
   private ReplCommController formReplCommController = null;
 
   private AppInvHTTPD assetServer = null;
+  public boolean wirelessBoolean = false;
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
 
@@ -45,7 +49,27 @@ public class ReplForm extends Form {
     super.onCreate(icicle);
     topform = this;		// Static handle on us...
     PackageManager packageManager = this.$context().getPackageManager();
-  }
+
+    this.$context();
+	//Checks the type of network connected.
+    ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    //mobile
+    State mobile = conMan.getNetworkInfo(0).getState();
+    //wifi
+    State wifi = conMan.getNetworkInfo(1).getState();
+
+    if (mobile == NetworkInfo.State.CONNECTED || mobile == NetworkInfo.State.CONNECTING) {
+    wirelessBoolean = false;
+    String message = "Wireless is not connected! Please turn on wifi!";
+    Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
+
+    } else if (wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING) {
+    wirelessBoolean = true;
+    String message = "Wireless IS connected! Good job!";
+    Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
+    }
+
+  }  
 
   @Override
   protected void onResume() {
@@ -124,5 +148,7 @@ public class ReplForm extends Form {
     if (!f.exists())
 	f.mkdirs();		// Create the directory and all parents
   }
+
+
 
 }
