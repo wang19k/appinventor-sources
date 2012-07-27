@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.io.File;
 import java.io.IOException;
 
+import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 
@@ -34,6 +35,9 @@ import android.net.NetworkInfo.State;
  *
  * @author markf@google.com (Your Name Here)
  */
+
+@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
+
 public class ReplForm extends Form {
 
   // Controller for the ReplCommController associated with this form
@@ -61,11 +65,13 @@ public class ReplForm extends Form {
     if (mobile == NetworkInfo.State.CONNECTED || mobile == NetworkInfo.State.CONNECTING) {
     wirelessBoolean = false;
     String message = "Wireless is not connected! Please turn on wifi!";
+    Log.println(ALIGNMENT_NORMAL, message, message);
     Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
 
     } else if (wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING) {
     wirelessBoolean = true;
     String message = "Wireless IS connected! Good job!";
+    Log.println(ALIGNMENT_NORMAL, message, message);
     Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
     }
 
