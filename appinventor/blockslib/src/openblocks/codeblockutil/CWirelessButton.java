@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 import org.json.*;
 import org.apache.commons.io.*;
 
- 
+
 import openblocks.yacodeblocks.FeedbackReporter;
 import openblocks.yacodeblocks.WorkspaceControllerHolder;
 import openblocks.yacodeblocks.WorkspaceController;
@@ -27,18 +27,16 @@ import openblocks.yacodeblocks.PhoneCommManager;
 
 /**
  * Button for opening wireless connection between blocks editor and phone
- * 
+ *
  * @author lmercer@mit.edu (Logan Mercer)
  *
  */
 public class CWirelessButton extends CSaveButton{
 
-        private static final String YAIL_NEWLINE = "(newline)"; // Cribbed from PhoneCommManager
-        private static final String REPL_CONFIRMATION = "Confirmation"; // ditto
+	private static final String YAIL_NEWLINE = "(newline)"; // Cribbed from PhoneCommManager
+	private static final String REPL_CONFIRMATION = "Confirmation"; // ditto
 
-
-
-        private WorkspaceController wc;
+	private WorkspaceController wc;
 
 	public CWirelessButton() {
 		super("Connect Wifi", "can't start connection");
@@ -49,21 +47,21 @@ public class CWirelessButton extends CSaveButton{
 	private static Random rnd = new Random();
 	public final String CONNECTING_MSG = randomString(5);
 	public final String theUrl = "http://osiris.mit.edu/rendezvous/";
-        private PhoneCommManager pcm; // When the OK option is selected from the message dialog we use this to start the REPL
+	private PhoneCommManager pcm; // When the OK option is selected from the message dialog we use this to start the REPL
 
-	String randomString(int len) 
+	String randomString(int len)
 	{
 		StringBuilder sb = new StringBuilder(len);
-		for(int i=0; i<len; i++) 
+		for(int i=0; i<len; i++)
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
 	}
 
 	public void init() {
 	    addActionListener(new ActionListener() {
-	        @Override
-	        public void actionPerformed(ActionEvent e) {
-	          javax.swing.SwingUtilities.invokeLater(new Runnable() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		  javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			  public void run() {
 			      wc = (WorkspaceController) WorkspaceControllerHolder.get();
 			      showWirelessNotice();
@@ -105,25 +103,25 @@ public class CWirelessButton extends CSaveButton{
 				  pcm.initReplController();
 				  pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
 			      } catch(Exception e) {
-				  System.out.println("It did not work." + e.toString());//return 
+				  System.out.println("It did not work." + e.toString());//return
 				  e.printStackTrace(System.out);
 			      }
-			      
+
 			  }
 		      });
-	        }});
+		}});
 	}
-        private void showError(String message) {
-	        HTMLPane htmlMsg = new HTMLPane(message);
+	private void showError(String message) {
+		HTMLPane htmlMsg = new HTMLPane(message);
 		String title = "Error";
 		JOptionPane.showMessageDialog(frame, htmlMsg, title, JOptionPane.PLAIN_MESSAGE);
-        }
+	}
 
 	private void showWirelessNotice() {
 		String title = "Starting the wireless connection.";
 		String msgText = "This is your 5 digit code: " + CONNECTING_MSG;
 		HTMLPane htmlMsg = new HTMLPane(msgText);
 	    JOptionPane.showMessageDialog(frame, htmlMsg, title, JOptionPane.PLAIN_MESSAGE);
-		
+
 	}
 }

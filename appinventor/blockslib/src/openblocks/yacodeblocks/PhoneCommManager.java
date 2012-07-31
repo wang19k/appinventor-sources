@@ -36,7 +36,7 @@ public class PhoneCommManager {
 
   // This separates components of the message that is returned from the phone.
   // used to indicate the block ID in REPL interactions with the phone
-  // This is used in a regexp match, so  be wary of changing it to include
+  // This is used in a regexp match, so	 be wary of changing it to include
   // regexp metacharacters.
   // You can change these punctuation marks for Repl messages, although I can't
   // imagine why. But don't even think about using "&" or "\" in any of them!
@@ -63,31 +63,31 @@ public class PhoneCommManager {
   // messages it sends back here. Check setup-repl-environment carefully to
   // ensure parameters match. Here's how it should start:
   // (define (setup-repl-environment
-  //    open-bracket
-  //    block-id-indicator
-  //    return-tag-ender
-  //    success
-  //    failure
-  //    result-indicator
-  //    close-bracket
-  //    encoding-map)
+  //	open-bracket
+  //	block-id-indicator
+  //	return-tag-ender
+  //	success
+  //	failure
+  //	result-indicator
+  //	close-bracket
+  //	encoding-map)
   //The list of pairs at the end represent a mapping
   // for encoding responses; the escape string must be at the end.
   // See also postProcessREPLResponse.
   //@VisibleForTesting
   private static final String REPL_STARTUP_STR =
-          "(begin (require com.google.youngandroid.runtime) " +
-          " (setup-repl-environment" +
-          " \"" + REPL_OPEN_BRACKET + "\"" +
-          " \"" + REPL_BLOCK_ID_INDICATOR + "\"" +
-          " \"" + REPL_RETURN_TAG_ENDER + "\"" +
-          " \"" + REPL_SUCCESS + "\"" +
-          " \"" + REPL_FAILURE + "\"" +
-          " \"" + REPL_RESULT_INDICATOR + "\"" +
-          " \"" + REPL_CLOSE_BRACKET + "\"" +
-         " \'((\"" + REPL_CLOSE_BRACKET + "\" \"" + REPL_ENCODED_CLOSE_BRACKET + "\")" +
-             "(\"" + REPL_OPEN_BRACKET  + "\" \"" + REPL_ENCODED_OPEN_BRACKET  + "\")" +
-             "(\""  + REPL_ESCAPE + "\" \"" + REPL_ENCODED_ESCAPE + "\"))))";
+	  "(begin (require com.google.youngandroid.runtime) " +
+	  " (setup-repl-environment" +
+	  " \"" + REPL_OPEN_BRACKET + "\"" +
+	  " \"" + REPL_BLOCK_ID_INDICATOR + "\"" +
+	  " \"" + REPL_RETURN_TAG_ENDER + "\"" +
+	  " \"" + REPL_SUCCESS + "\"" +
+	  " \"" + REPL_FAILURE + "\"" +
+	  " \"" + REPL_RESULT_INDICATOR + "\"" +
+	  " \"" + REPL_CLOSE_BRACKET + "\"" +
+	 " \'((\"" + REPL_CLOSE_BRACKET + "\" \"" + REPL_ENCODED_CLOSE_BRACKET + "\")" +
+	     "(\"" + REPL_OPEN_BRACKET	+ "\" \"" + REPL_ENCODED_OPEN_BRACKET  + "\")" +
+	     "(\""  + REPL_ESCAPE + "\" \"" + REPL_ENCODED_ESCAPE + "\"))))";
 
   private static final String REPL_COMM_ERROR_MSG =
     "<p>App Inventor is having trouble communicating with the device.\n"
@@ -151,8 +151,8 @@ public class PhoneCommManager {
     this.deviceSelector = deviceSelector;
     if (psReplController == null) {
       if (androidController == null) {
-        System.out.println("androidController unexpectedly null. Programming error?");
-        return;
+	System.out.println("androidController unexpectedly null. Programming error?");
+	return;
       }
       WorkspaceControllerHolder.get().getAIDir().checkSetup();
       initReplController();
@@ -161,94 +161,94 @@ public class PhoneCommManager {
     deviceSelector.addCallback(new CDeviceSelector.DeviceSelectedCallback() {
       @Override
       public void onDeviceSelected(String device) {
-        String prevDevice = psReplController.getSelectedDevice();
-        if (prevDevice != null && connectedToPhone()) {
-          if (!device.equals(prevDevice)) {
-            if (!FeedbackReporter.getConfirmation(
-                "The Blocks Editor is currently connected to device " + prevDevice + ".\n"
-                + "At most one device can be connected at a time. Do you want to switch to "
-                + "device " + device + "?")) {
-              return;
-            }
-          } else {
-            if (FeedbackReporter.getConfirmation(
-                "The Blocks Editor is already connected to device " + prevDevice + ". \n"
-                + "Do you want to restart the app on the device?")) {
-              reinitPhoneApp();
-            }
-            return;
-          }
-        }
-        setConnectedToPhone(false);
-        System.out.println("Selecting device " + device);
-        if (!psReplController.selectDevice(device)) {
-          if (DEBUG) {
-            System.out.println("Selected device is no longer attached");
-          }
-          FeedbackReporter.showErrorMessage(
-              "It appears that device " + device + " is no longer available.");
-          return;
-        }
-        if (DEBUG) {
-          System.out.println("Creating the REPL controller");
-        }
-        replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
+	String prevDevice = psReplController.getSelectedDevice();
+	if (prevDevice != null && connectedToPhone()) {
+	  if (!device.equals(prevDevice)) {
+	    if (!FeedbackReporter.getConfirmation(
+		"The Blocks Editor is currently connected to device " + prevDevice + ".\n"
+		+ "At most one device can be connected at a time. Do you want to switch to "
+		+ "device " + device + "?")) {
+	      return;
+	    }
+	  } else {
+	    if (FeedbackReporter.getConfirmation(
+		"The Blocks Editor is already connected to device " + prevDevice + ". \n"
+		+ "Do you want to restart the app on the device?")) {
+	      reinitPhoneApp();
+	    }
+	    return;
+	  }
+	}
+	setConnectedToPhone(false);
+	System.out.println("Selecting device " + device);
+	if (!psReplController.selectDevice(device)) {
+	  if (DEBUG) {
+	    System.out.println("Selected device is no longer attached");
+	  }
+	  FeedbackReporter.showErrorMessage(
+	      "It appears that device " + device + " is no longer available.");
+	  return;
+	}
+	if (DEBUG) {
+	  System.out.println("Creating the REPL controller");
+	}
+	replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
       }});
   }
 
   // Used by the Wireless code to let us know the actual address of the phone
   public void setPhoneIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+	this.ipAddress = ipAddress;
   }
 
   // JIS: Make this public for the Wireless code
   public void initReplController() {
     setReplController(new DeviceReplCommController(
-        ipAddress,						   
-        REPL_COMMUNICATION_PORT,
-        androidController,
-        new DeviceReplCommController.PostProcessor() {
-          public void postProcess(String received) {
-            setConnectedToPhone(true);
-            postProcessREPLResponse(received, System.out);
-          }
-          public void onFailure(Throwable e) {
-            if (connectedToPhone()) {
-              setConnectedToPhone(false);
-              showReplCommError(e);
-              try {
-                phoneSynchronizer.sendNow(new Runnable() {
-                  @Override
-                  public void run() {
-                    psResetReplController();
-                  }
-                });
-              } catch (PhoneCommunicationException p) {
-                p.printStackTrace();
-              }
-            } else {
-              // We don't show the user the error because this codepath
-              // is triggered by them requesting to restart the
-              // application with the "reconnect" button.
-              System.out.println("Communication failure with phone. Not reporting it to user.");
-              e.printStackTrace();
-            }
-          }
-          public void onDisconnect(String device) {
-            if (connectedToDevice(device)) {
-              if (DEBUG) {
-                System.out.println("Disconnecting currently selected device");
-              }
-              setConnectedToPhone(false);
-              setWaitingForProjectLoad(false);
-            }
-            deviceSelector.removeDevice(device);
-          }
-          public void onConnect(String device) {
-            String deviceString = device;
-            deviceSelector.addDevice(deviceString);
-          }
-        }));
+	ipAddress,
+	REPL_COMMUNICATION_PORT,
+	androidController,
+	new DeviceReplCommController.PostProcessor() {
+	  public void postProcess(String received) {
+	    setConnectedToPhone(true);
+	    postProcessREPLResponse(received, System.out);
+	  }
+	  public void onFailure(Throwable e) {
+	    if (connectedToPhone()) {
+	      setConnectedToPhone(false);
+	      showReplCommError(e);
+	      try {
+		phoneSynchronizer.sendNow(new Runnable() {
+		  @Override
+		  public void run() {
+		    psResetReplController();
+		  }
+		});
+	      } catch (PhoneCommunicationException p) {
+		p.printStackTrace();
+	      }
+	    } else {
+	      // We don't show the user the error because this codepath
+	      // is triggered by them requesting to restart the
+	      // application with the "reconnect" button.
+	      System.out.println("Communication failure with phone. Not reporting it to user.");
+	      e.printStackTrace();
+	    }
+	  }
+	  public void onDisconnect(String device) {
+	    if (connectedToDevice(device)) {
+	      if (DEBUG) {
+		System.out.println("Disconnecting currently selected device");
+	      }
+	      setConnectedToPhone(false);
+	      setWaitingForProjectLoad(false);
+	    }
+	    deviceSelector.removeDevice(device);
+	  }
+	  public void onConnect(String device) {
+	    String deviceString = device;
+	    deviceSelector.addDevice(deviceString);
+	  }
+	}));
     androidController.setDeviceListener(psReplController);
   }
 
@@ -259,28 +259,28 @@ public class PhoneCommManager {
     }
     try {
       phoneSynchronizer.sendEventually(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            psReplControllerRestart(true /*send defns*/, true /*restart app*/);
-          } catch (IOException e) {
-            System.out.println("Error trying to reinit phone app: ");
-            e.printStackTrace();
-          } catch (ExternalStorageException e) {
-            FeedbackReporter.showErrorMessage(e.getMessage());
-            System.out.println("Error trying to reinit phone app: ");
-            e.printStackTrace();
-          } catch (CodeblocksException e) {
-            System.out.println("Error trying to reinit phone app: ");
-            e.printStackTrace();
-          } catch (NoProjectException e) {
-            // There is no current project.
-            // Just call psResetReplController to kill the starter app.
-            psResetReplController();
-          } finally {
-            updateStatusIndicators();
-          }
-        }});
+	@Override
+	public void run() {
+	  try {
+	    psReplControllerRestart(true /*send defns*/, true /*restart app*/);
+	  } catch (IOException e) {
+	    System.out.println("Error trying to reinit phone app: ");
+	    e.printStackTrace();
+	  } catch (ExternalStorageException e) {
+	    FeedbackReporter.showErrorMessage(e.getMessage());
+	    System.out.println("Error trying to reinit phone app: ");
+	    e.printStackTrace();
+	  } catch (CodeblocksException e) {
+	    System.out.println("Error trying to reinit phone app: ");
+	    e.printStackTrace();
+	  } catch (NoProjectException e) {
+	    // There is no current project.
+	    // Just call psResetReplController to kill the starter app.
+	    psResetReplController();
+	  } finally {
+	    updateStatusIndicators();
+	  }
+	}});
     } catch (PhoneCommunicationException e) {
       e.printStackTrace();
     } finally {
@@ -300,22 +300,22 @@ public class PhoneCommManager {
     Callable<Boolean> installApplicationCallable = new Callable<Boolean>() {
       @Override
       public Boolean call() {
-        try {
-          setSendingToPhone(true);
-          androidController.androidSyncAndInstallSpecificApplication(localApkPath, appName,
-              packageName);
-          return true;
-        } catch (AndroidControllerException e) {
-          FeedbackReporter.showErrorMessage("Couldn't install the app on the phone: \n" +
-              e.getMessage());
-          e.printStackTrace();
-          return false;
-        } catch (ExternalStorageException e) {
-          FeedbackReporter.showErrorMessage(e.getMessage());
-          return false;
-        } finally {
-          setSendingToPhone(false);
-        }
+	try {
+	  setSendingToPhone(true);
+	  androidController.androidSyncAndInstallSpecificApplication(localApkPath, appName,
+	      packageName);
+	  return true;
+	} catch (AndroidControllerException e) {
+	  FeedbackReporter.showErrorMessage("Couldn't install the app on the phone: \n" +
+	      e.getMessage());
+	  e.printStackTrace();
+	  return false;
+	} catch (ExternalStorageException e) {
+	  FeedbackReporter.showErrorMessage(e.getMessage());
+	  return false;
+	} finally {
+	  setSendingToPhone(false);
+	}
       }
     };
 
@@ -361,7 +361,7 @@ public class PhoneCommManager {
 
     if (resetPhone) {
       /* cancel outstanding tasks waiting for phone, if any. */
-      /* TODO(kerr): cancellation needs to be debugged.  disable for now
+      /* TODO(kerr): cancellation needs to be debugged.	 disable for now
        * try {
        *  phoneSynchronizer.cancelAllAndWait();
        * } catch (PhoneCommunicationException e) {
@@ -370,7 +370,7 @@ public class PhoneCommManager {
        * }
        */
       if (!connectedToPhone()) {
-        return;
+	return;
       }
       reinitPhoneApp();
     }
@@ -387,14 +387,14 @@ public class PhoneCommManager {
    * just sent back to the REPL so we can use this information in processing the response
    * @param purpose a string documenting the purpose of this call
    * @param blockID the block id of the block that this call originates from.  Use 0 if there is
-   *        no block (or no single block).
+   *	    no block (or no single block).
    * @param loading if true, won't try to send project definitions to the phone
-   *        if a restart of the app is required. Useful when this is called
-   *        to send the project definitions to the phone (so we don't try to
-   *        do it again, which will deadlock)
+   *	    if a restart of the app is required. Useful when this is called
+   *	    to send the project definitions to the phone (so we don't try to
+   *	    do it again, which will deadlock)
    */
   public void replControllerCreateAndSendAsync(final String data, final String purpose,
-                                               final Long blockID, final boolean loading) {
+					       final Long blockID, final boolean loading) {
     replControllerCreateAndSend(data, purpose, blockID, loading, true);
   }
 
@@ -409,55 +409,55 @@ public class PhoneCommManager {
     Runnable replControllerCreateAndSendRunnable = new Runnable() {
       @Override
       public void run() {
-        if (DEBUG) {
-          System.out.println("********* Actually invoking CreateAndSend");
-        }
+	if (DEBUG) {
+	  System.out.println("********* Actually invoking CreateAndSend");
+	}
 
-        // If we might have a working controller, try the send directly.
-        if (connectedToPhone()) {
-          try {
-            psReplControllerSend(data, purpose + REPL_BLOCK_ID_INDICATOR + blockID.toString());
-            return;
-          } catch (IOException e) {
-            if (DEBUG) {
-              System.out.println("^^^^^^^^ regular send failed, will try kick: " + e.getMessage());
+	// If we might have a working controller, try the send directly.
+	if (connectedToPhone()) {
+	  try {
+	    psReplControllerSend(data, purpose + REPL_BLOCK_ID_INDICATOR + blockID.toString());
+	    return;
+	  } catch (IOException e) {
+	    if (DEBUG) {
+	      System.out.println("^^^^^^^^ regular send failed, will try kick: " + e.getMessage());
 	      e.printStackTrace(System.out);
 	      System.out.println("androidController = " + androidController);
-            }
-            setConnectedToPhone(false);
-          }
-        }
+	    }
+	    setConnectedToPhone(false);
+	  }
+	}
 
-        // The direct send failed, try to start or restart the connection as appropriate.
-        try {
-          psReplControllerRestart(!loading /* don't send defns to phone if already loading */,
-              loading /*restart the app if we're loading*/);
-          psReplControllerSend(data, purpose + REPL_BLOCK_ID_INDICATOR + blockID.toString());
-          return;
-        } catch (IOException e) {
-          setConnectedToPhone(false);
-          showReplCommError(e);
-        } catch (ExternalStorageException e) {
-          setConnectedToPhone(false);
-          FeedbackReporter.showErrorMessage(e.getMessage());
-        } catch (CodeblocksException e) {
-          setConnectedToPhone(false);
-          FeedbackReporter.showErrorMessage(e.getMessage());
-        } catch (NoProjectException e) {
-          // There is no current project.
-          setConnectedToPhone(false);
-          FeedbackReporter.showInfoMessage(FeedbackReporter.NO_PROJECT_MESSAGE);
-        }
-        // if we get here there was an error and we need to reset
-        psResetReplController();
+	// The direct send failed, try to start or restart the connection as appropriate.
+	try {
+	  psReplControllerRestart(!loading /* don't send defns to phone if already loading */,
+	      loading /*restart the app if we're loading*/);
+	  psReplControllerSend(data, purpose + REPL_BLOCK_ID_INDICATOR + blockID.toString());
+	  return;
+	} catch (IOException e) {
+	  setConnectedToPhone(false);
+	  showReplCommError(e);
+	} catch (ExternalStorageException e) {
+	  setConnectedToPhone(false);
+	  FeedbackReporter.showErrorMessage(e.getMessage());
+	} catch (CodeblocksException e) {
+	  setConnectedToPhone(false);
+	  FeedbackReporter.showErrorMessage(e.getMessage());
+	} catch (NoProjectException e) {
+	  // There is no current project.
+	  setConnectedToPhone(false);
+	  FeedbackReporter.showInfoMessage(FeedbackReporter.NO_PROJECT_MESSAGE);
+	}
+	// if we get here there was an error and we need to reset
+	psResetReplController();
       }
     };
 
     try {
       if (asynchronous) {
-        phoneSynchronizer.sendEventually(replControllerCreateAndSendRunnable);
+	phoneSynchronizer.sendEventually(replControllerCreateAndSendRunnable);
       } else {
-        phoneSynchronizer.sendNow(replControllerCreateAndSendRunnable);
+	phoneSynchronizer.sendNow(replControllerCreateAndSendRunnable);
       }
     } catch (PhoneCommunicationException e) {
       e.printStackTrace();
@@ -505,19 +505,19 @@ public class PhoneCommManager {
     String projectDefinitions = "";
     if (sendProjectDefinitions) {
       try {
-        projectDefinitions = WorkspaceControllerHolder.get().getProjectDefinitionsForRepl();
+	projectDefinitions = WorkspaceControllerHolder.get().getProjectDefinitionsForRepl();
       } catch (YailGenerationException e) {
-        if (DEBUG) {
-          System.out.println("Got YailGenerationException when trying to get project definitions");
-        }
-        throw new CodeblocksException("Problem getting project definitions: "
-            + e.getMessage());
+	if (DEBUG) {
+	  System.out.println("Got YailGenerationException when trying to get project definitions");
+	}
+	throw new CodeblocksException("Problem getting project definitions: "
+	    + e.getMessage());
       } catch (IOException e) {
-        if (DEBUG) {
-          System.out.println("Got IOException when trying to get project definitions");
-        }
-        throw new CodeblocksException("Problem getting project definitions from server: "
-            + e.getMessage());
+	if (DEBUG) {
+	  System.out.println("Got IOException when trying to get project definitions");
+	}
+	throw new CodeblocksException("Problem getting project definitions from server: "
+	    + e.getMessage());
       }
     }
     // Note that these sends can trigger an IOException
@@ -531,11 +531,11 @@ public class PhoneCommManager {
       // make sure all the assets we need are on the phone before sending
       // the definitions.
       if (DEBUG) {
-        System.out.println("Sending project startup definitions");
+	System.out.println("Sending project startup definitions");
       }
       psPushAssetsToPhone();
       psReplControllerSend(projectDefinitions, REPL_PROJECT_LOADING + REPL_BLOCK_ID_INDICATOR
-          + "0");
+	  + "0");
     }
     setConnectedToPhone(true);
   }
@@ -544,7 +544,7 @@ public class PhoneCommManager {
   // expects that replController is in a good state
   private void psReplControllerSend(String data, String returnTag) throws IOException {
     String wrapped = "(" + RUNTIME_REPL_COMMUNICATION_INPUT_WRAPPER + " "
-        + data + " \"" + returnTag + "\")";
+	+ data + " \"" + returnTag + "\")";
     /* Kawa's REPL behaves nastily when you give it an input that has linebreaks
      * in it.  It seems to echo those back and spits out a prompt for each new
      * line.So we avoid the multiple prompts by replacing all whitespace with spaces.
@@ -561,13 +561,13 @@ public class PhoneCommManager {
     try {
       setSendingToPhone(true);
       if (returnTag.startsWith(REPL_PROJECT_LOADING)) {
-        setWaitingForProjectLoad(true);
-        projectLoading = true;
+	setWaitingForProjectLoad(true);
+	projectLoading = true;
       }
       psReplController.send(noWhitespace);
     } catch (IOException e) {
       if (projectLoading) {
-        setWaitingForProjectLoad(false);
+	setWaitingForProjectLoad(false);
       }
       throw e;
     } finally {
@@ -584,7 +584,7 @@ public class PhoneCommManager {
     Callable<Boolean> addAssetCallable = new Callable<Boolean>() {
       @Override
       public Boolean call() {
-        return psDoAddAsset(assetPath, localAssetPath);
+	return psDoAddAsset(assetPath, localAssetPath);
       }
     };
     try {
@@ -605,7 +605,7 @@ public class PhoneCommManager {
     Runnable addAssetRunnable = new Runnable() {
       @Override
       public void run() {
-        psDoAddAsset(assetPath, localAssetPath);
+	psDoAddAsset(assetPath, localAssetPath);
       }
     };
     try {
@@ -631,26 +631,26 @@ public class PhoneCommManager {
     if (ignoreConnected || connectedToPhone()) {
       final String remoteAccessPath = SDCARD_ASSET_DIR + assetName;
       try {
-        setSendingToPhone(true);
-        if (DEBUG) {
-          System.out.println("Trying to push asset " + localAssetPath +
-              " to phone at: " + remoteAccessPath);
-        }
-        androidController.pushFileToDevice(localAssetPath, remoteAccessPath);
-        if (DEBUG) {
-          System.out.println("Asset pushed to phone at: " + remoteAccessPath);
-        }
-        return true;
+	setSendingToPhone(true);
+	if (DEBUG) {
+	  System.out.println("Trying to push asset " + localAssetPath +
+	      " to phone at: " + remoteAccessPath);
+	}
+	androidController.pushFileToDevice(localAssetPath, remoteAccessPath);
+	if (DEBUG) {
+	  System.out.println("Asset pushed to phone at: " + remoteAccessPath);
+	}
+	return true;
       } catch (AndroidControllerException e) {
-        e.printStackTrace();
-        FeedbackReporter.showErrorMessage("Error sending media file to the phone: \n" +
-            e.getMessage());
-        return false;
+	e.printStackTrace();
+	FeedbackReporter.showErrorMessage("Error sending media file to the phone: \n" +
+	    e.getMessage());
+	return false;
       } catch (ExternalStorageException e) {
-        FeedbackReporter.showErrorMessage(e.getMessage());
-        return false;
+	FeedbackReporter.showErrorMessage(e.getMessage());
+	return false;
       } finally {
-        setSendingToPhone(false);
+	setSendingToPhone(false);
       }
     } else {
       return true;
@@ -699,7 +699,7 @@ public class PhoneCommManager {
    */
   private StringBuilder leftOver = new StringBuilder();
   private static final Pattern grossResponseP = Pattern.compile("(?s)(.*?)" + REPL_OPEN_BRACKET +
-                                                                "(.*?)" + REPL_CLOSE_BRACKET);
+								"(.*?)" + REPL_CLOSE_BRACKET);
   private static final Pattern fineResponseP = Pattern.compile(
       "(?s)([\\w ]*)" + REPL_BLOCK_ID_INDICATOR +
       "([\\d]*)" + REPL_RETURN_TAG_ENDER +
@@ -717,19 +717,19 @@ public class PhoneCommManager {
    *
    * This causes the expression to be evaluated to <value> and a string of the
    * form
-   *      <<  return-tag @@ outcome == value >>
+   *	  <<  return-tag @@ outcome == value >>
    * is sent to the computer where outcome is "Success" or "Failure" depending
    * on whether expression returns normally or throws an exception.
    * Return tags should be of the form
    *
-   *            purpose : blockID
+   *		purpose : blockID
    *
    *  where purpose gives an idea of what the call was for, and blockID is the
    *  ID of a codeblocks block to which the outcome and value should be sent.
    *
    * These patterns below define comprehensible responses.
    * Responses have the form
-   *         << purpose:blockID @@ (Success: value | Failure: message) >>
+   *	     << purpose:blockID @@ (Success: value | Failure: message) >>
    * Purposes can be words with spaces. BlockID's can be
    * integers. Values can be anything not containing REPL_OPEN_BRACKET or
    * REPL_CLOSE_BRACKET. The "?" in grossResponseP achieves this final constraint.
@@ -756,9 +756,9 @@ public class PhoneCommManager {
     while (true) {
       Matcher completeResponse = grossResponseP.matcher(candidate);
       if (!completeResponse.find()) {
-        leftOver.setLength(0);
-        leftOver.append(candidate);
-        return responsesFound;
+	leftOver.setLength(0);
+	leftOver.append(candidate);
+	return responsesFound;
       }
       responsesFound++;
       candidate = candidate.substring(completeResponse.end());
@@ -771,32 +771,32 @@ public class PhoneCommManager {
     Matcher match1 = fineResponseP.matcher(grossResponse);
     if (!match1.matches()) {
       try {
-        error.append("Garbled response: " + grossResponse);
+	error.append("Garbled response: " + grossResponse);
       } catch (IOException e) {
-        // To mollify compiler
+	// To mollify compiler
       }
     } else {
       PhoneResponse pr =  new PhoneResponse(match1.group(1),
-          Long.parseLong(match1.group(2).equals("")
-                  ? "0"
-                  : match1.group(2)),
-                  match1.group(3).equals(REPL_SUCCESS),
-                  match1.group(4)
-                     .replace(REPL_ENCODED_CLOSE_BRACKET, REPL_CLOSE_BRACKET)
-                     .replace(REPL_ENCODED_OPEN_BRACKET, REPL_OPEN_BRACKET)
-                     .replace(REPL_ENCODED_ESCAPE, REPL_ESCAPE));
+	  Long.parseLong(match1.group(2).equals("")
+		  ? "0"
+		  : match1.group(2)),
+		  match1.group(3).equals(REPL_SUCCESS),
+		  match1.group(4)
+		     .replace(REPL_ENCODED_CLOSE_BRACKET, REPL_CLOSE_BRACKET)
+		     .replace(REPL_ENCODED_OPEN_BRACKET, REPL_OPEN_BRACKET)
+		     .replace(REPL_ENCODED_ESCAPE, REPL_ESCAPE));
       RenderableBlock rb = RenderableBlock.getRenderableBlock(pr.blockID);
       if (rb != null) {
-        rb.showReplResult(pr.purpose, pr.success, pr.message);
-        if (DEBUG) {
-          System.out.println("Sent to block: " + pr.toString());
-        }
-      } else if (!pr.success) {  // It's a non-attributable error
-        FeedbackReporter.showErrorMessage(pr.message, pr.purpose);
+	rb.showReplResult(pr.purpose, pr.success, pr.message);
+	if (DEBUG) {
+	  System.out.println("Sent to block: " + pr.toString());
+	}
+      } else if (!pr.success) {	 // It's a non-attributable error
+	FeedbackReporter.showErrorMessage(pr.message, pr.purpose);
       }
       // see if purpose was project loading and enable repl comm button if so
       if (pr.purpose.equals(REPL_PROJECT_LOADING)) {
-        setWaitingForProjectLoad(false);
+	setWaitingForProjectLoad(false);
       }
     }
   }
@@ -805,9 +805,9 @@ public class PhoneCommManager {
   void checkNoise(String message, Appendable error) {
     if (!message.matches("(\\n|\\s|#\\|kawa:[\\d]+\\|#)*")) {
       try {
-        error.append("Ignored \"" + message + "\"\n");
+	error.append("Ignored \"" + message + "\"\n");
       } catch (IOException e) {
-        // IOException can't occur, but we have to mollify the compiler.
+	// IOException can't occur, but we have to mollify the compiler.
       }
     }
   }
@@ -828,12 +828,12 @@ public class PhoneCommManager {
     @Override
     public String toString() {
       return purpose +
-             REPL_BLOCK_ID_INDICATOR +
-             new Long(blockID).toString() +
-             REPL_RETURN_TAG_ENDER +
-             (success ? REPL_SUCCESS : REPL_FAILURE) +
-             REPL_RESULT_INDICATOR +
-             message;
+	     REPL_BLOCK_ID_INDICATOR +
+	     new Long(blockID).toString() +
+	     REPL_RETURN_TAG_ENDER +
+	     (success ? REPL_SUCCESS : REPL_FAILURE) +
+	     REPL_RESULT_INDICATOR +
+	     message;
     }
   }
 
@@ -859,13 +859,13 @@ public class PhoneCommManager {
     }
   }
 
-  // JIS: Made public so CWirelessButton can use it for Wifi Connection (KLUDGE)  
+  // JIS: Made public so CWirelessButton can use it for Wifi Connection (KLUDGE)
   public void setConnectedToPhone(boolean newSetting) {
     synchronized(statusLock) {
       if (newSetting == connectedToPhone) return;
       connectedToPhone = newSetting;
       if (DEBUG && SwingUtilities.isEventDispatchThread()) {
-        System.out.println("setConnectedToPhone: in eventDispatchThread");
+	System.out.println("setConnectedToPhone: in eventDispatchThread");
       }
     }
     updateStatusIndicators();
@@ -882,15 +882,15 @@ public class PhoneCommManager {
    * (yellow) and "disconnected" (gray). The state of the indicators is set
    * according to the following state variables:
    *
-   *    - deviceConnected - true iff the first device to get plugged in is still
-   *      plugged in
-   *    - sendingToPhone - true while we are in the process of sending commands
-   *      or data to the phone
-   *    - waitingForProjectLoad - true if we have sent project definitions
-   *      to the repl on the phone and are waiting for an acknowledgement that
-   *      the project is loaded on the phone
-   *    - connectedToPhone - true if we believe that there is a REPL running
-   *      on the phone that we can communicate with
+   *	- deviceConnected - true iff the first device to get plugged in is still
+   *	  plugged in
+   *	- sendingToPhone - true while we are in the process of sending commands
+   *	  or data to the phone
+   *	- waitingForProjectLoad - true if we have sent project definitions
+   *	  to the repl on the phone and are waiting for an acknowledgement that
+   *	  the project is loaded on the phone
+   *	- connectedToPhone - true if we believe that there is a REPL running
+   *	  on the phone that we can communicate with
    *
    * It is the job of any code that changes the state variables to call
    * updateStatusIndicators to reflect the change in the UI.
@@ -903,38 +903,38 @@ public class PhoneCommManager {
     final class statusUpdater implements Runnable {
       @Override
       public void run() {
-        boolean phoneCommBusy;
-        boolean myConnectedToPhone;
-        synchronized(statusLock) {
-          phoneCommBusy = waitingForProjectLoad || sendingToPhone;
-          myConnectedToPhone = connectedToPhone;
-        }
-        // comm indicator
-        if (phoneCommBusy) { // communicating with phone
-          commIndicator.setState(PhoneCommIndicator.IndicatorState.COMMUNICATING);
-        } else {
-          if (myConnectedToPhone) {  // not communicating with phone and repl app is running
-            commIndicator.setState(PhoneCommIndicator.IndicatorState.CONNECTED);
-          } else { // not communicating and repl app not running
-            commIndicator.setState(PhoneCommIndicator.IndicatorState.DISCONNECTED);
-          }
-        }
-        // connect menu enabled/disabled
-        // Note: The device selector menu is created with the initial text
-        // "Loading a Project".  This changes to "Connect to Device" when the
-        //  menu is first activated.
-        if (!phoneCommBusy
-            && WorkspaceControllerHolder.get().haveProject()) {
-          deviceSelector.setEnabled(true);
-        } else {
-          deviceSelector.setEnabled(false);
-        }
-        // connected device
-        if (myConnectedToPhone) {
-          deviceSelector.setCurrentDevice(psReplController.getSelectedDevice());
-        } else {
-          deviceSelector.setCurrentDevice(null);
-        }
+	boolean phoneCommBusy;
+	boolean myConnectedToPhone;
+	synchronized(statusLock) {
+	  phoneCommBusy = waitingForProjectLoad || sendingToPhone;
+	  myConnectedToPhone = connectedToPhone;
+	}
+	// comm indicator
+	if (phoneCommBusy) { // communicating with phone
+	  commIndicator.setState(PhoneCommIndicator.IndicatorState.COMMUNICATING);
+	} else {
+	  if (myConnectedToPhone) {  // not communicating with phone and repl app is running
+	    commIndicator.setState(PhoneCommIndicator.IndicatorState.CONNECTED);
+	  } else { // not communicating and repl app not running
+	    commIndicator.setState(PhoneCommIndicator.IndicatorState.DISCONNECTED);
+	  }
+	}
+	// connect menu enabled/disabled
+	// Note: The device selector menu is created with the initial text
+	// "Loading a Project".	 This changes to "Connect to Device" when the
+	//  menu is first activated.
+	if (!phoneCommBusy
+	    && WorkspaceControllerHolder.get().haveProject()) {
+	  deviceSelector.setEnabled(true);
+	} else {
+	  deviceSelector.setEnabled(false);
+	}
+	// connected device
+	if (myConnectedToPhone) {
+	  deviceSelector.setCurrentDevice(psReplController.getSelectedDevice());
+	} else {
+	  deviceSelector.setCurrentDevice(null);
+	}
       }
     }
     if (commIndicator == null) {
@@ -945,11 +945,11 @@ public class PhoneCommManager {
       new statusUpdater().run();
     } else {
       try {
-        SwingUtilities.invokeAndWait(new statusUpdater());
+	SwingUtilities.invokeAndWait(new statusUpdater());
       } catch (InterruptedException e) {
-        e.printStackTrace();
+	e.printStackTrace();
       } catch (InvocationTargetException e) {
-        e.printStackTrace();
+	e.printStackTrace();
       }
     }
   }
