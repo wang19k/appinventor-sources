@@ -51,6 +51,8 @@
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
+	<pathelement location="${lib.dir}/QRGenerator/core.jar" />
+	<pathelement location="${lib.dir}/QRGenerator/javase.jar" />
       </classpath>
     </ai.javac5>
 
