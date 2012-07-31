@@ -117,7 +117,7 @@ public class WifiAndroidController implements AndroidController {
 		URL url = new URL("http://" + ipAddress + ":8000");
 		File file = new File(fileToPush);
 		long filelength = file.length();
-	    
+
 		System.out.println("url:" + url);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("POST");
@@ -137,7 +137,7 @@ public class WifiAndroidController implements AndroidController {
 
 		String message2 = "";
 		message2 += CrLf + "-----------------------------4664151417711--"
-                    + CrLf;
+		    + CrLf;
 
 		conn.setRequestProperty("Content-Type",
 					"multipart/form-data; boundary=---------------------------4664151417711");

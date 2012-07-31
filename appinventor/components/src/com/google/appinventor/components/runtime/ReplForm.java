@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2010 Google Inc. All Rights Reserved.
 package com.google.appinventor.components.runtime;
 
@@ -7,7 +8,6 @@ import java.util.Enumeration;
 import java.io.File;
 import java.io.IOException;
 
-import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
 
@@ -24,10 +24,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.NetworkInfo.State;
-
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
@@ -36,46 +32,35 @@ import android.net.NetworkInfo.State;
  * @author markf@google.com (Your Name Here)
  */
 
-@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
-
 public class ReplForm extends Form {
 
   // Controller for the ReplCommController associated with this form
   private ReplCommController formReplCommController = null;
 
   private AppInvHTTPD assetServer = null;
-  public boolean wirelessBoolean = false;
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
+  private boolean IsUSBRepl = false;
+
+  public ReplForm() {
+    super();
+    topform = this;
+  }
 
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    topform = this;		// Static handle on us...
-    PackageManager packageManager = this.$context().getPackageManager();
-
-    this.$context();
-	//Checks the type of network connected.
-    ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    //mobile
-    State mobile = conMan.getNetworkInfo(0).getState();
-    //wifi
-    State wifi = conMan.getNetworkInfo(1).getState();
-
-    if (mobile == NetworkInfo.State.CONNECTED || mobile == NetworkInfo.State.CONNECTING) {
-    wirelessBoolean = false;
-    String message = "Wireless is not connected! Please turn on wifi!";
-    Log.println(ALIGNMENT_NORMAL, message, message);
-    Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
-
-    } else if (wifi == NetworkInfo.State.CONNECTED || wifi == NetworkInfo.State.CONNECTING) {
-    wirelessBoolean = true;
-    String message = "Wireless IS connected! Good job!";
-    Log.println(ALIGNMENT_NORMAL, message, message);
-    Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
+    if (IsUSBRepl) {
+      PackageManager packageManager = this.$context().getPackageManager();
+      // the following is intended to prevent the application from being restarted
+      // once it has ever run (so it can be run only once after it is installed)
+      packageManager.setComponentEnabledSetting(
+        new ComponentName(this.getPackageName(), this.getClass().getName()),
+	PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+      formReplCommController = new ReplCommController(this);
+      formReplCommController.startListening(true /*showAlert*/);
     }
-
-  }  
+  }
 
   @Override
   protected void onResume() {
@@ -135,6 +120,22 @@ public class ReplForm extends Form {
     });
   }
 
+  public void setIsUSBrepl() {
+    IsUSBRepl = true;
+  }
+
+  // // This is used by the aiphoneapp (USB based).
+  // public void startUSBRepl() {
+  //   PackageManager packageManager = this.$context().getPackageManager();
+  //   // the following is intended to prevent the application from being restarted
+  //   // once it has ever run (so it can be run only once after it is installed)
+  //   packageManager.setComponentEnabledSetting(
+  //     new ComponentName(this.getPackageName(), this.getClass().getName()),
+  //     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+  //   formReplCommController = new ReplCommController(this);
+  //   formReplCommController.startListening(true /*showAlert*/);
+  // }
+
   public void startServices() {
     formReplCommController = new ReplCommController(this);
     formReplCommController.startListening(true /*showAlert*/);
@@ -154,7 +155,5 @@ public class ReplForm extends Form {
     if (!f.exists())
 	f.mkdirs();		// Create the directory and all parents
   }
-
-
 
 }

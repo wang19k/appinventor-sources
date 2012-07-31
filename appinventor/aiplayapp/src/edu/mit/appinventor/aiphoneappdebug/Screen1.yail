@@ -4,7 +4,7 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def expiration 1343779200000)
+(def expiration 1345003200000)
 
 (def expired #f)
 

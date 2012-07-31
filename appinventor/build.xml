@@ -25,6 +25,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="RunLocalBuildServer"/>
   </target>
 
+  <target name="PlayApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="tests"/>
