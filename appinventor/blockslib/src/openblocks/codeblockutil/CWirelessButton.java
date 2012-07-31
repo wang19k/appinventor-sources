@@ -162,7 +162,7 @@ public class CWirelessButton extends CSaveButton{
 	        System.out.println(e.getMessage());
 	    }
 
-	    String filePath = "/tmp/qrpng.png";
+	    String filePath = "/tmp/qrcode.png";
 	    File file = new File(filePath);
 	    try {
 	        MatrixToImageWriter.writeToFile(matrix, "PNG", file);
@@ -174,12 +174,11 @@ public class CWirelessButton extends CSaveButton{
 	/** Returns an ImageIcon, or null if the path was invalid. */
 	protected ImageIcon createImageIcon(String path,
 	                                           String description) {
-	    java.net.URL imgURL = getClass().getResource(path);
-	    if (imgURL != null) {
-	        return new ImageIcon(imgURL, description);
-	    } else {
-	        System.err.println("Couldn't find file: " + path);
-	        return null;
-	    }
+	    //	    java.net.URL imgURL = getClass().getResource(path);
+	    //	    if (imgURL != null) {
+	        return new ImageIcon(path, description);
+		//	    } else {
+		//	        System.err.println("Couldn't find file: " + path);
+		//	        return null;
 	}
 }
