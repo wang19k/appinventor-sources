@@ -228,7 +228,7 @@ public final class Compiler {
 
         out.write("      <intent-filter>\n");
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
-        if (isMain /*&& !isForRepl*/) {
+        if (isMain && !isForRepl) {
           // We only want the LAUNCHER category if this is a normal user-compiled app.
           // If this is the special REPL app then we don't want the app to show up in
           // the apps list
