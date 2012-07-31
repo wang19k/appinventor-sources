@@ -115,19 +115,20 @@ public class CWirelessButton extends CSaveButton{
 		generateQRCode();
 		String path = "/tmp/qrcode.png";
 //		java.net.URL imgURL = getClass().getResource(path);
-		ImageIcon qrcode = new ImageIcon(path, "This should be the qr code.");
+		ImageIcon qrcode = createImageIcon(path, "This should be the qr code.");
 		System.out.println("Made the ImageIcon");
 		if (qrcode == null)
 			System.out.println ("LOLOL it is null");
 		else
 			System.out.println ("Looks like qrcode does something");
-		JLabel label1 = new JLabel("Scan Me", qrcode, JLabel.CENTER);
+		/**JLabel label1 = new JLabel("Scan Me", qrcode, JLabel.CENTER);
 		JLabel label2 = new JLabel(msgText);
 		JPanel connectingMsg = new JPanel();
 		connectingMsg.add(label1);
-		connectingMsg.add(label2);
+		connectingMsg.add(label2); **/
+		FeedbackReporter.showWarningMessage(msgText, title, "OK", qrcode);
 		
-	    JOptionPane.showMessageDialog(frame, connectingMsg, title, JOptionPane.PLAIN_MESSAGE, qrcode);
+	    //JOptionPane.showMessageDialog(frame, connectingMsg, title, JOptionPane.PLAIN_MESSAGE, qrcode);
 		
 	}
 	private void generateQRCode() {
@@ -168,6 +169,17 @@ public class CWirelessButton extends CSaveButton{
 	        System.out.println("printing to " + file.getAbsolutePath());
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
+	    }
+	}
+	/** Returns an ImageIcon, or null if the path was invalid. */
+	protected ImageIcon createImageIcon(String path,
+	                                           String description) {
+	    java.net.URL imgURL = getClass().getResource(path);
+	    if (imgURL != null) {
+	        return new ImageIcon(imgURL, description);
+	    } else {
+	        System.err.println("Couldn't find file: " + path);
+	        return null;
 	    }
 	}
 }
