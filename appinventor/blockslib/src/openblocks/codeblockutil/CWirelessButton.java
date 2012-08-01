@@ -63,6 +63,7 @@ public class CWirelessButton extends CSaveButton{
 	public final String CONNECTING_MSG = randomString(5);
 	public final String theUrl = "http://osiris.mit.edu/rendezvous/";
 	private PhoneCommManager pcm; // When the OK option is selected from the message dialog we use this to start the REPL
+        private ImageIcon qrcode = new ImageIcon();
 
 	String randomString(int len)
 	{
@@ -131,9 +132,6 @@ public class CWirelessButton extends CSaveButton{
 		String title = "Starting the wireless connection.";
 		String msgText = "This is your 5 digit code: " + CONNECTING_MSG;
 		generateQRCode();
-		String path = "/tmp/qrcode.png";
-		ImageIcon qrcode = createImageIcon(path, "This should be the qr code.");
-		System.out.println("Made the ImageIcon");
 		if (qrcode == null)
 		    System.out.println ("LOLOL it is null");
 		else
@@ -141,8 +139,9 @@ public class CWirelessButton extends CSaveButton{
 		FeedbackReporter.showInfoMessage(msgText, qrcode);
 		
 	}
+
 	private void generateQRCode() {
-		Charset charset = Charset.forName("ISO-8859-1");
+	    Charset charset = Charset.forName("ISO-8859-1");
 	    CharsetEncoder encoder = charset.newEncoder();
 	    byte[] b = null;
 	    try {
@@ -162,8 +161,8 @@ public class CWirelessButton extends CSaveButton{
 
 	    // get a byte matrix for the data
 	    BitMatrix matrix = null;
-	    int h = 100;
-	    int w = 100;
+	    int h = 200;
+	    int w = 200;
 	    com.google.zxing.Writer writer = new QRCodeWriter();
 	    try {
 	        matrix = writer.encode(data,
@@ -171,24 +170,10 @@ public class CWirelessButton extends CSaveButton{
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
 	    }
-
-	    String filePath = "/tmp/qrcode.png";
-	    File file = new File(filePath);
 	    try {
-	        MatrixToImageWriter.writeToFile(matrix, "PNG", file);
-	        System.out.println("printing to " + file.getAbsolutePath());
+	        qrcode.setImage(MatrixToImageWriter.toBufferedImage(matrix));
 	    } catch (Exception e) {
 	        System.out.println(e.getMessage());
 	    }
-	}
-	/** Returns an ImageIcon, or null if the path was invalid. */
-	protected ImageIcon createImageIcon(String path,
-	                                           String description) {
-	    //	    java.net.URL imgURL = getClass().getResource(path);
-	    //	    if (imgURL != null) {
-	        return new ImageIcon(path, description);
-		//	    } else {
-		//	        System.err.println("Couldn't find file: " + path);
-		//	        return null;
 	}
 }
