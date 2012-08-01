@@ -85,6 +85,8 @@ public class ReplForm extends Form {
 	assetServer.stop();
 	assetServer = null;
     }
+    finish();			// Must really exit here, so if you hits the back button we terminate completely.
+    System.exit(0);
   }
 
   @Override
