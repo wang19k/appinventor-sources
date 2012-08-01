@@ -4,10 +4,6 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def expiration 1345003200000)
-
-(def expired #f)
-
 (def (PostData)
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
 )
@@ -30,11 +26,18 @@ $Source $Yail
 )
 
 (call-component-method 'code 'HideKeyboard (*list-for-runtime*)
- '())
+ '()
+
+)
  (let ((topform Screen1:topform))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
    (topform:startServices))
 
+
  )
+(def expired #f)
+
+(def expiration 1345003200000)
+
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
 )
@@ -107,6 +110,20 @@ $Source $Yail
 )
 
 )
+;;; HorizontalArrangement3
+(add-component Screen1 HorizontalArrangement HorizontalArrangement3 )
+;;; Label3
+(add-component HorizontalArrangement3 Label Label3 (set-and-coerce-property! 'Label3 'Text "Or you Can Scan a Bar Code" 'text)
+)
+;;; ScanButton
+(add-component HorizontalArrangement3 Button ScanButton (set-and-coerce-property! 'ScanButton 'Text "Scan Now" 'text)
+)
+(define-event ScanButton Click()
+ (set-this-form)
+ (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*)
+ '())
+
+)
 ;;; expirewarning
 (add-component Screen1 Label expirewarning )
 ;;; Web1
@@ -114,4 +131,14 @@ $Source $Yail
 )
 ;;; Clock1
 (add-component Screen1 Clock Clock1 )
+;;; BarcodeScanner1
+(add-component Screen1 BarcodeScanner BarcodeScanner1 )
+(define-event BarcodeScanner1 AfterScan( result )
+ (set-this-form)
+ (set-and-coerce-property! 'code 'Text (lexical-value result)
+ 'text)
+
+((get-var PostData))
+
+)
 (init-runtime)
