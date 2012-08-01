@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009 Google Inc. All Rights Reserved.
 
 package openblocks.yacodeblocks;
@@ -181,6 +182,18 @@ public class FeedbackReporter extends JOptionPane {
       }
       HTMLPane htmlMsg = new HTMLPane(msgText);
       showMessageDialog(frame, htmlMsg, INFO_MESSAGE_TITLE, JOptionPane.INFORMATION_MESSAGE);
+    } else {
+      System.out.println(msgText);
+    }
+  }
+
+  public static void showInfoMessage(String msgText, ImageIcon icon) {
+    if (!testingMode) {
+      if (WorkspaceControllerHolder.isHeadless()) {
+        return;
+      }
+      HTMLPane htmlMsg = new HTMLPane(msgText);
+      showMessageDialog(frame, htmlMsg, INFO_MESSAGE_TITLE, JOptionPane.INFORMATION_MESSAGE, icon);
     } else {
       System.out.println(msgText);
     }

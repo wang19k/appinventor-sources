@@ -138,7 +138,7 @@ public class CWirelessButton extends CSaveButton{
 		    System.out.println ("LOLOL it is null");
 		else
 		    System.out.println ("Looks like qrcode does something");
-		FeedbackReporter.showWarningMessage(msgText, title, "OK", qrcode);
+		FeedbackReporter.showInfoMessage(msgText, qrcode);
 		
 	}
 	private void generateQRCode() {
