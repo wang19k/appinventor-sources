@@ -29,9 +29,7 @@ $Source $Yail
  '()
 
 )
- (let ((topform Screen1:topform))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
-   (topform:startServices))
-
+((get-var *start-repl*))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
 
  )
 (def expired #f)
@@ -141,4 +139,11 @@ $Source $Yail
 ((get-var PostData))
 
 )
+(def *repl-started* #f)		;; only start the repl services once!
+(def (*start-repl*)
+  (let ((topform Screen1:topform))
+    (if (get-var *repl-started*) 'ok
+      (begin (topform:startServices)
+	     (set-var! *repl-started* #t)))))
+	
 (init-runtime)
