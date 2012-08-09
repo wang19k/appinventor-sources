@@ -58,7 +58,7 @@ public final class Compiler {
 
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
-  
+
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
 
@@ -75,7 +75,7 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "android.jar";
   private static final String MAC_AAPT_TOOL =
       "/tools/mac/aapt";
-  private static final String WINDOWS_AAPT_TOOL = 
+  private static final String WINDOWS_AAPT_TOOL =
       "/tools/windows/aapt";
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
@@ -121,6 +121,7 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForRepl;
+  private final boolean isForWireless;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
 
@@ -165,7 +166,7 @@ public final class Compiler {
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
-    
+
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
@@ -180,6 +181,18 @@ public final class Compiler {
           // Android Market.
          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
+
+      // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
+      // is used by the Google Play store to determine which devices the app is available for. By adding
+      // these lines we indicate that we use these features BUT THAT THEY ARE NOT REQUIRED so it is ok
+      // to make the app available on devices that lack the feature. Without these lines the Play Store
+      // makes a guess based on permissions and assumes that they are required features.
+      if (isForWireless) {
+          out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
+      }
+
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
@@ -279,11 +292,11 @@ public final class Compiler {
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, String keystoreFilePath, int childProcessRam) {
+                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
+    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
 
     // Create build directory.
@@ -397,13 +410,14 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForRepl, int childProcessMaxRam) {
+           PrintStream userErrors, boolean isForRepl, boolean isForWireless, int childProcessMaxRam) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
     this.isForRepl = isForRepl;
+    this.isForWireless = isForWireless;
     this.childProcessRamMb = childProcessMaxRam;
   }
 
@@ -425,7 +439,7 @@ public final class Compiler {
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
             .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
-        	classFileName = classesDir.getAbsolutePath()
+                classFileName = classesDir.getAbsolutePath()
            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
@@ -530,7 +544,7 @@ public final class Compiler {
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
       if (System.getProperty("os.name").startsWith("Windows")){
-  		jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+                jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
             File.separator + "jarsigner.exe");
       }
       if (!jarsignerFile.exists()) {
@@ -640,8 +654,8 @@ public final class Compiler {
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
     } else if (osName.startsWith("Windows")) {
-		aaptTool = WINDOWS_AAPT_TOOL;
-	} else {
+                aaptTool = WINDOWS_AAPT_TOOL;
+        } else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
