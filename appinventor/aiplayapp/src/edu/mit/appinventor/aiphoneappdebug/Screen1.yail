@@ -34,7 +34,7 @@ $Source $Yail
  )
 (def expired #f)
 
-(def expiration 1345521600000)
+(def expiration 1349049600000)
 
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
