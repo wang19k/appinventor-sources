@@ -113,11 +113,11 @@ public class CWirelessButton extends CSaveButton{
                   ac.setIpAddress(ipAddress);
                   wc.setupWirelessConnection(ac, ipAddress);
                   pcm = wc.getPhoneCommManager();
-                  pcm.setAndroidController(ac);
-                  pcm.setConnectedToPhone(true); // Kludge -- no USB cable, so implicitly connected
-                  System.out.println("CWirelessButton: Set Connected to Phone.");
-                  pcm.initReplController();
-                  pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
+		  pcm.prepareForWiFi();
+		  //                  pcm.setConnectedToPhone(true); // Kludge -- no USB cable, so implicitly connected
+                  //System.out.println("CWirelessButton: Set Connected to Phone.");
+                  // pcm.initReplController();
+                  // pcm.replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
                 } catch(Exception e) {
                   System.out.println("It did not work." + e.toString());//return
                   e.printStackTrace(System.out);

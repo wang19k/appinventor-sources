@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2010 Google Inc. All Rights Reserved.
 
 package openblocks.yacodeblocks;
@@ -201,8 +202,7 @@ public class PhoneCommManager {
 	this.ipAddress = ipAddress;
   }
 
-  // JIS: Make this public for the Wireless code
-  public void initReplController() {
+  private void initReplController() {
     setReplController(new DeviceReplCommController(
 	ipAddress,
 	REPL_COMMUNICATION_PORT,
@@ -342,6 +342,16 @@ public class PhoneCommManager {
     synchronized(statusLock) {
       return connectedToPhone;
     }
+  }
+
+  /**
+   * Reinitialize the phone connection for WiFi use.
+   *
+   */
+
+  public void prepareForWiFi() {
+    initReplController();
+    reinitPhoneApp();
   }
 
   /**
