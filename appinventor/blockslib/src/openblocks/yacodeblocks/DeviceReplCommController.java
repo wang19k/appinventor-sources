@@ -1,11 +1,42 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009 Google Inc. All Rights Reserved.
 
 package openblocks.yacodeblocks;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.Random;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import org.json.*;
+import org.apache.commons.io.*;
+
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
 
 /**
  * Class for communication with a Phone/Emulator containing an embedded Yail REPL.
@@ -33,6 +64,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   private ReadWriteThread inputThread;
   private AndroidController androidController;
   private PostProcessor postProcessor;
+  private PhoneCommManager phoneManager;
 
   private volatile boolean connectionHappy = false;  // is there a device connected and working
   private volatile int devicesPluggedIn = 0;
@@ -103,8 +135,10 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
         if (DEBUG) {
           System.out.println("**** Trying to do restart from reinstalling the application....");
         }
-        doReinstallApplication();
-        doRestartApplication();
+	if (!selectedDevice.equals("WiFi")) { // Cannot restart WiFi app, but it is likely just fine.
+	  doReinstallApplication();
+	  doRestartApplication();
+	}
         restarted = true;
         establishSocketLevelCommunication();
         doWrite(message);
@@ -330,9 +364,29 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
     return androidController.getSelectedDevice();
   }
   
+  public boolean selectDevice(String device, String ipAddress) {
+    try {
+      if (device.equals("WiFi")) {
+	this.host = ipAddress;
+	androidController.selectDevice(device, ipAddress);
+	phoneManager.replWifiStart();
+      } else { 
+	androidController.selectDevice(device);
+      }
+      return true;
+    } catch (AndroidControllerException e) {
+      return false;
+    }
+  }
+
   public boolean selectDevice(String device) {
     try {
-      androidController.selectDevice(device);
+      if (device.equals("WiFi")) {
+	rendevzousIpAddress();	// This runs in another thread which calls selectDevice(device, ipaddress) when ready
+	return false;
+      } else { 
+	androidController.selectDevice(device);
+      }
       return true;
     } catch (AndroidControllerException e) {
       return false;
@@ -392,4 +446,105 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       }
     }
   }
+
+  private void rendevzousIpAddress() {
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	public void run() {
+	  JFrame frame;
+	  String AB = "0123456789abcdefghijklmnopqrstuvwxyz";
+	  Random rnd = new Random();
+	  ImageIcon qrcode = new ImageIcon();
+	  StringBuilder sb = new StringBuilder(5);
+	  String theUrl = "http://osiris.mit.edu/rendezvous/";
+	  
+	  for(int i=0; i<5; i++)
+	    sb.append(AB.charAt(rnd.nextInt(AB.length())));
+	  String code = sb.toString();
+	  showWirelessNotice(code);
+	  try {
+	    URL url = new URL(theUrl + code);
+	    URLConnection con = url.openConnection();
+	    System.out.println("Opening a URL connection");
+	    InputStream in = con.getInputStream();
+	    System.out.println("Well, input stream worked fine.");
+	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+	    System.out.println("BufferedReader worked fine.");
+	    String jsonString = reader.readLine();
+	    while (jsonString == null) {
+	      url = new URL(theUrl + code);
+	      con = url.openConnection();
+	      System.out.println("Opening a URL connection");
+	      in = con.getInputStream();
+	      System.out.println("Well, input stream worked fine.");
+	      reader = new BufferedReader(new InputStreamReader(in));
+	      System.out.println("BufferedReader worked fine.");
+	      jsonString = reader.readLine();
+	      System.out.println("JSON read the line");
+	      Thread.sleep(100);
+	    }
+	    System.out.println("Cool, it stopped being NULL and connected");
+	    JSONObject jsonObject = new JSONObject(jsonString);
+	    System.out.println("Made the JSON object");
+	    String ipAddress = (String) jsonObject.get("ipaddr");
+	    System.out.println("Got ipaddr = " + ipAddress);
+	    selectDevice("WiFi", ipAddress);
+	  } catch(Exception e) {
+	    System.out.println("It did not work." + e.toString());//return
+	    e.printStackTrace(System.out);
+	  }
+	}
+      });
+  }
+
+  private void showWirelessNotice(String code) {
+    String title = "Starting the wireless connection.";
+    String msgText = "This is your 5 digit code: " + code;
+    ImageIcon qrcode = generateQRCode(code);
+    if (qrcode == null)
+      System.out.println ("qrcode is null");
+    else
+      System.out.println ("qrcode is not null");
+    FeedbackReporter.showInfoMessage(msgText, qrcode);
+  }
+
+  private ImageIcon generateQRCode(String code) {
+    Charset charset = Charset.forName("ISO-8859-1");
+    CharsetEncoder encoder = charset.newEncoder();
+    byte[] b = null;
+    try {
+      // Convert a string to ISO-8859-1 bytes in a ByteBuffer
+      ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(code));
+      b = bbuf.array();
+    } catch (CharacterCodingException e) {
+      System.out.println(e.getMessage());
+    }
+
+    String data = null;
+    try {
+      data = new String(b, "ISO-8859-1");
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e.getMessage());
+    }
+
+    // get a byte matrix for the data
+    BitMatrix matrix = null;
+    int h = 200;
+    int w = 200;
+    com.google.zxing.Writer writer = new QRCodeWriter();
+    try {
+      matrix = writer.encode(data,
+        com.google.zxing.BarcodeFormat.QR_CODE, w, h);
+      ImageIcon qrcode = new ImageIcon();
+      qrcode.setImage(MatrixToImageWriter.toBufferedImage(matrix));
+      return qrcode;
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    return null;
+  }
+
+  public void setPhoneManager(PhoneCommManager phoneManager) {
+    this.phoneManager = phoneManager;
+  }
+
 }

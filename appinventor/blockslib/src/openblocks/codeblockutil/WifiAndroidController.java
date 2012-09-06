@@ -90,6 +90,10 @@ public class WifiAndroidController implements AndroidController {
 	return;
     }
 
+    public void selectDevice(String device, String ipAddress) {
+	return;
+    }
+
     public String getSelectedDevice() {
 	return ("WiFi");
     }

@@ -1163,12 +1163,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     });
   }
 
-  public void setupWirelessConnection(AndroidController ac, String ipAddress) {
-      androidController = ac;
-      pcm.setAndroidController(ac);
-      pcm.setPhoneIpAddress(ipAddress);
-  }
-
   /////////////
   // STARTUP //
   /////////////

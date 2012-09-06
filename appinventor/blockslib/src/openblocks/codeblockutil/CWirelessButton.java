@@ -111,7 +111,7 @@ public class CWirelessButton extends CSaveButton{
                   System.out.println("CWirelessButton: ipaddr = " + ipAddress);
                   WifiAndroidController ac = new WifiAndroidController();
                   ac.setIpAddress(ipAddress);
-                  wc.setupWirelessConnection(ac, ipAddress);
+		  //                  wc.setupWirelessConnection(ac, ipAddress);
                   pcm = wc.getPhoneCommManager();
 		  pcm.prepareForWiFi();
 		  //                  pcm.setConnectedToPhone(true); // Kludge -- no USB cable, so implicitly connected

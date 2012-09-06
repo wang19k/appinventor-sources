@@ -182,12 +182,15 @@ public class PhoneCommManager {
 	}
 	setConnectedToPhone(false);
 	System.out.println("Selecting device " + device);
+	setPhoneManager();	// Tell the replcontroller who we are
 	if (!psReplController.selectDevice(device)) {
-	  if (DEBUG) {
-	    System.out.println("Selected device is no longer attached");
-	  }
-	  FeedbackReporter.showErrorMessage(
+	  if (!device.equals("WiFi")) { // Only generate a warning if we are not wifi, wifi always returns false here
+	    if (DEBUG) {
+	      System.out.println("Selected device is no longer attached");
+	    }
+	    FeedbackReporter.showErrorMessage(
 	      "It appears that device " + device + " is no longer available.");
+	  }
 	  return;
 	}
 	if (DEBUG) {
@@ -197,9 +200,13 @@ public class PhoneCommManager {
       }});
   }
 
-  // Used by the Wireless code to let us know the actual address of the phone
-  public void setPhoneIpAddress(String ipAddress) {
-	this.ipAddress = ipAddress;
+  // Used by the Wifi Code to start the repl after the ip address is obtained asynchronously
+  public void replWifiStart() {
+    replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
+  }
+
+  public void setPhoneManager() {
+    psReplController.setPhoneManager(this);
   }
 
   private void initReplController() {
