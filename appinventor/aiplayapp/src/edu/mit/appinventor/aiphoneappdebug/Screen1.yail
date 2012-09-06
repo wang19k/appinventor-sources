@@ -4,6 +4,10 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
+(def expiration 1349049600000)
+
+(def expired #f)
+
 (def (PostData)
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
 )
@@ -26,18 +30,15 @@ $Source $Yail
 )
 
 (call-component-method 'code 'HideKeyboard (*list-for-runtime*)
- '()
+ '())
 
-)
 ((get-var *start-repl*))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
 
  )
-(def expired #f)
-
-(def expiration 1349049600000)
-
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "1.5.2" 'text)
 )
 (define-event Screen1 Initialize()
  (set-this-form)
@@ -122,6 +123,19 @@ $Source $Yail
  '())
 
 )
+;;; HorizontalArrangement4
+(add-component Screen1 HorizontalArrangement HorizontalArrangement4 )
+;;; Label4
+(add-component HorizontalArrangement4 Label Label4 (set-and-coerce-property! 'Label4 'Text "If the Blocks Editor is already running" 'text)
+)
+;;; RestartButton
+(add-component HorizontalArrangement4 Button RestartButton (set-and-coerce-property! 'RestartButton 'Text "Restart" 'text)
+)
+(define-event RestartButton Click()
+ (set-this-form)
+ ((get-var *start-repl*))
+
+)
 ;;; expirewarning
 (add-component Screen1 Label expirewarning )
 ;;; Web1
@@ -133,17 +147,25 @@ $Source $Yail
 (add-component Screen1 BarcodeScanner BarcodeScanner1 )
 (define-event BarcodeScanner1 AfterScan( result )
  (set-this-form)
- (set-and-coerce-property! 'code 'Text (lexical-value result)
+ (if (call-yail-primitive yail-not (*list-for-runtime* (get-var expired)
+)
+ '( boolean)
+ "not")
+ (begin (set-and-coerce-property! 'code 'Text (lexical-value result)
  'text)
 
 ((get-var PostData))
 
 )
+)
+
+)
+
 (def *repl-started* #f)		;; only start the repl services once!
 (def (*start-repl*)
   (let ((topform Screen1:topform))
     (if (get-var *repl-started*) 'ok
       (begin (topform:startServices)
 	     (set-var! *repl-started* #t)))))
-	
+
 (init-runtime)
