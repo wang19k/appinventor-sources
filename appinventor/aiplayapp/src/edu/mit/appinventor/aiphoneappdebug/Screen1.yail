@@ -4,8 +4,7 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def expiration 1349049600000)
-
+(def expiration 1350273600000)
 (def expired #f)
 
 (def (PostData)
@@ -37,8 +36,8 @@ $Source $Yail
  )
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "1.5.2" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 7 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "1.6" 'text)
 )
 (define-event Screen1 Initialize()
  (set-this-form)
