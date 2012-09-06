@@ -13,7 +13,6 @@ import openblocks.codeblockutil.CDeviceSelector;
 import openblocks.codeblockutil.CEmulatorButton;
 import openblocks.codeblockutil.CHeader;
 import openblocks.codeblockutil.CSaveButton;
-import openblocks.codeblockutil.CWirelessButton;
 import openblocks.codeblockutil.PhoneCommIndicator;
 import openblocks.renderable.RenderableBlock;
 import openblocks.workspace.Page;
@@ -101,7 +100,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   private final CSaveButton undoButton;
   private final CSaveButton redoButton;
   private final CEmulatorButton newEmulatorButton;
-  private final CWirelessButton wirelessButton;
   private final CDeviceSelector deviceSelector;
   private final PhoneCommIndicator commIndicator;
 
@@ -150,7 +148,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     saveButton = new CSaveButton("Save", "Saved");
     undoButton = new CSaveButton("Undo", "Undo");
     redoButton = new CSaveButton("Redo", "Redo");
-    wirelessButton = new CWirelessButton();
     newEmulatorButton = new CEmulatorButton();
     autoSaver = new AutoSaver(this, saveButton, undoButton, redoButton);
     commIndicator = new PhoneCommIndicator();
@@ -1067,10 +1064,8 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     initializeControllerHistoryButtons();
 
     newEmulatorButton.init();
-    wirelessButton.init();
 
     newEmulatorButton.setPreferredSize(new Dimension(2 * BUTTON_WIDTH, BUTTON_HEIGHT));
-    wirelessButton.setPreferredSize(new Dimension(2 * BUTTON_WIDTH, BUTTON_HEIGHT));
     deviceSelector.setPreferredSize(new Dimension(150, BUTTON_HEIGHT));
 
     // Initialize the Repl controller and set the UI properties and action
@@ -1079,7 +1074,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
 
     headerPane = new CHeader(
         new JComponent[] {saveButton, undoButton, redoButton},
-        new JComponent[] {wirelessButton, newEmulatorButton, deviceSelector, commIndicator, zoomSlider});
+        new JComponent[] {newEmulatorButton, deviceSelector, commIndicator, zoomSlider});
 
     // Add the TrashCan for deleting blocks
     if (!addTrashCan()) {
