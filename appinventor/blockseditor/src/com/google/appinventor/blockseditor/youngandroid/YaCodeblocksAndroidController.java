@@ -21,6 +21,12 @@ import openblocks.yacodeblocks.AndroidControllerException;
 import openblocks.yacodeblocks.ExternalStorageException;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -111,7 +117,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
      */
     boolean detectIsAppRunning(IDevice device) {
       if (usingwifi) {
-	return true;		// Cannot really tell
+        return true;            // Cannot really tell
       }
       if (device != selectedDevice) return false;
       if (!startedSinceLastConnected) return false;
@@ -202,9 +208,9 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
     void killApp() {
       if (usingwifi) {
-	// Need to close the connection here?
+        // Need to close the connection here?
       } else {
-	killApplication(packageName);
+        killApplication(packageName);
       }
     }
 
@@ -241,15 +247,121 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
     private String ipAddress;
 
+    // Do this actual stuffing!
+
+    private class Uploader {
+
+      private static final String CrLf = "\r\n";
+      private void SendFile(String ipAddress, String fileToPush, String filename) throws IOException {
+
+        FileInputStream is = null;
+        OutputStream os = null;
+        InputStream cin = null;
+
+        try {
+          URL url = new URL("http://" + ipAddress + ":8000");
+          File file = new File(fileToPush);
+          long filelength = file.length();
+
+          System.out.println("url:" + url);
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          conn.setRequestMethod("POST");
+          conn.setDoOutput(true);
+
+          String postData = "";
+
+          is = new FileInputStream(file);
+
+          String message1 = "";
+          message1 += "-----------------------------4664151417711" + CrLf;
+          message1 += "Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"" + filename + "\"" + CrLf;
+          message1 += "Content-Type: application/octet-string" + CrLf;
+          message1 += CrLf;
+
+          // the image is sent between the messages in the multipart message.
+
+          String message2 = "";
+          message2 += CrLf + "-----------------------------4664151417711--"
+            + CrLf;
+
+          conn.setRequestProperty("Content-Type",
+                                  "multipart/form-data; boundary=---------------------------4664151417711");
+          // might not need to specify the content-length when sending chunked
+          // data.
+          conn.setRequestProperty("Content-Length", String.valueOf((message1
+                                                                    .length() + message2.length() + filelength)));
+
+          os = conn.getOutputStream();
+          os.write(message1.getBytes());
+
+          // SEND THE FILE
+          int index = 0;
+          int size = 1024;
+          byte [] data = new byte[size];
+          int r;
+          do {
+            r = is.read(data, 0, size);
+            if (r > 0)
+              os.write(data, 0, r);
+          } while (r > 0);
+
+          os.write(message2.getBytes());
+          os.flush();
+
+          System.out.println("open is");
+          cin = conn.getInputStream();
+
+          int len;
+          do {
+            System.out.println("READ");
+            len = cin.read(data, 0, size);
+
+            if (len > 0) {
+              System.out.println(new String(data, 0, len));
+            }
+          } while (len > 0);
+
+          System.out.println("DONE");
+        } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
+          System.out.println("Close connection");
+          try {
+            os.close();
+          } catch (Exception e) {
+          }
+          try {
+            is.close();
+          } catch (Exception e) {
+          }
+          try {
+            cin.close();
+          } catch (Exception e) {
+          }
+        }
+      }
+    }
+
     WifiManager(String ipAddress) {
       this.ipAddress = ipAddress;
     }
 
-    void pushFileToDevice(String fileToPush, String remotePath) {
-      return;			// TBD
+    void pushFileToDevice(String fileToPush, String remotePath)
+      throws AndroidControllerException, ExternalStorageException {
+      // This is where we will push assets to the phone.. TBD XXX
+      System.out.println("pushFileToDevice: fileToPush: \"" + fileToPush + "\" remotePath: \"" + remotePath + "\"");
+      String [] r = remotePath.split("/"); // We only want the last part!
+      String filename = r[r.length - 1];
+      System.out.println("pushFileToDevice: filename = \"" + filename + "\"");
+      try {
+        (new Uploader()).SendFile(ipAddress, fileToPush, filename);
+      } catch (Exception e) {
+        e.printStackTrace(System.out);
+        throw new AndroidControllerException(e.toString());
+      }
     }
   }
-  
+
   private WifiManager wifiManager = null;
 
   private boolean usingwifi = false; // Set to true when we are using a WiFi connection
@@ -280,7 +392,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public boolean androidInitializeCommunicationBridge(String adbLocation) {
-    if (usingwifi) {		// Don't use adb with Wifi
+    if (usingwifi) {            // Don't use adb with Wifi
       return true;
     }
     this.adbLocation = adbLocation;
