@@ -79,7 +79,7 @@ public final class Main {
                                          zip,
                                          commandLineOptions.outputDir,
                                          commandLineOptions.isForStemCellApp,
-					 commandLineOptions.isForWireless,
+                                         commandLineOptions.isForWireless,
                                          commandLineOptions.childProcessRamMb);
     System.exit(result.getResult());
   }

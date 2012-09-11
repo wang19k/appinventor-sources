@@ -84,7 +84,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       System.out.println(String.format("Sent '%s\n", message));
     }
   }
-  
+
 /**
  * Send initial string to the REPL controller.  If the REPL controller
  * isn't actually connected, will take a series of escalating steps to
@@ -135,10 +135,10 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
         if (DEBUG) {
           System.out.println("**** Trying to do restart from reinstalling the application....");
         }
-	if (!selectedDevice.equals("WiFi")) { // Cannot restart WiFi app, but it is likely just fine.
-	  doReinstallApplication();
-	  doRestartApplication();
-	}
+        if (!selectedDevice.equals("WiFi")) { // Cannot restart WiFi app, but it is likely just fine.
+          doReinstallApplication();
+          doRestartApplication();
+        }
         restarted = true;
         establishSocketLevelCommunication();
         doWrite(message);
@@ -359,19 +359,19 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
     }
     postProcessor.onDisconnect(serialNumber);
   }
-  
+
   public String getSelectedDevice() {
     return androidController.getSelectedDevice();
   }
-  
+
   public boolean selectDevice(String device, String ipAddress) {
     try {
       if (device.equals("WiFi")) {
-	this.host = ipAddress;
-	androidController.selectDevice(device, ipAddress);
-	phoneManager.replWifiStart();
-      } else { 
-	androidController.selectDevice(device);
+        this.host = ipAddress;
+        androidController.selectDevice(device, ipAddress);
+        phoneManager.replWifiStart();
+      } else {
+        androidController.selectDevice(device);
       }
       return true;
     } catch (AndroidControllerException e) {
@@ -382,10 +382,10 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   public boolean selectDevice(String device) {
     try {
       if (device.equals("WiFi")) {
-	rendevzousIpAddress();	// This runs in another thread which calls selectDevice(device, ipaddress) when ready
-	return false;
-      } else { 
-	androidController.selectDevice(device);
+        rendevzousIpAddress();  // This runs in another thread which calls selectDevice(device, ipaddress) when ready
+        return false;
+      } else {
+        androidController.selectDevice(device);
       }
       return true;
     } catch (AndroidControllerException e) {
@@ -449,50 +449,50 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
 
   private void rendevzousIpAddress() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
-	public void run() {
-	  JFrame frame;
-	  String AB = "0123456789abcdefghijklmnopqrstuvwxyz";
-	  Random rnd = new Random();
-	  ImageIcon qrcode = new ImageIcon();
-	  StringBuilder sb = new StringBuilder(5);
-	  String theUrl = "http://osiris.mit.edu/rendezvous/";
-	  
-	  for(int i=0; i<5; i++)
-	    sb.append(AB.charAt(rnd.nextInt(AB.length())));
-	  String code = sb.toString();
-	  showWirelessNotice(code);
-	  try {
-	    URL url = new URL(theUrl + code);
-	    URLConnection con = url.openConnection();
-	    System.out.println("Opening a URL connection");
-	    InputStream in = con.getInputStream();
-	    System.out.println("Well, input stream worked fine.");
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-	    System.out.println("BufferedReader worked fine.");
-	    String jsonString = reader.readLine();
-	    while (jsonString == null) {
-	      url = new URL(theUrl + code);
-	      con = url.openConnection();
-	      System.out.println("Opening a URL connection");
-	      in = con.getInputStream();
-	      System.out.println("Well, input stream worked fine.");
-	      reader = new BufferedReader(new InputStreamReader(in));
-	      System.out.println("BufferedReader worked fine.");
-	      jsonString = reader.readLine();
-	      System.out.println("JSON read the line");
-	      Thread.sleep(100);
-	    }
-	    System.out.println("Cool, it stopped being NULL and connected");
-	    JSONObject jsonObject = new JSONObject(jsonString);
-	    System.out.println("Made the JSON object");
-	    String ipAddress = (String) jsonObject.get("ipaddr");
-	    System.out.println("Got ipaddr = " + ipAddress);
-	    selectDevice("WiFi", ipAddress);
-	  } catch(Exception e) {
-	    System.out.println("It did not work." + e.toString());//return
-	    e.printStackTrace(System.out);
-	  }
-	}
+        public void run() {
+          JFrame frame;
+          String AB = "0123456789abcdefghijklmnopqrstuvwxyz";
+          Random rnd = new Random();
+          ImageIcon qrcode = new ImageIcon();
+          StringBuilder sb = new StringBuilder(5);
+          String theUrl = "http://osiris.mit.edu/rendezvous/";
+
+          for(int i=0; i<5; i++)
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+          String code = sb.toString();
+          showWirelessNotice(code);
+          try {
+            URL url = new URL(theUrl + code);
+            URLConnection con = url.openConnection();
+            System.out.println("Opening a URL connection");
+            InputStream in = con.getInputStream();
+            System.out.println("Well, input stream worked fine.");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            System.out.println("BufferedReader worked fine.");
+            String jsonString = reader.readLine();
+            while (jsonString == null) {
+              url = new URL(theUrl + code);
+              con = url.openConnection();
+              System.out.println("Opening a URL connection");
+              in = con.getInputStream();
+              System.out.println("Well, input stream worked fine.");
+              reader = new BufferedReader(new InputStreamReader(in));
+              System.out.println("BufferedReader worked fine.");
+              jsonString = reader.readLine();
+              System.out.println("JSON read the line");
+              Thread.sleep(100);
+            }
+            System.out.println("Cool, it stopped being NULL and connected");
+            JSONObject jsonObject = new JSONObject(jsonString);
+            System.out.println("Made the JSON object");
+            String ipAddress = (String) jsonObject.get("ipaddr");
+            System.out.println("Got ipaddr = " + ipAddress);
+            selectDevice("WiFi", ipAddress);
+          } catch(Exception e) {
+            System.out.println("It did not work." + e.toString());//return
+            e.printStackTrace(System.out);
+          }
+        }
       });
   }
 

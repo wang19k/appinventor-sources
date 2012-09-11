@@ -56,7 +56,7 @@ public class ReplForm extends Form {
       // once it has ever run (so it can be run only once after it is installed)
       packageManager.setComponentEnabledSetting(
         new ComponentName(this.getPackageName(), this.getClass().getName()),
-	PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
       formReplCommController = new ReplCommController(this);
       formReplCommController.startListening(true /*showAlert*/);
     }
@@ -66,26 +66,26 @@ public class ReplForm extends Form {
   protected void onResume() {
     super.onResume();
     if (formReplCommController != null)
-	formReplCommController.startListening(true /*showAlert*/);
+        formReplCommController.startListening(true /*showAlert*/);
   }
 
   @Override
   protected void onStop() {
     super.onStop();
     if (formReplCommController != null)
-	formReplCommController.stopListening(false /*showAlert*/);
+        formReplCommController.stopListening(false /*showAlert*/);
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
     if (formReplCommController != null)
-    	formReplCommController.destroy();
+        formReplCommController.destroy();
     if (assetServer != null) {
-	assetServer.stop();
-	assetServer = null;
+        assetServer.stop();
+        assetServer = null;
     }
-    finish();			// Must really exit here, so if you hits the back button we terminate completely.
+    finish();                   // Must really exit here, so if you hits the back button we terminate completely.
     System.exit(0);
   }
 
@@ -142,12 +142,12 @@ public class ReplForm extends Form {
     formReplCommController = new ReplCommController(this);
     formReplCommController.startListening(true /*showAlert*/);
     try {
-	if (assetServer == null) {
-	    checkAssetDir();
-	    assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR)); // Probably should make the port variable
-	}
+        if (assetServer == null) {
+            checkAssetDir();
+            assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR)); // Probably should make the port variable
+        }
     } catch (IOException ex) {
-	Log.e("Setting up NanoHTTPD", ex.toString());
+        Log.e("Setting up NanoHTTPD", ex.toString());
     }
   }
 
@@ -155,7 +155,7 @@ public class ReplForm extends Form {
   private void checkAssetDir() {
     File f = new File(REPL_ASSET_DIR);
     if (!f.exists())
-	f.mkdirs();		// Create the directory and all parents
+        f.mkdirs();             // Create the directory and all parents
   }
 
 }

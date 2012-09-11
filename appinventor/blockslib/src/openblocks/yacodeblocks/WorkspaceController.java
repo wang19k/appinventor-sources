@@ -855,13 +855,13 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
         } finally {
           System.out.println("WorkspaceController: workspace reload done");
           autoSaver.reset();
-	  System.out.println("Called autoSaver.reset();");
+          System.out.println("Called autoSaver.reset();");
           autoSaver.saveFormProperties(formProperties);
-	  System.out.println("Called autoSaver.saveFormProperties");
+          System.out.println("Called autoSaver.saveFormProperties");
           if (blocksWereUpgraded || componentRemovedOrRenamedDuringLoad) {
             System.out.println("blocksWereUpgraded or ComponentRemovedOrRenamedDuringLoad");
-	    autoSaver.workspaceChangedBySystem();
-	    System.out.println("autoSaver.workspaceChangedBySystem();");
+            autoSaver.workspaceChangedBySystem();
+            System.out.println("autoSaver.workspaceChangedBySystem();");
           } else {
             if (codeblocksSource.length() == 0) {
               try {
