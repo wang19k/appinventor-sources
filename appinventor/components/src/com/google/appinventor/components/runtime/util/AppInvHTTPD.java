@@ -9,15 +9,25 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import com.google.appinventor.components.common.YaVersion;
+import kawa.standard.Scheme;
+import gnu.expr.Language;
 
 public class AppInvHTTPD extends NanoHTTPD {
 
   private File rootDir;
+  private Language scheme;
 
   public AppInvHTTPD( int port, File wwwroot) throws IOException
   {
     super(port, wwwroot);
     this.rootDir = wwwroot;
+    this.scheme = Scheme.getInstance("scheme");
+    try {
+      scheme.eval("(begin (require com.google.youngandroid.runtime)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -31,6 +41,26 @@ public class AppInvHTTPD extends NanoHTTPD {
   public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
   {
     myOut.println( method + " '" + uri + "' " );
+
+    // Special case for _version: This uri has a parameter of "version" which is the blocks editor idea of
+    // what YaVersion.YOUNG_ANDROID_VERSION should be. If this is not equal to what we believe it should
+    // be, we call "badversion" which is defined in the Yail code for the Wireless Debug Repl. It arranges
+    // to do the right thing vis. a vis. the REPL UI
+    if (uri.equals("/_version")) { // handle special uri's here
+      Response res;
+      try {
+        String strversion = parms.getProperty("version", "0");
+        int version = (new Integer(strversion)).intValue();
+        if (version != YaVersion.YOUNG_ANDROID_VERSION)
+          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
+        // scheme.eval("(begin (require com.google.youngandroid.runtime) " + code + " )");
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+      } catch (Throwable e) {
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, e.toString());
+        e.printStackTrace();
+      }
+      return (res);
+    }
 
     Enumeration e = header.propertyNames();
     while ( e.hasMoreElements())

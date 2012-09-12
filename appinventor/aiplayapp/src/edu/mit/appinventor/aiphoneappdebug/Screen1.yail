@@ -4,9 +4,12 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def expiration 1350273600000)
-(def expired #f)
+(def (badversion)
+(set-var! expired  #t)
 
+(set-and-coerce-property! 'expirewarning 'Text "This version of the Debug App is not compatible with the blocks editor" 'text)
+
+ )
 (def (PostData)
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
 )
@@ -31,9 +34,11 @@ $Source $Yail
 (call-component-method 'code 'HideKeyboard (*list-for-runtime*)
  '())
 
-((get-var *start-repl*))  ;;; Turn on Kawa Telnet Repl and NanoHTTPD for asset management.
-
  )
+(def expired #f)
+
+(def expiration 1350273600000)
+
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 7 'number)
