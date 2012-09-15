@@ -47,6 +47,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 public class DeviceReplCommController implements AndroidController.DeviceConnectionListener {
 
+  private static final int YOUNG_ANDROID_VERSION = 62; // THIS NEEDS TO BE COPIED FROM YaVersion
+
   public interface PostProcessor {
     void postProcess(String message);
     void onFailure(Throwable e);
@@ -371,6 +373,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
         androidController.selectDevice(device, ipAddress);
         phoneManager.replWifiStart();
       } else {
+        this.host = "127.0.0.1"; // The IP address used for USB connected phones
         androidController.selectDevice(device);
       }
       return true;
@@ -470,7 +473,12 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             System.out.println("BufferedReader worked fine.");
             String jsonString = reader.readLine();
+            int count = 0;
             while (jsonString == null) {
+              if (count++ > 200) { // This limits this loop to 20 seconds
+                FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
+                return;
+              }
               url = new URL(theUrl + code);
               con = url.openConnection();
               System.out.println("Opening a URL connection");
@@ -487,6 +495,19 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
             System.out.println("Made the JSON object");
             String ipAddress = (String) jsonObject.get("ipaddr");
             System.out.println("Got ipaddr = " + ipAddress);
+
+            // We have the IP address, we now send our version to the phone which
+            // starts the phone TelnetRepl listening. If this version doesn't match
+            // The phone will display an error and not listen. We don't need to know
+            // the result because if the phone fails to listen it will reject the
+            // connection that is attempted when we call selectDevice()
+	    String curl = "http://" + ipAddress + ":8000/_version?version=" +
+	      YOUNG_ANDROID_VERSION;
+	    System.out.println("Connecting to: " + curl);
+            url = new URL(curl);
+            con = url.openConnection();
+            con.getInputStream().close(); // We don't care about the return value
+
             selectDevice("WiFi", ipAddress);
           } catch(Exception e) {
             System.out.println("It did not work." + e.toString());//return

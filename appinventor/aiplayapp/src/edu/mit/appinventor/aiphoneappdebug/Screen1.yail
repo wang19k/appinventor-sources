@@ -33,8 +33,9 @@ $Source $Yail
 
 (call-component-method 'code 'HideKeyboard (*list-for-runtime*)
  '())
-
+((get-var *start-httpd*))
  )
+
 (def expired #f)
 
 (def expiration 1350273600000)
@@ -137,7 +138,7 @@ $Source $Yail
 )
 (define-event RestartButton Click()
  (set-this-form)
- ((get-var *start-repl*))
+ ((get-var *start-httpd*))
 
 )
 ;;; expirewarning
@@ -165,11 +166,18 @@ $Source $Yail
 
 )
 
-(def *repl-started* #f)		;; only start the repl services once!
+(def *httpd-started* #f)		;; only start the http daemon once!
+(def (*start-httpd*)
+  (let ((topform Screen1:topform))
+    (if (get-var *httpd-started*) 'ok
+      (begin (topform:startHTTPD)
+	     (set-var! *httpd-started* #t)))))
+
+(def *repl-started* #f)		;; only start the TelnetRepl daemon once!
 (def (*start-repl*)
   (let ((topform Screen1:topform))
     (if (get-var *repl-started*) 'ok
-      (begin (topform:startServices)
+      (begin (topform:startRepl)
 	     (set-var! *repl-started* #t)))))
 
 (init-runtime)

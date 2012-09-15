@@ -126,29 +126,23 @@ public class ReplForm extends Form {
     IsUSBRepl = true;
   }
 
-  // // This is used by the aiphoneapp (USB based).
-  // public void startUSBRepl() {
-  //   PackageManager packageManager = this.$context().getPackageManager();
-  //   // the following is intended to prevent the application from being restarted
-  //   // once it has ever run (so it can be run only once after it is installed)
-  //   packageManager.setComponentEnabledSetting(
-  //     new ComponentName(this.getPackageName(), this.getClass().getName()),
-  //     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-  //   formReplCommController = new ReplCommController(this);
-  //   formReplCommController.startListening(true /*showAlert*/);
-  // }
-
-  public void startServices() {
-    formReplCommController = new ReplCommController(this);
-    formReplCommController.startListening(true /*showAlert*/);
+  // Called from Screen1.yail after Screen1 is setup
+  public void startHTTPD() {
     try {
         if (assetServer == null) {
             checkAssetDir();
-            assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR)); // Probably should make the port variable
+            assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR), this); // Probably should make the port variable
+	    Log.i("ReplForm", "started AppInvHTTPD");
         }
     } catch (IOException ex) {
-        Log.e("Setting up NanoHTTPD", ex.toString());
+      Log.e("ReplForm", "Setting up NanoHTTPD: " + ex.toString());
     }
+  }
+
+  public void startRepl() {
+    Log.i("ReplForm", "startRepl()");
+    formReplCommController = new ReplCommController(this);
+    formReplCommController.startListening(true /*showAlert*/);
   }
 
   // Make sure that the REPL asset directory exists.

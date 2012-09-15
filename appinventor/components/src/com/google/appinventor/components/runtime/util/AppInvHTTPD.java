@@ -3,6 +3,7 @@
 // This work is licensed under a Creative Commons Attribution 3.0 Unported License.
 
 package com.google.appinventor.components.runtime.util;
+import com.google.appinventor.components.runtime.ReplForm;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.io.File;
@@ -17,12 +18,15 @@ public class AppInvHTTPD extends NanoHTTPD {
 
   private File rootDir;
   private Language scheme;
+  private ReplForm form;
 
-  public AppInvHTTPD( int port, File wwwroot) throws IOException
+  public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
   {
     super(port, wwwroot);
     this.rootDir = wwwroot;
     this.scheme = Scheme.getInstance("scheme");
+    this.form = form;
+    gnu.expr.ModuleExp.mustNeverCompile();
     try {
       scheme.eval("(begin (require com.google.youngandroid.runtime)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
     } catch (Throwable e) {
@@ -51,9 +55,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       try {
         String strversion = parms.getProperty("version", "0");
         int version = (new Integer(strversion)).intValue();
-        if (version != YaVersion.YOUNG_ANDROID_VERSION)
+        if (version != YaVersion.YOUNG_ANDROID_VERSION) {
           scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
-        // scheme.eval("(begin (require com.google.youngandroid.runtime) " + code + " )");
+        } else {
+          // If we have a good version, start the repl
+	  // We use Scheme here so we can use process-repl-input which will arrange for
+	  // the correct thread to be used to start the repl (by going through the android os handler
+          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var *start-repl*)) \"foo\"))");	  
+        }
         res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       } catch (Throwable e) {
         res = new Response(HTTP_OK, MIME_PLAINTEXT, e.toString());
