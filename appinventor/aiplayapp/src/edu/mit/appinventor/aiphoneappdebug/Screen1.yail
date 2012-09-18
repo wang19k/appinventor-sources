@@ -139,7 +139,7 @@ $Source $Yail
 (define-event RestartButton Click()
  (set-this-form)
  ((get-var *start-httpd*))
-
+ ((get-var *start-repl*))
 )
 ;;; expirewarning
 (add-component Screen1 Label expirewarning )
