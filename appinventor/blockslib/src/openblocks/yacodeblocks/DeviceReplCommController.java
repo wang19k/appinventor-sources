@@ -458,7 +458,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
           Random rnd = new Random();
           ImageIcon qrcode = new ImageIcon();
           StringBuilder sb = new StringBuilder(5);
-          String theUrl = "http://osiris.mit.edu/rendezvous/";
+          String theUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/";
 
           for(int i=0; i<5; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));

@@ -40,9 +40,7 @@ $Source $Yail
 (def (badversion)
 (set-var! expired  #t)
 
-(set-and-coerce-property! 'expirewarning 'TextColor -65536 'number)
-
-(set-and-coerce-property! 'expirewarning 'Text "This version of the Debug App is not compatible with the blocks editor" 'text)
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
 
  )
 (def (GetServer)
@@ -71,7 +69,7 @@ $Source $Yail
 (def Server "")
 
 ;;; Screen1
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor Instant App Companion" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
 (set-and-coerce-property! 'Screen1 'VersionName "1.5.2" 'text)
 )
@@ -134,8 +132,6 @@ $Source $Yail
  ((get-var *start-httpd*))
  ((get-var *start-repl*))
 )
-;;; expirewarning
-(add-component Screen1 Label expirewarning )
 ;;; SettingsButton
 (add-component Screen1 Button SettingsButton (set-and-coerce-property! 'SettingsButton 'Text "Settings" 'text)
 )
@@ -187,6 +183,23 @@ $Source $Yail
 )
 ;;; DebugLabel
 (add-component Screen1 Label DebugLabel )
+;;; Expireblock
+(add-component Screen1 VerticalArrangement Expireblock (set-and-coerce-property! 'Expireblock 'AlignHorizontal 3 'number)
+(set-and-coerce-property! 'Expireblock 'Visible #f 'boolean)
+)
+;;; expirewarning
+(add-component Expireblock Label expirewarning (set-and-coerce-property! 'expirewarning 'Text "This version of the App Inventor Instant App Companion is not compatible with your blocks editor. You can download a new version from the Play Store" 'text)
+(set-and-coerce-property! 'expirewarning 'TextColor #xFFFF0000 'number)
+)
+;;; MarketButton
+(add-component Expireblock Button MarketButton (set-and-coerce-property! 'MarketButton 'Text "Go to the Play Store" 'text)
+)
+(define-event MarketButton Click()
+ (set-this-form)
+ (call-component-method 'ActivityStarter1 'StartActivity (*list-for-runtime*)
+ '())
+
+)
 ;;; Web1
 (add-component Screen1 Web Web1 (set-and-coerce-property! 'Web1 'Url "http://osiris.mit.edu/rendezvous/" 'text)
 )
@@ -211,6 +224,10 @@ $Source $Yail
 )
 ;;; TinyDB1
 (add-component Screen1 TinyDB TinyDB1 )
+;;; ActivityStarter1
+(add-component Screen1 ActivityStarter ActivityStarter1 (set-and-coerce-property! 'ActivityStarter1 'Action "android.intent.action.VIEW" 'text)
+(set-and-coerce-property! 'ActivityStarter1 'DataUri "market://details?id=edu.mit.appinventor.aiphoneappdebug" 'text)
+)
 
 (def *httpd-started* #f)		;; only start the http daemon once!
 (def (*start-httpd*)
