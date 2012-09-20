@@ -4,13 +4,13 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def (badversion)
-(set-var! expired  #t)
-
-(set-and-coerce-property! 'expirewarning 'Text "This version of the Debug App is not compatible with the blocks editor" 'text)
-
- )
 (def (PostData)
+(set-and-coerce-property! 'Web1 'Url ((get-var GetServer))
+ 'text)
+
+(set-and-coerce-property! 'DebugLabel 'Text ((get-var GetServer))
+ 'text)
+
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
 )
  '( any any)
@@ -33,55 +33,47 @@ $Source $Yail
 
 (call-component-method 'code 'HideKeyboard (*list-for-runtime*)
  '())
-((get-var *start-httpd*))
- )
 
+ )
 (def expired #f)
 
-(def expiration 1350273600000)
-
-;;; Screen1
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 7 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "1.6" 'text)
-)
-(define-event Screen1 Initialize()
- (set-this-form)
- (if (call-yail-primitive <= (*list-for-runtime* (get-var expiration)
- (call-component-method 'Clock1 'SystemTime (*list-for-runtime*)
- '())
-)
- '( number number)
- "<=")
- (begin (set-var! expired  #t)
-
-)
-)
-
-(if (get-var expired)
- (begin (set-and-coerce-property! 'expirewarning 'Text "This version of App Inventor has expired." 'text)
+(def (badversion)
+(set-var! expired  #t)
 
 (set-and-coerce-property! 'expirewarning 'TextColor -65536 'number)
 
+(set-and-coerce-property! 'expirewarning 'Text "This version of the Debug App is not compatible with the blocks editor" 'text)
+
+ )
+(def (GetServer)
+(set-var! Server  (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "_rendezvous_server")
+ '( text)
 )
- (begin (set-and-coerce-property! 'expirewarning 'Text (call-yail-primitive string-append (*list-for-runtime* "This version of App Inventor expires on " (call-yail-primitive string-append (*list-for-runtime* (call-component-method 'Clock1 'FormatDateTime (*list-for-runtime* (call-component-method 'Clock1 'MakeInstantFromMillis (*list-for-runtime* (get-var expiration)
 )
- '( number)
+
+(if (call-yail-primitive yail-equal? (*list-for-runtime* (get-var Server)
+ "")
+ '( any any)
+ "=")
+ (begin (set-var! Server  "rendezvous.appinventor.mit.edu")
+
 )
 )
- '( InstantInTime)
-)
- ".")
+
+ (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* (get-var Server)
+ "/rendezvous/")
  '( text text)
  "join")
 )
  '( text text)
  "join")
- 'text)
-
 )
-)
+(def Server "")
 
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Debugger" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "1.5.2" 'text)
 )
 ;;; HorizontalArrangement2
 (add-component Screen1 HorizontalArrangement HorizontalArrangement2 )
@@ -109,11 +101,11 @@ $Source $Yail
  '( boolean)
  "not")
  (begin ((get-var PostData))
+ 	((get-var *start-httpd*))
+	)
+ )
 
-)
-)
-
-)
+ )
 ;;; HorizontalArrangement3
 (add-component Screen1 HorizontalArrangement HorizontalArrangement3 )
 ;;; Label3
@@ -138,11 +130,63 @@ $Source $Yail
 )
 (define-event RestartButton Click()
  (set-this-form)
+ (set-var! expired  #t)
  ((get-var *start-httpd*))
  ((get-var *start-repl*))
 )
 ;;; expirewarning
 (add-component Screen1 Label expirewarning )
+;;; SettingsButton
+(add-component Screen1 Button SettingsButton (set-and-coerce-property! 'SettingsButton 'Text "Settings" 'text)
+)
+(define-event SettingsButton Click()
+ (set-this-form)
+ (set-and-coerce-property! 'TableArrangement1 'Visible #t 'boolean)
+
+(set-and-coerce-property! 'postip 'Text ((get-var GetServer))
+ 'text)
+
+(set-and-coerce-property! 'postip 'Text (get-var Server)
+ 'text)
+
+)
+;;; TableArrangement1
+(add-component Screen1 TableArrangement TableArrangement1 (set-and-coerce-property! 'TableArrangement1 'Visible #f 'boolean)
+)
+;;; SetRend
+(add-component TableArrangement1 Button SetRend (set-and-coerce-property! 'SetRend 'Column 1 'number)
+(set-and-coerce-property! 'SetRend 'Row 0 'number)
+(set-and-coerce-property! 'SetRend 'Text "Set Server" 'text)
+)
+(define-event SetRend Click()
+ (set-this-form)
+ (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "_rendezvous_server" (get-property 'postip 'Text)
+)
+ '( text any)
+)
+
+)
+;;; DefaultButton
+(add-component TableArrangement1 Button DefaultButton (set-and-coerce-property! 'DefaultButton 'Column 1 'number)
+(set-and-coerce-property! 'DefaultButton 'Row 1 'number)
+(set-and-coerce-property! 'DefaultButton 'Text "Reset to Default" 'text)
+)
+(define-event DefaultButton Click()
+ (set-this-form)
+ (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "_rendezvous_server" "rendezvous.appinventor.mit.edu")
+ '( text any)
+)
+
+(set-and-coerce-property! 'postip 'Text "rendezvous.appinventor.mit.edu" 'text)
+
+)
+;;; postip
+(add-component TableArrangement1 TextBox postip (set-and-coerce-property! 'postip 'Column 0 'number)
+(set-and-coerce-property! 'postip 'Hint "Server Host" 'text)
+(set-and-coerce-property! 'postip 'Row 0 'number)
+)
+;;; DebugLabel
+(add-component Screen1 Label DebugLabel )
 ;;; Web1
 (add-component Screen1 Web Web1 (set-and-coerce-property! 'Web1 'Url "http://osiris.mit.edu/rendezvous/" 'text)
 )
@@ -160,11 +204,13 @@ $Source $Yail
  'text)
 
 ((get-var PostData))
-
+((get-var *start-httpd*))
 )
 )
 
 )
+;;; TinyDB1
+(add-component Screen1 TinyDB TinyDB1 )
 
 (def *httpd-started* #f)		;; only start the http daemon once!
 (def (*start-httpd*)
