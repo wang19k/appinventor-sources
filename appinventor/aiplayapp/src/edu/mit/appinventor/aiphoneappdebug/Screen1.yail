@@ -4,6 +4,43 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
+(def (SetServer)
+(set-var! Server  (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "_rendezvous_server")
+ '( text)
+)
+)
+
+(if (call-yail-primitive yail-equal? (*list-for-runtime* (get-var Server)
+ "")
+ '( any any)
+ "=")
+ (begin (set-var! Server  "rendezvous.appinventor.mit.edu")
+
+)
+)
+
+ )
+(def Server "")
+
+(def (GetServer)
+((get-var SetServer))
+
+ (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* (get-var Server)
+ "/rendezvous/")
+ '( text text)
+ "join")
+)
+ '( text text)
+ "join")
+)
+(def (badversion)
+(set-var! expired  #t)
+
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
+
+ )
+(def expired #f)
+
 (def (PostData)
 (set-and-coerce-property! 'Web1 'Url ((get-var GetServer))
  'text)
@@ -35,39 +72,6 @@ $Source $Yail
  '())
 
  )
-(def expired #f)
-
-(def (badversion)
-(set-var! expired  #t)
-
-(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
-
- )
-(def (GetServer)
-(set-var! Server  (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "_rendezvous_server")
- '( text)
-)
-)
-
-(if (call-yail-primitive yail-equal? (*list-for-runtime* (get-var Server)
- "")
- '( any any)
- "=")
- (begin (set-var! Server  "rendezvous.appinventor.mit.edu")
-
-)
-)
-
- (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* (get-var Server)
- "/rendezvous/")
- '( text text)
- "join")
-)
- '( text text)
- "join")
-)
-(def Server "")
-
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor Instant App Companion" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
@@ -139,8 +143,7 @@ $Source $Yail
  (set-this-form)
  (set-and-coerce-property! 'TableArrangement1 'Visible #t 'boolean)
 
-(set-and-coerce-property! 'postip 'Text ((get-var GetServer))
- 'text)
+((get-var SetServer))
 
 (set-and-coerce-property! 'postip 'Text (get-var Server)
  'text)
