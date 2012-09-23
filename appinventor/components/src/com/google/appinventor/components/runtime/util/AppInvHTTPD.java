@@ -19,6 +19,7 @@ public class AppInvHTTPD extends NanoHTTPD {
   private File rootDir;
   private Language scheme;
   private ReplForm form;
+  private static final int YAV_SKEW = 1;
 
   public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
   {
@@ -46,22 +47,32 @@ public class AppInvHTTPD extends NanoHTTPD {
   {
     myOut.println( method + " '" + uri + "' " );
 
-    // Special case for _version: This uri has a parameter of "version" which is the blocks editor idea of
-    // what YaVersion.YOUNG_ANDROID_VERSION should be. If this is not equal to what we believe it should
-    // be, we call "badversion" which is defined in the Yail code for the Wireless Debug Repl. It arranges
-    // to do the right thing vis. a vis. the REPL UI
+    // Special case for _version: This uri has a parameter of
+    // "version" which is the blocks editor idea of what
+    // YaVersion.YOUNG_ANDROID_VERSION should be. If this is not in
+    // the range of our YOUNG_ANDROID_VERSION - YAV_SKEW to
+    // YOUNG_ANDROID_VERSION, we call "badversion" which is defined in
+    // the Yail code for the Wireless Debug Repl. It arranges to do
+    // the right thing vis. a vis. the REPL UI
+    //
+    // We support a range on the theory that people cannot upgrade the
+    // REPL exactly when we upgrade the App Engine server. So we
+    // permit some version skew. Exactly how much is defined by
+    // YAV_SKEW (defined above)
+
     if (uri.equals("/_version")) { // handle special uri's here
       Response res;
       try {
         String strversion = parms.getProperty("version", "0");
         int version = (new Integer(strversion)).intValue();
-        if (version != YaVersion.YOUNG_ANDROID_VERSION) {
+        if ((version > YaVersion.YOUNG_ANDROID_VERSION) ||
+            (version < (YaVersion.YOUNG_ANDROID_VERSION - YAV_SKEW))) {
           scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
         } else {
           // If we have a good version, start the repl
-	  // We use Scheme here so we can use process-repl-input which will arrange for
-	  // the correct thread to be used to start the repl (by going through the android os handler
-          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var *start-repl*)) \"foo\"))");	  
+          // We use Scheme here so we can use process-repl-input which will arrange for
+          // the correct thread to be used to start the repl (by going through the android os handler
+          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var *start-repl*)) \"foo\"))");
         }
         res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       } catch (Throwable e) {
