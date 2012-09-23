@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -501,13 +502,17 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
             // The phone will display an error and not listen. We don't need to know
             // the result because if the phone fails to listen it will reject the
             // connection that is attempted when we call selectDevice()
-	    String curl = "http://" + ipAddress + ":8000/_version?version=" +
-	      YOUNG_ANDROID_VERSION;
-	    System.out.println("Connecting to: " + curl);
+            String curl = "http://" + ipAddress + ":8000/_version?version=" +
+              YOUNG_ANDROID_VERSION;
+            System.out.println("Connecting to: " + curl);
             url = new URL(curl);
-            con = url.openConnection();
-            con.getInputStream().close(); // We don't care about the return value
-
+            try {
+              con = url.openConnection();
+              con.getInputStream().close(); // We don't care about the return value
+            } catch (FileNotFoundException fnf) {
+              System.out.println("Exception setting version, ignoring for now.");
+              fnf.printStackTrace(System.out); // Let's not hide it though!
+            }
             selectDevice("WiFi", ipAddress);
           } catch(Exception e) {
             System.out.println("It did not work." + e.toString());//return
