@@ -876,8 +876,7 @@ public class PhoneCommManager {
     }
   }
 
-  // JIS: Made public so CWirelessButton can use it for Wifi Connection (KLUDGE)
-  public void setConnectedToPhone(boolean newSetting) {
+  private void setConnectedToPhone(boolean newSetting) {
     synchronized(statusLock) {
       if (newSetting == connectedToPhone) return;
       connectedToPhone = newSetting;

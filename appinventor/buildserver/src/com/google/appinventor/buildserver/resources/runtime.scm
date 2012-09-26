@@ -2,7 +2,7 @@
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
 ;;; provide an abstraction of the Kawa interface to Java and the Simple component model used by
-;;; Young Android. 
+;;; Young Android.
 
 ;;; MACROS library
 ;;;
@@ -424,7 +424,7 @@
                                   (begin
                                     (android-log-form (exception:getMessage))
 ;;; Comment out the line below to inhibit a stack trace on a RunTimeError
-				    (exception:printStackTrace)
+                                    (exception:printStackTrace)
                                     (process-exception exception)
                                     #f))))
                         #f)
