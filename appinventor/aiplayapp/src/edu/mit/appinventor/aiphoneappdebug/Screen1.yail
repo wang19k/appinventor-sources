@@ -45,8 +45,8 @@ $Source $Yail
 (set-and-coerce-property! 'Web1 'Url ((get-var GetServer))
  'text)
 
-(set-and-coerce-property! 'DebugLabel 'Text ((get-var GetServer))
- 'text)
+;;(set-and-coerce-property! 'DebugLabel 'Text ((get-var GetServer))
+;; 'text)
 
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
 )
@@ -74,8 +74,8 @@ $Source $Yail
  )
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor Instant App Companion" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 6 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "1.5.2" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 8 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "1.7" 'text)
 )
 ;;; HorizontalArrangement2
 (add-component Screen1 HorizontalArrangement HorizontalArrangement2 )
