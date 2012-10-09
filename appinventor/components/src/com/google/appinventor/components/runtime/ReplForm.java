@@ -42,6 +42,7 @@ public class ReplForm extends Form {
   private AppInvHTTPD assetServer = null;
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
+  private static final String BUGSENSE_API_KEY = "195de24b";
   private boolean IsUSBRepl = false;
 
   public ReplForm() {
@@ -52,7 +53,7 @@ public class ReplForm extends Form {
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    BugSenseHandler.initAndStartSession((Context) this, "195de24b");
+    BugSenseHandler.initAndStartSession((Context) this, BUGSENSE_API_KEY);
     if (IsUSBRepl) {
       PackageManager packageManager = this.$context().getPackageManager();
       // the following is intended to prevent the application from being restarted
