@@ -25,6 +25,8 @@ import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.Context;
 
+import com.bugsense.trace.BugSenseHandler; // Let's try bugsense
+
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
  * via the Repl
@@ -50,6 +52,7 @@ public class ReplForm extends Form {
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
+    BugSenseHandler.initAndStartSession((Context) this, "195de24b");
     if (IsUSBRepl) {
       PackageManager packageManager = this.$context().getPackageManager();
       // the following is intended to prevent the application from being restarted

@@ -83,6 +83,8 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String TWITTER_RUNTIME =
       RUNTIME_FILES_DIR + "twitter4j.jar";
+  private static final String BUGSENSE_RUNTIME =
+      RUNTIME_FILES_DIR + "bugsense-3.0.4.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
   @VisibleForTesting
@@ -473,6 +475,7 @@ public final class Compiler {
           getResource(KAWA_RUNTIME) + File.pathSeparator +
           getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator +
           getResource(TWITTER_RUNTIME) + File.pathSeparator +
+          getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
           getResource(ANDROID_RUNTIME);
       String yailRuntime = getResource(YAIL_RUNTIME);
       List<String> kawaCommandArgs = Lists.newArrayList();
@@ -622,6 +625,7 @@ public final class Compiler {
         getResource(SIMPLE_ANDROID_RUNTIME_JAR),
         getResource(KAWA_RUNTIME),
         getResource(TWITTER_RUNTIME),
+        getResource(BUGSENSE_RUNTIME),
     };
     long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
