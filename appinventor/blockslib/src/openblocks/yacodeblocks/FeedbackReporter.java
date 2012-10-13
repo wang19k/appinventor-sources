@@ -257,6 +257,31 @@ public class FeedbackReporter extends JOptionPane {
     }
   }
 
+  /**
+   * ShowQRCode show a pop-up which displays the wireless code used to
+   * get the Wireless Devices ipAddress from the Rendezvous server (see
+   * code in DeviceReplCommController). It display "OK" or "Cancel" so
+   * the user can cancel the operation. Returns true when OK is pressed
+   * and false when Cancel is pressed. A QR Code is also displayed which
+   * can be scanned by the phone if it has the necessary scanning app
+   * and hardware.
+   * @param msgText The code to show complete with explanation text.
+   * @param qrcode The ImageIcon with the QR Code to display.
+   * @return true if OK is selected, false otherwise.
+   */
+  public static boolean showQRCode(String msgText, ImageIcon qrcode) {
+    if (!testingMode) {
+      if (WorkspaceControllerHolder.isHeadless()) {
+        throw new RuntimeException(msgText);
+      }
+      HTMLPane htmlMsg = new HTMLPane(msgText);
+      int result = showConfirmDialog(frame, htmlMsg, "Your Code",
+          JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, qrcode);
+      return (result == JOptionPane.YES_OPTION);
+    } else {
+      return testingConfirmationResult;
+    }
+  }
 
   // For errors that we want logged, but not shown to the user
   public static void logError(String msgText) {

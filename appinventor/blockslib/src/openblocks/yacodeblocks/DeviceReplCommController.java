@@ -464,7 +464,11 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
           for(int i=0; i<5; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
           String code = sb.toString();
-          showWirelessNotice(code);
+          boolean go = showWirelessNotice(code);
+          if (!go) {
+            System.out.println("Cancel Selected, punting.");
+            return;             // XXX Do we need to cleanup?
+          }
           try {
             URL url = new URL(theUrl + code);
             URLConnection con = url.openConnection();
@@ -522,15 +526,15 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       });
   }
 
-  private void showWirelessNotice(String code) {
+  private boolean showWirelessNotice(String code) {
     String title = "Starting the wireless connection.";
-    String msgText = "This is your 5 digit code: " + code;
+    String msgText = "<font size=+1>This is your 5 digit code: </font><br /><font size=+5>" + code + "</font>";
     ImageIcon qrcode = generateQRCode(code);
     if (qrcode == null)
       System.out.println ("qrcode is null");
     else
       System.out.println ("qrcode is not null");
-    FeedbackReporter.showInfoMessage(msgText, qrcode);
+    return FeedbackReporter.showQRCode(msgText, qrcode);
   }
 
   private ImageIcon generateQRCode(String code) {
