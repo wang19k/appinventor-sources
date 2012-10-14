@@ -30,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JDialog;
 
 import org.json.*;
 import org.apache.commons.io.*;
@@ -88,14 +89,14 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
     }
   }
 
-/**
- * Send initial string to the REPL controller.  If the REPL controller
- * isn't actually connected, will take a series of escalating steps to
- * reconnect it.
- * @param message the string to send to the REPL controller
- * @param mustRestartApp if true, will restart the app before doing the send
- * @throws IOException, ExternalStorageException
- */
+  /**
+   * Send initial string to the REPL controller.  If the REPL controller
+   * isn't actually connected, will take a series of escalating steps to
+   * reconnect it.
+   * @param message the string to send to the REPL controller
+   * @param mustRestartApp if true, will restart the app before doing the send
+   * @throws IOException, ExternalStorageException
+   */
   public void sendInitial(String message, boolean mustRestartApp) throws IOException,
       ExternalStorageException {
     String selectedDevice = androidController.getSelectedDevice();
@@ -454,74 +455,89 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   private void rendevzousIpAddress() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
         public void run() {
-          JFrame frame;
           String AB = "0123456789abcdefghijklmnopqrstuvwxyz";
           Random rnd = new Random();
           ImageIcon qrcode = new ImageIcon();
           StringBuilder sb = new StringBuilder(5);
-          String theUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/";
+          final String theUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/";
 
           for(int i=0; i<5; i++)
             sb.append(AB.charAt(rnd.nextInt(AB.length())));
-          String code = sb.toString();
+          final String code = sb.toString();
           boolean go = showWirelessNotice(code);
           if (!go) {
             System.out.println("Cancel Selected, punting.");
             return;             // XXX Do we need to cleanup?
           }
-          try {
-            URL url = new URL(theUrl + code);
-            URLConnection con = url.openConnection();
-            System.out.println("Opening a URL connection");
-            InputStream in = con.getInputStream();
-            System.out.println("Well, input stream worked fine.");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            System.out.println("BufferedReader worked fine.");
-            String jsonString = reader.readLine();
-            int count = 0;
-            while (jsonString == null) {
-              if (count++ > 200) { // This limits this loop to 20 seconds
-                FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
-                return;
-              }
-              url = new URL(theUrl + code);
-              con = url.openConnection();
-              System.out.println("Opening a URL connection");
-              in = con.getInputStream();
-              System.out.println("Well, input stream worked fine.");
-              reader = new BufferedReader(new InputStreamReader(in));
-              System.out.println("BufferedReader worked fine.");
-              jsonString = reader.readLine();
-              System.out.println("JSON read the line");
-              Thread.sleep(100);
-            }
-            System.out.println("Cool, it stopped being NULL and connected");
-            JSONObject jsonObject = new JSONObject(jsonString);
-            System.out.println("Made the JSON object");
-            String ipAddress = (String) jsonObject.get("ipaddr");
-            System.out.println("Got ipaddr = " + ipAddress);
+          final JDialog pending = FeedbackReporter.showConnecting("Attempting to contact your phone/tablet.");
+          Thread t = new Thread(new Runnable() {
+              public void run() {
+                try {
+                  URL url = new URL(theUrl + code);
+                  URLConnection con = url.openConnection();
+                  System.out.println("Opening a URL connection");
+                  InputStream in = con.getInputStream();
+                  System.out.println("Well, input stream worked fine.");
+                  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                  System.out.println("BufferedReader worked fine.");
+                  String jsonString = reader.readLine();
+                  int count = 0;
+                  while (jsonString == null) {
+                    if (count++ > 200) { // This limits this loop to 20 seconds
+                      javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                          public void run() {
+                            pending.setVisible(false); // Take down pending message
+                            FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
+                          }});
+                      return;
+                    }
+                    url = new URL(theUrl + code);
+                    con = url.openConnection();
+                    System.out.println("Opening a URL connection");
+                    in = con.getInputStream();
+                    System.out.println("Well, input stream worked fine.");
+                    reader = new BufferedReader(new InputStreamReader(in));
+                    System.out.println("BufferedReader worked fine.");
+                    jsonString = reader.readLine();
+                    System.out.println("JSON read the line");
+                    Thread.sleep(100);
+                  }
+                  System.out.println("Cool, it stopped being NULL and connected");
+                  JSONObject jsonObject = new JSONObject(jsonString);
+                  System.out.println("Made the JSON object");
+                  final String ipAddress = (String) jsonObject.get("ipaddr");
+                  System.out.println("Got ipaddr = " + ipAddress);
 
-            // We have the IP address, we now send our version to the phone which
-            // starts the phone TelnetRepl listening. If this version doesn't match
-            // The phone will display an error and not listen. We don't need to know
-            // the result because if the phone fails to listen it will reject the
-            // connection that is attempted when we call selectDevice()
-            String curl = "http://" + ipAddress + ":8000/_version?version=" +
-              YOUNG_ANDROID_VERSION;
-            System.out.println("Connecting to: " + curl);
-            url = new URL(curl);
-            try {
-              con = url.openConnection();
-              con.getInputStream().close(); // We don't care about the return value
-            } catch (FileNotFoundException fnf) {
-              System.out.println("Exception setting version, ignoring for now.");
-              fnf.printStackTrace(System.out); // Let's not hide it though!
-            }
-            selectDevice("WiFi", ipAddress);
-          } catch(Exception e) {
-            System.out.println("It did not work." + e.toString());//return
-            e.printStackTrace(System.out);
-          }
+                  // We have the IP address, we now send our version to the phone which
+                  // starts the phone TelnetRepl listening. If this version doesn't match
+                  // The phone will display an error and not listen. We don't need to know
+                  // the result because if the phone fails to listen it will reject the
+                  // connection that is attempted when we call selectDevice()
+                  String curl = "http://" + ipAddress + ":8000/_version?version=" +
+                    YOUNG_ANDROID_VERSION;
+                  System.out.println("Connecting to: " + curl);
+                  url = new URL(curl);
+                  try {
+                    con = url.openConnection();
+                    con.getInputStream().close(); // We don't care about the return value
+                  } catch (FileNotFoundException fnf) {
+                    System.out.println("Exception setting version, ignoring for now.");
+                    fnf.printStackTrace(System.out); // Let's not hide it though!
+                  }
+                  javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                      public void run() {
+                        pending.setVisible(false);
+                        selectDevice("WiFi", ipAddress); // This is run on the UI thread
+                      }});
+                } catch(Exception e) {
+                  System.out.println("It did not work." + e.toString());//return
+                  e.printStackTrace(System.out);
+                  javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                      public void run() {
+                        if (pending != null) pending.setVisible(false);
+                      }});
+                }}});
+          t.start();
         }
       });
   }

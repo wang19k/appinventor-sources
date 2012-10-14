@@ -8,7 +8,7 @@ import openblocks.codeblockutil.HTMLPane;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-
+import javax.swing.JDialog;
 
 /**
  * FeedbackReporter provides a mechanism for showing the user status and error
@@ -281,6 +281,26 @@ public class FeedbackReporter extends JOptionPane {
     } else {
       return testingConfirmationResult;
     }
+  }
+
+  /**
+   * showConnecting shows a pop-up window displaying the provided message. It
+   * is used by the DeviceReplCommController to display the "Connecting to your
+   * phone..." message.
+   * @param message The message to be displayed.
+   * @return JDialog The message dialog which is non-modal
+   */
+
+  public static JDialog showConnecting(String message) {
+    JDialog result = new JDialog(frame, "Connecting...");
+    HTMLPane htmlMsg = new HTMLPane("<font size=+3>" + message + "</font>");
+    // JOptionPane pane = new JOptionPane(htmlMsg, JOptionPane.PLAIN_MESSAGE);
+    // JDialog result = pane.createDialog(frame, "Connecting.....");
+    result.getContentPane().add(htmlMsg);
+    result.pack();
+    result.setLocationRelativeTo(frame);
+    result.setVisible(true);
+    return result;
   }
 
   // For errors that we want logged, but not shown to the user
