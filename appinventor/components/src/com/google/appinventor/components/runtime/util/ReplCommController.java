@@ -5,8 +5,12 @@ package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.collect.Lists;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import kawa.standard.Scheme;
@@ -105,9 +109,27 @@ public class ReplCommController {
     // to show messages from a component such as GameClient or Voting.
     handler.post(new Runnable() {
       public void run() {
-        Toast.makeText(form, notice, Toast.LENGTH_LONG).show();
+          toastNow(notice);
       }
     });
+  }
+
+  // show a toast using a TextView, which allows us to set the
+  // font size.  The default toast is too small.
+  // This code is lifted from the Notifier component
+  private void toastNow (String message) {
+    Toast toast = Toast.makeText(form, message, Toast.LENGTH_LONG);
+    toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
+    TextView textView = new TextView(form);
+    textView.setBackgroundColor(Color.DKGRAY);
+    textView.setTextColor(Color.WHITE);
+    textView.setTextSize(30);
+    Typeface typeface = Typeface.create("serif", Typeface.BOLD);
+    textView.setTypeface(typeface);
+    textView.setPadding(10, 10, 10, 10);
+    textView.setText(message);
+    toast.setView(textView);
+    toast.show();
   }
 
   /**
