@@ -322,6 +322,12 @@ public interface Images extends Resources {
   ImageResource pedometerComponent();
 
   /**
+   * Designer pallete item: PhoneStatus Component
+   */
+  @Source("com/google/appinventor/images/phoneip.png")
+  ImageResource phonestatusComponent();
+
+  /**
    * Designer palette item: Lego Mindstorms NXT components
    */
   @Source("com/google/appinventor/images/legoMindstormsNxt.png")

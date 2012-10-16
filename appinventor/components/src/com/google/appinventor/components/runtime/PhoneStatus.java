@@ -29,7 +29,7 @@ import com.google.appinventor.components.common.YaVersion;
                    description = "Component that returns information about the phone.",
                    category = ComponentCategory.INTERNAL,
                    nonVisible = true,
-                   iconName = "images/pedometer.png")
+                   iconName = "images/phoneip.png")
 @SimpleObject
 public class PhoneStatus extends AndroidNonvisibleComponent implements Component {
 
