@@ -98,8 +98,7 @@ public class ReplCommController {
     blocksEditorReplController.StartServer();
     everStarted = true;
     if (showAlert) {
-      ShowAlert("Listening to App Inventor. Click \"Restart app on device\" in the Blocks Editor "
-          + " if you don't eventually see your components.");
+      ShowAlert("Listening to App Inventor. Your Blocks should display shortly.");
     }
   }
 
