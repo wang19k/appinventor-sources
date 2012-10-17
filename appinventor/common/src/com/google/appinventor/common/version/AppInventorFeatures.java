@@ -1,4 +1,7 @@
-// Copyright 2011 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.common.version;
 
@@ -30,7 +33,7 @@ public final class AppInventorFeatures {
   public static boolean showInternalComponentsCategory() {
     // Set this to true if you want to show the "For internal use only" section of the components
     // palette in the designer.
-    return true;
+    return false;
   }
 
   public static boolean trackClientEvents() {
