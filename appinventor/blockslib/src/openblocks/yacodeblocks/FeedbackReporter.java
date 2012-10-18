@@ -275,9 +275,11 @@ public class FeedbackReporter extends JOptionPane {
         throw new RuntimeException(msgText);
       }
       HTMLPane htmlMsg = new HTMLPane(msgText);
-      int result = showConfirmDialog(frame, htmlMsg, "Your Code",
-          JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, qrcode);
-      return (result == JOptionPane.YES_OPTION);
+      String[] options = { "Connect to Phone", "Cancel" };
+      int result = showOptionDialog(frame, htmlMsg, "To connect to the phone using WiFi",
+       JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, qrcode,
+       options, options[0]);
+      return (result == 0);
     } else {
       return testingConfirmationResult;
     }
