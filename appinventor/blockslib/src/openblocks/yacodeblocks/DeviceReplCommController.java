@@ -544,7 +544,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
 
   private boolean showWirelessNotice(String code) {
     String title = "Starting the wireless connection.";
-    String msgText = "<font size=+1>This is your 5 digit code: </font><br /><font size=+5>" + code + "</font>";
+    String msgText = "Instructions:<br />\n<ul>\n<li>Start the App Inventor Instant App Companion (debugger).</li>\n<li>Use the App to Scan the QR Code on the left<br />\n<center>or</center>\ntype the code below into the App and Press GO.</li>\n<li>Press the OK button below</li>\n</ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
     ImageIcon qrcode = generateQRCode(code);
     if (qrcode == null)
       System.out.println ("qrcode is null");
