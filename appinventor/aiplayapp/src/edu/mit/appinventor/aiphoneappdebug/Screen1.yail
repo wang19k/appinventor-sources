@@ -4,6 +4,12 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aiphoneappdebug.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
+(def (badversion)
+(set-var! expired  #t)
+
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
+
+ )
 (def (Setup)
 (set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
  '())
@@ -11,6 +17,12 @@ $Source $Yail
 
 (set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
  'text)
+
+(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
 
 (if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
  '())
@@ -29,7 +41,12 @@ $Source $Yail
 (def ipaddress "IPADDRESS")
 
 (def (PostData)
-(set-and-coerce-property! 'Web1 'Url ((get-var GetServer))
+(set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
+ '( text text)
+ "join")
+)
+ '( text text)
+ "join")
  'text)
 
 (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
@@ -59,43 +76,10 @@ $Source $Yail
  )
 (def expired #f)
 
-(def (badversion)
-(set-var! expired  #t)
-
-(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
-
- )
-(def (GetServer)
-((get-var SetServer))
-
- (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* (get-var Server)
- "/rendezvous/")
- '( text text)
- "join")
-)
- '( text text)
- "join")
-)
-(def Server "")
-
-(def (SetServer)
-(set-var! Server  (call-component-method 'TinyDB1 'GetValue (*list-for-runtime* "_rendezvous_server")
- '( text)
-)
-)
-
-(if (call-yail-primitive yail-equal? (*list-for-runtime* (get-var Server)
- "")
- '( any any)
- "=")
- (begin (set-var! Server  "rendezvous.appinventor.mit.edu")
-
-)
-)
-
- )
 ;;; Screen1
-(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "App Inventor Instant App Companion" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
+(set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
+(set-and-coerce-property! 'Screen1 'Title "App Inventor Companion App" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 8 'number)
 (set-and-coerce-property! 'Screen1 'VersionName "1.7" 'text)
 )
@@ -105,23 +89,47 @@ $Source $Yail
 
 )
 ;;; HorizontalArrangement2
-(add-component Screen1 HorizontalArrangement HorizontalArrangement2 )
+(add-component Screen1 HorizontalArrangement HorizontalArrangement2 (set-and-coerce-property! 'HorizontalArrangement2 'Width -2 'number)
+)
 ;;; Label1
 (add-component HorizontalArrangement2 Label Label1 (set-and-coerce-property! 'Label1 'Text "Your IP Address: " 'text)
 )
 ;;; iplabel
 (add-component HorizontalArrangement2 Label iplabel (set-and-coerce-property! 'iplabel 'Text "IP ADDRESS" 'text)
+(set-and-coerce-property! 'iplabel 'Width -2 'number)
+)
+;;; Label5
+(add-component Screen1 Label Label5 (set-and-coerce-property! 'Label5 'Text "     " 'text)
+(set-and-coerce-property! 'Label5 'Width -2 'number)
 )
 ;;; Label2
-(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Enter Displayed Code" 'text)
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n2) Click the 'Go' button below.\n3) Click the 'Connect to phone' button on the Blocks Editor. \n4) If not connected in 30 seconds, click reset and repeat." 'text)
+(set-and-coerce-property! 'Label2 'Width -2 'number)
+)
+;;; Label6
+(add-component Screen1 Label Label6 (set-and-coerce-property! 'Label6 'Text "        " 'text)
+(set-and-coerce-property! 'Label6 'Width -2 'number)
+)
+;;; ScanButton
+(add-component Screen1 Button ScanButton (set-and-coerce-property! 'ScanButton 'Text "Scan the QR Code" 'text)
+(set-and-coerce-property! 'ScanButton 'Width -2 'number)
+)
+(define-event ScanButton Click()
+ (set-this-form)
+ (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*)
+ '())
+
 )
 ;;; HorizontalArrangement1
-(add-component Screen1 HorizontalArrangement HorizontalArrangement1 )
+(add-component Screen1 HorizontalArrangement HorizontalArrangement1 (set-and-coerce-property! 'HorizontalArrangement1 'Width -2 'number)
+)
 ;;; code
-(add-component HorizontalArrangement1 TextBox code (set-and-coerce-property! 'code 'Hint "Enter Your Code" 'text)
+(add-component HorizontalArrangement1 TextBox code (set-and-coerce-property! 'code 'Hint "Or type the 6-letter code here." 'text)
+(set-and-coerce-property! 'code 'Width -2 'number)
 )
 ;;; Button1
-(add-component HorizontalArrangement1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Go!" 'text)
+(add-component Screen1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Go!" 'text)
+(set-and-coerce-property! 'Button1 'Width -2 'number)
 )
 (define-event Button1 Click()
  (set-this-form)
@@ -130,27 +138,37 @@ $Source $Yail
  '( boolean)
  "not")
  (begin ((get-var PostData))
-        ((get-var *start-httpd*))
+	((get-var *start-httpd*))
 )
 )
+
+(set-and-coerce-property! 'Button1 'Enabled #f 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #f 'boolean)
+
+(set-and-coerce-property! 'RetryButton 'Visible #t 'boolean)
+
+)
+;;; RetryButton
+(add-component Screen1 Button RetryButton (set-and-coerce-property! 'RetryButton 'Text "Reset" 'text)
+(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
+(set-and-coerce-property! 'RetryButton 'Width -2 'number)
+)
+(define-event RetryButton Click()
+ (set-this-form)
+ ((get-var Setup))
 
 )
 ;;; HorizontalArrangement3
-(add-component Screen1 HorizontalArrangement HorizontalArrangement3 )
+(add-component Screen1 HorizontalArrangement HorizontalArrangement3 (set-and-coerce-property! 'HorizontalArrangement3 'Visible #f 'boolean)
+)
 ;;; Label3
 (add-component HorizontalArrangement3 Label Label3 (set-and-coerce-property! 'Label3 'Text "Or you Can Scan a Bar Code" 'text)
-)
-;;; ScanButton
-(add-component HorizontalArrangement3 Button ScanButton (set-and-coerce-property! 'ScanButton 'Text "Scan Now" 'text)
-)
-(define-event ScanButton Click()
- (set-this-form)
- (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*)
- '())
-
+(set-and-coerce-property! 'Label3 'Visible #f 'boolean)
 )
 ;;; HorizontalArrangement4
-(add-component Screen1 HorizontalArrangement HorizontalArrangement4 )
+(add-component Screen1 HorizontalArrangement HorizontalArrangement4 (set-and-coerce-property! 'HorizontalArrangement4 'Visible #f 'boolean)
+)
 ;;; Label4
 (add-component HorizontalArrangement4 Label Label4 (set-and-coerce-property! 'Label4 'Text "If the Blocks Editor is already running" 'text)
 )
@@ -161,59 +179,12 @@ $Source $Yail
  (set-this-form)
  ((get-var *start-httpd*))
  ((get-var *start-repl*))
-)
-;;; SettingsButton
-(add-component Screen1 Button SettingsButton (set-and-coerce-property! 'SettingsButton 'Text "Settings" 'text)
-)
-(define-event SettingsButton Click()
- (set-this-form)
- (set-and-coerce-property! 'TableArrangement1 'Visible #t 'boolean)
-
-((get-var SetServer))
-
-(set-and-coerce-property! 'postip 'Text (get-var Server)
- 'text)
 
 )
 ;;; ConnectFailLabel
 (add-component Screen1 Label ConnectFailLabel (set-and-coerce-property! 'ConnectFailLabel 'Text "Your phone does not appear to be connected to a Wireless (WiFi) network." 'text)
 (set-and-coerce-property! 'ConnectFailLabel 'TextColor #xFFFF0000 'number)
 (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
-)
-;;; TableArrangement1
-(add-component Screen1 TableArrangement TableArrangement1 (set-and-coerce-property! 'TableArrangement1 'Visible #f 'boolean)
-)
-;;; SetRend
-(add-component TableArrangement1 Button SetRend (set-and-coerce-property! 'SetRend 'Column 1 'number)
-(set-and-coerce-property! 'SetRend 'Row 0 'number)
-(set-and-coerce-property! 'SetRend 'Text "Set Server" 'text)
-)
-(define-event SetRend Click()
- (set-this-form)
- (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "_rendezvous_server" (get-property 'postip 'Text)
-)
- '( text any)
-)
-
-)
-;;; DefaultButton
-(add-component TableArrangement1 Button DefaultButton (set-and-coerce-property! 'DefaultButton 'Column 1 'number)
-(set-and-coerce-property! 'DefaultButton 'Row 1 'number)
-(set-and-coerce-property! 'DefaultButton 'Text "Reset to Default" 'text)
-)
-(define-event DefaultButton Click()
- (set-this-form)
- (call-component-method 'TinyDB1 'StoreValue (*list-for-runtime* "_rendezvous_server" "rendezvous.appinventor.mit.edu")
- '( text any)
-)
-
-(set-and-coerce-property! 'postip 'Text "rendezvous.appinventor.mit.edu" 'text)
-
-)
-;;; postip
-(add-component TableArrangement1 TextBox postip (set-and-coerce-property! 'postip 'Column 0 'number)
-(set-and-coerce-property! 'postip 'Hint "Server Host" 'text)
-(set-and-coerce-property! 'postip 'Row 0 'number)
 )
 ;;; Expireblock
 (add-component Screen1 VerticalArrangement Expireblock (set-and-coerce-property! 'Expireblock 'AlignHorizontal 3 'number)
