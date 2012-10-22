@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.buildserver;
 
@@ -25,8 +28,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -64,6 +70,9 @@ public final class Compiler {
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
+  
+  private static final String COMPONENT_LIBRARIES =
+    RUNTIME_FILES_DIR + "simple_components_libraries.json";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -81,12 +90,11 @@ public final class Compiler {
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
-  private static final String TWITTER_RUNTIME =
-      RUNTIME_FILES_DIR + "twitter4j.jar";
   private static final String BUGSENSE_RUNTIME =
       RUNTIME_FILES_DIR + "bugsense-3.0.4.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
+  
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
@@ -97,6 +105,9 @@ public final class Compiler {
   private static final ConcurrentMap<String, Set<String>> componentPermissions =
       new ConcurrentHashMap<String, Set<String>>();
 
+  private static final ConcurrentMap<String, Set<String>> componentLibraries =
+    new ConcurrentHashMap<String, Set<String>>();
+  
   /**
    * Map used to hold the names and paths of resources that we've written out
    * as temp files.
@@ -126,6 +137,7 @@ public final class Compiler {
   private final boolean isForWireless;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
+  private static Set<String> librariesNeeded; // Set of component libraries
 
 
   /*
@@ -154,6 +166,35 @@ public final class Compiler {
     }
     return permissions;
   }
+  
+  /*
+   * Generate the set of Android permissions needed by this project.
+   */
+  @VisibleForTesting
+  Set<String> generateLibraryNames() {
+    // Before we can use componentLibraries, we have to call loadComponentLibraries().
+    try {
+      loadComponentLibraryNames();
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+      return null;
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+      return null;
+    }
+
+    
+    Set<String> libraries = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      libraries.addAll(componentLibraries.get(componentType));
+    }
+    return libraries;
+  }
+  
 
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
@@ -296,10 +337,14 @@ public final class Compiler {
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) {
     long start = System.currentTimeMillis();
+    
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
+
+    // Get the names of component libraries for classpath and dx command line
+    librariesNeeded = compiler.generateLibraryNames();
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -309,6 +354,13 @@ public final class Compiler {
     File resDir = createDirectory(buildDir, "res");
     File drawableDir = createDirectory(resDir, "drawable");
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
+      return false;
+    }
+
+    // Create anim directory and animation xml files
+    out.println("________Creating animation xml");
+    File animDir = createDirectory(resDir, "anim");
+    if (!compiler.createAnimationXml(animDir)) {
       return false;
     }
 
@@ -380,6 +432,54 @@ public final class Compiler {
   }
 
   /*
+   * Creates all the animation xml files.
+   */
+  private boolean createAnimationXml(File animDir) {
+    // Store the filenames, and their contents into a HashMap
+    // so that we can easily add more, and also to iterate
+    // through creating the files.
+    Map<String, String> files = new HashMap<String, String>();
+    files.put("fadein.xml", AnimationXmlConstants.FADE_IN_XML);
+    files.put("fadeout.xml", AnimationXmlConstants.FADE_OUT_XML);
+    files.put("hold.xml", AnimationXmlConstants.HOLD_XML);
+    files.put("zoom_enter.xml", AnimationXmlConstants.ZOOM_ENTER);
+    files.put("zoom_exit.xml", AnimationXmlConstants.ZOOM_EXIT);
+    files.put("zoom_enter_reverse.xml", AnimationXmlConstants.ZOOM_ENTER_REVERSE);
+    files.put("zoom_exit_reverse.xml", AnimationXmlConstants.ZOOM_EXIT_REVERSE);
+    files.put("slide_exit.xml", AnimationXmlConstants.SLIDE_EXIT);
+    files.put("slide_enter.xml", AnimationXmlConstants.SLIDE_ENTER);
+    files.put("slide_exit_reverse.xml", AnimationXmlConstants.SLIDE_EXIT_REVERSE);
+    files.put("slide_enter_reverse.xml", AnimationXmlConstants.SLIDE_ENTER_REVERSE);
+    files.put("slide_v_exit.xml", AnimationXmlConstants.SLIDE_V_EXIT);
+    files.put("slide_v_enter.xml", AnimationXmlConstants.SLIDE_V_ENTER);
+    files.put("slide_v_exit_reverse.xml", AnimationXmlConstants.SLIDE_V_EXIT_REVERSE);
+    files.put("slide_v_enter_reverse.xml", AnimationXmlConstants.SLIDE_V_ENTER_REVERSE);
+
+    for (String filename : files.keySet()) {
+      File file = new File(animDir, filename);
+      if (!writeXmlFile(file, files.get(filename))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Writes the given string input to the provided file.
+   */
+  private boolean writeXmlFile(File file, String input) {
+    try {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+      writer.write(input);
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  /*
    * Runs ApkBuilder by using the API instead of calling its main method because the main method
    * can call System.exit(1), which will bring down our server.
    */
@@ -439,10 +539,10 @@ public final class Compiler {
         int srcIndex = sourceFileName.indexOf("/../src/");
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
-            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+        .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
-                classFileName = classesDir.getAbsolutePath()
-           .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+          classFileName = classesDir.getAbsolutePath()
+          .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
@@ -471,12 +571,20 @@ public final class Compiler {
         return false;
       }
 
+      // Construct the class path including component libraries (jars)
       String classpath =
-          getResource(KAWA_RUNTIME) + File.pathSeparator +
-          getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator +
-          getResource(TWITTER_RUNTIME) + File.pathSeparator +
-          getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
-          getResource(ANDROID_RUNTIME);
+        getResource(KAWA_RUNTIME) + File.pathSeparator +
+        getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator; 
+
+      // Add component library names to classpath
+      for (String library : librariesNeeded) {
+        classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
+      }
+      
+      classpath += 
+        getResource(ANDROID_RUNTIME);
+
       String yailRuntime = getResource(YAIL_RUNTIME);
       List<String> kawaCommandArgs = Lists.newArrayList();
       int mx = childProcessRamMb - 200;
@@ -511,7 +619,7 @@ public final class Compiler {
       String kawaOutput = kawaOutputStream.toString();
       out.print(kawaOutput);
       String kawaCompileTimeMessage = "Kawa compile time: " +
-          ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
+      ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
       out.println(kawaCompileTimeMessage);
       LOG.info(kawaCompileTimeMessage);
 
@@ -613,21 +721,29 @@ public final class Compiler {
 
   private boolean runDx(File classesDir, String dexedClasses) {
     int mx = childProcessRamMb - 200;
-    String[] dxCommandLine = {
-        System.getProperty("java.home") + "/bin/java",
-        "-mx" + mx + "M",
-        "-jar",
-        getResource(DX_JAR),
-        "--dex",
-        "--positions=lines",
-        "--output=" + dexedClasses,
-        classesDir.getAbsolutePath(),
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR),
-        getResource(KAWA_RUNTIME),
-        getResource(TWITTER_RUNTIME),
-        getResource(BUGSENSE_RUNTIME),
-    };
-    long startDx = System.currentTimeMillis();
+    List<String> commandLineList = new ArrayList<String>();
+    commandLineList.add(System.getProperty("java.home") + "/bin/java");
+    commandLineList.add("-mx" + mx + "M");
+    commandLineList.add("-jar");
+    commandLineList.add(getResource(DX_JAR));
+    commandLineList.add("--dex");
+    commandLineList.add("--positions=lines");
+    commandLineList.add("--output=" + dexedClasses);
+    commandLineList.add(classesDir.getAbsolutePath());
+    commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    commandLineList.add(getResource(KAWA_RUNTIME));
+    commandLineList.add(getResource(BUGSENSE_RUNTIME));
+    
+    // Add libraries to command line arguments
+    for (String library : librariesNeeded) {
+      commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
+    }
+    
+    // Convert command line to an array
+    String[] dxCommandLine = new String[commandLineList.size()];
+    commandLineList.toArray(dxCommandLine);
+    
+   long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
     // tools output
     boolean dxSuccess;
@@ -647,7 +763,7 @@ public final class Compiler {
 
     return true;
   }
-
+  
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     createDirectory(project.getAssetsDirectory());
@@ -753,6 +869,39 @@ public final class Compiler {
           }
 
           componentPermissions.put(name, permissionsForThisComponent);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Loads the names of library jars for each component and stores them in
+   * componentLibraries.
+   * 
+   * @throws IOException
+   * @throws JSONException
+   */
+  private static void loadComponentLibraryNames() throws IOException, JSONException {
+    synchronized (componentLibraries) {
+      if (componentLibraries.isEmpty()) {
+        String librariesJson = Resources.toString(
+            Compiler.class.getResource(COMPONENT_LIBRARIES), Charsets.UTF_8);
+
+        JSONArray componentsArray = new JSONArray(librariesJson);
+        int componentslength = componentsArray.length();
+        for (int componentsIndex = 0; componentsIndex < componentslength; componentsIndex++) {
+          JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
+          String name = componentObject.getString("name");
+
+          Set<String> librariesForThisComponent = Sets.newHashSet();
+
+          JSONArray librariesArray = componentObject.getJSONArray("libraries");
+          int librariesLength = librariesArray.length();
+          for (int librariesIndex = 0; librariesIndex < librariesLength; librariesIndex++) {
+            String libraryName = librariesArray.getString(librariesIndex);
+            librariesForThisComponent.add(libraryName);
+          }
+          componentLibraries.put(name, librariesForThisComponent);
         }
       }
     }

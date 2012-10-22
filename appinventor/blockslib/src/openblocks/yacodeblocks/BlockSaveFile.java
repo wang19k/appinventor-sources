@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package openblocks.yacodeblocks;
 
@@ -538,6 +541,11 @@ public class BlockSaveFile {
       }
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The ActivityStarter.StartActivity method was modified to pull the parent Form's
+      // screen animation type. No blockes need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
@@ -748,6 +756,11 @@ public class BlockSaveFile {
       // to upgrade to version 8.
       blkCompVersion = 8;
     }
+    if (blkCompVersion < 9) {
+      // The OpenScreenAnimation and CloseScreenAnimation properties were added. No blocks need
+      // to be modified to upgrade to version 9.
+      blkCompVersion = 9;
+    }
     return blkCompVersion;
   }
 
@@ -833,6 +846,11 @@ public class BlockSaveFile {
       // The Shape property was added.
       // No blocks need to be modified to upgrade to version 5.
       blkCompVersion = 5;
+    }
+    if (blkCompVersion < 6) {
+      // The getIntent method was modified to add the parent Form's screen
+      // animation type. No blocks need to be modified to upgrade to version 6.
+      blkCompVersion = 6;
     }
     return blkCompVersion;
   }

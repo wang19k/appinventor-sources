@@ -1,4 +1,7 @@
-// Copyright 2008 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client;
 
@@ -13,6 +16,13 @@ import com.google.gwt.user.client.ui.Tree.Resources;
  *
  */
 public interface Images extends Resources {
+
+  /**
+   * Android with arms raised for the welcome dialog created by
+   * {@link Ode#createWelcomeDialog(boolean)}
+   */
+  @Source("com/google/appinventor/images/androidGreenSmall.png")
+  ImageResource androidGreenSmall();
 
   /**
    * Close button image for the box widget
