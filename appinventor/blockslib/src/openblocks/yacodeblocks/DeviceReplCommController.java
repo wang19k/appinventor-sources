@@ -5,6 +5,8 @@
 
 package openblocks.yacodeblocks;
 
+import com.google.appinventor.components.common.YaVersion;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,8 +52,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
  */
 
 public class DeviceReplCommController implements AndroidController.DeviceConnectionListener {
-
-  private static final int YOUNG_ANDROID_VERSION = 62; // THIS NEEDS TO BE COPIED FROM YaVersion
 
   public interface PostProcessor {
     void postProcess(String message);
@@ -516,7 +516,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
                   // the result because if the phone fails to listen it will reject the
                   // connection that is attempted when we call selectDevice()
                   String curl = "http://" + ipAddress + ":8000/_version?version=" +
-                    YOUNG_ANDROID_VERSION;
+                    YaVersion.YOUNG_ANDROID_VERSION;
                   System.out.println("Connecting to: " + curl);
                   url = new URL(curl);
                   try {

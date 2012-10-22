@@ -48,6 +48,7 @@
       <include name="${openblocks.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
@@ -87,6 +88,7 @@
     <pathelement location="${public.build.dir}/OpenBlocks.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
