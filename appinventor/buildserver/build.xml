@@ -221,7 +221,7 @@
          list below.
       -->
     <zip destfile="${local.build.dir}/aiplayapp.zip" basedir="${appinventor.dir}/aiplayapp" filesonly="true"
-         includes="src/**/*,youngandroidproject/*" />
+         includes="src/**/*,youngandroidproject/*,assets/*" />
   </target>
 
   <!-- =====================================================================
@@ -232,14 +232,14 @@
        ===================================================================== -->
   <target name="CheckPlayApp"
           depends="GenPlayAppSrcZip,BuildServer">
-    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/AppInventorDebugApp.apk">
+    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/AppInventorCompanion.apk">
       <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
       <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
     </uptodate>
   </target>
 
   <!-- =====================================================================
-       PlayApp: builds ../build/buildserver/AppInventorDebugApp.apk
+       PlayApp: builds ../build/buildserver/AppInventorCompanion.apk
        ===================================================================== -->
   <target name="PlayApp"
           depends="CheckPlayApp"
