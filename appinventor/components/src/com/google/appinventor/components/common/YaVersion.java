@@ -195,8 +195,10 @@ public class YaVersion {
   // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 4.
   // - FORM_COMPONENT_VERSION was incremented to 9.
   // - LISTPICKER_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 64:
+  // - Phone Status Block was added.
 
-    public static final int YOUNG_ANDROID_VERSION = 63;
+    public static final int YOUNG_ANDROID_VERSION = 64;
 
   // ............................... Blocks Language Version Number ...............................
 
