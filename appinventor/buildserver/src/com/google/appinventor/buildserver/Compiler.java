@@ -91,7 +91,7 @@ public final class Compiler {
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String BUGSENSE_RUNTIME =
-      RUNTIME_FILES_DIR + "bugsense-3.0.4.jar";
+      RUNTIME_FILES_DIR + "bugsense3.0.5.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
   
