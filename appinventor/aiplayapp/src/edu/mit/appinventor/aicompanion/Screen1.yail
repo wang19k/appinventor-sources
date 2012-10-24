@@ -191,7 +191,7 @@ $Source $Yail
 (set-and-coerce-property! 'Expireblock 'Visible #f 'boolean)
 )
 ;;; expirewarning
-(add-component Expireblock Label expirewarning (set-and-coerce-property! 'expirewarning 'Text "This version of the App Inventor Instant App Companion is not compatible with your blocks editor. You can download a new version from the Play Store" 'text)
+(add-component Expireblock Label expirewarning (set-and-coerce-property! 'expirewarning 'Text "This version of the App Inventor Companion is not compatible with your blocks editor. You can download a new version from the Play Store" 'text)
 (set-and-coerce-property! 'expirewarning 'TextColor #xFFFF0000 'number)
 )
 ;;; MarketButton
@@ -229,7 +229,7 @@ $Source $Yail
 (add-component Screen1 TinyDB TinyDB1 )
 ;;; ActivityStarter1
 (add-component Screen1 ActivityStarter ActivityStarter1 (set-and-coerce-property! 'ActivityStarter1 'Action "android.intent.action.VIEW" 'text)
-(set-and-coerce-property! 'ActivityStarter1 'DataUri "market://details?id=edu.mit.appinventor.aiphoneappdebug" 'text)
+(set-and-coerce-property! 'ActivityStarter1 'DataUri "market://details?id=edu.mit.appinventor.aicompanion" 'text)
 )
 ;;; PhoneStatus1
 (add-component Screen1 PhoneStatus PhoneStatus1 )
