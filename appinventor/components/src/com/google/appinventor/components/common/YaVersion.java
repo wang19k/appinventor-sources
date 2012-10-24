@@ -468,7 +468,7 @@ public class YaVersion {
   // For PHONENUMBERPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
   public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 4;
-  
+
   public static final int PHONESTATUS_COMPONENT_VERSION = 1;
 
   // For PLAYER_COMPONENT_VERSION 2:
