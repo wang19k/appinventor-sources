@@ -12,6 +12,8 @@ import java.io.IOException;
 
 import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.EclairUtil;
 
 import android.content.ComponentName;
 import android.content.Intent;
@@ -26,8 +28,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Activity;
 import android.content.Context;
-
-import com.bugsense.trace.BugSenseHandler; // Let's try bugsense
 
 /**
  * Subclass of Form used by the 'stem cell apk', i.e. the Android app that allows communication
@@ -55,7 +55,8 @@ public class ReplForm extends Form {
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
-    BugSenseHandler.initAndStartSession((Context) this, BUGSENSE_API_KEY);
+    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT)
+      EclairUtil.setupBugSense((Context) this, BUGSENSE_API_KEY);
     if (IsUSBRepl) {
       PackageManager packageManager = this.$context().getPackageManager();
       // the following is intended to prevent the application from being restarted
@@ -138,7 +139,7 @@ public class ReplForm extends Form {
         if (assetServer == null) {
             checkAssetDir();
             assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR), this); // Probably should make the port variable
-	    Log.i("ReplForm", "started AppInvHTTPD");
+            Log.i("ReplForm", "started AppInvHTTPD");
         }
     } catch (IOException ex) {
       Log.e("ReplForm", "Setting up NanoHTTPD: " + ex.toString());
