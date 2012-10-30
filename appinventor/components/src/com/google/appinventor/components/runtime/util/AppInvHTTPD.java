@@ -16,6 +16,9 @@ import com.google.appinventor.components.common.YaVersion;
 import kawa.standard.Scheme;
 import gnu.expr.Language;
 
+import android.content.Intent;
+import android.net.Uri;
+
 public class AppInvHTTPD extends NanoHTTPD {
 
   private File rootDir;
@@ -81,6 +84,20 @@ public class AppInvHTTPD extends NanoHTTPD {
         res = new Response(HTTP_OK, MIME_PLAINTEXT, e.toString());
         e.printStackTrace();
       }
+      return (res);
+    } else if (uri.equals("/_package")) { // Handle installing a package
+      Response res;
+      String packageapk = parms.getProperty("package", null);
+      if (packageapk == null) {
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT OK"); // Should really return an error code, but we don't look at it yet
+        return (res);
+      }
+      myOut.println(rootDir + "/" + packageapk);
+      Intent intent = new Intent(Intent.ACTION_VIEW);
+      Uri packageuri = Uri.fromFile(new File(rootDir + "/" + packageapk));
+      intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
+      form.startActivity(intent);
+      res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       return (res);
     }
 
