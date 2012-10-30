@@ -38,7 +38,7 @@ $Source $Yail
 )
 
  )
-(def ipaddress "IPADDRESS")
+(def expired #f)
 
 (def (PostData)
 (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
@@ -74,7 +74,7 @@ $Source $Yail
  '())
 
  )
-(def expired #f)
+(def ipaddress "IPADDRESS")
 
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
@@ -137,10 +137,15 @@ $Source $Yail
 )
  '( boolean)
  "not")
+ (begin (if (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-length (*list-for-runtime* (get-property 'code 'Text)
+)
+ '( text)
+ "length")
+ 6)
+ '( any any)
+ "=")
  (begin ((get-var PostData))
 	((get-var *start-httpd*))
-)
-)
 
 (set-and-coerce-property! 'Button1 'Enabled #f 'boolean)
 
@@ -148,6 +153,24 @@ $Source $Yail
 
 (set-and-coerce-property! 'RetryButton 'Visible #t 'boolean)
 
+(set-and-coerce-property! 'HorizontalArrangement5 'Visible #f 'boolean)
+
+)
+ (begin (set-and-coerce-property! 'HorizontalArrangement5 'Visible #t 'boolean)
+
+)
+)
+
+)
+)
+
+)
+;;; HorizontalArrangement5
+(add-component Screen1 HorizontalArrangement HorizontalArrangement5 (set-and-coerce-property! 'HorizontalArrangement5 'Visible #f 'boolean)
+)
+;;; Label7
+(add-component HorizontalArrangement5 Label Label7 (set-and-coerce-property! 'Label7 'Text "You did not enter 6 characters, please try again." 'text)
+(set-and-coerce-property! 'Label7 'TextColor #xFFFF0000 'number)
 )
 ;;; RetryButton
 (add-component Screen1 Button RetryButton (set-and-coerce-property! 'RetryButton 'Text "Reset" 'text)
