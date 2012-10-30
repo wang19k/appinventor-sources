@@ -29,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -344,19 +345,35 @@ public final class YaCodeblocksAndroidController implements AndroidController,
       }
     }
 
+
     WifiManager(String ipAddress) {
       this.ipAddress = ipAddress;
     }
 
-    void pushFileToDevice(String fileToPush, String remotePath)
+    void triggerInstall(String packageName) {
+      try {
+        String url = "http://" + ipAddress + ":8000/_package?package=" + packageName;
+        URL triggerurl = new URL(url);
+        URLConnection con = triggerurl.openConnection();
+        con.getInputStream().close(); // Ignore return value for now
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    void pushFileToDevice(String fileToPush, String remotePath) throws AndroidControllerException, ExternalStorageException {
+      pushFileToDevice(fileToPush, remotePath, false);
+    }
+
+    void pushFileToDevice(String fileToPush, String remotePath, boolean doInstall)
       throws AndroidControllerException, ExternalStorageException {
-      // This is where we will push assets to the phone.. TBD XXX
       System.out.println("pushFileToDevice: fileToPush: \"" + fileToPush + "\" remotePath: \"" + remotePath + "\"");
       String [] r = remotePath.split("/"); // We only want the last part!
       String filename = r[r.length - 1];
       System.out.println("pushFileToDevice: filename = \"" + filename + "\"");
       try {
         (new Uploader()).SendFile(ipAddress, fileToPush, filename);
+        if (doInstall) triggerInstall(filename);
       } catch (Exception e) {
         e.printStackTrace(System.out);
         throw new AndroidControllerException(e.toString());
@@ -368,7 +385,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
   private boolean usingwifi = false; // Set to true when we are using a WiFi connection
 
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = true;
 
   private static final String MOUNT_COMMAND = "mount";
 
@@ -487,7 +504,6 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
   public void androidSyncAndInstallSpecificApplication(String apkFilePath, String appName,
       String packageName) throws AndroidControllerException, ExternalStorageException {
-    if (usingwifi) return;
     if (DEBUG) {
       System.out.println("Trying to Sync and Install application: " + appName);
     }
@@ -558,12 +574,13 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   private void syncApplication(String apkFilePath, String appName, String packageName,
       boolean uninstallRequired) throws AndroidControllerException, ExternalStorageException {
     // Upload the app to the device.
-    if (usingwifi) return;
     final String remoteInstallPath = installPath + appName;
-    pushFileToDevice(apkFilePath, remoteInstallPath);
-
-    // Install the app.
-    installApplication(remoteInstallPath, packageName, uninstallRequired);
+    if (usingwifi) {
+      wifiManager.pushFileToDevice(apkFilePath, appName, true); // Send and Install
+    } else {
+      pushFileToDevice(apkFilePath, remoteInstallPath);
+      installApplication(remoteInstallPath, packageName, uninstallRequired);
+    }
   }
 
   public void pushFileToDevice(String fileToPush, String remotePath)
