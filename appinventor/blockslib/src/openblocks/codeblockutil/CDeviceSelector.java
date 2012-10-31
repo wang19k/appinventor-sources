@@ -69,6 +69,10 @@ public class CDeviceSelector extends JMenuBar {
         // to indicate that the reset is happening, but I can't figure
         // out how to get Swing to do this.
         aidir.restartADB();
+        if (callback != null) {
+          System.out.println("Device selected is now none");
+          callback.onDeviceSelected("none");
+        }
       }
     });
     menu.add(resetConnections);

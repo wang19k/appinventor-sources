@@ -166,6 +166,14 @@ public class PhoneCommManager {
       public void onDeviceSelected(String device) {
         String prevDevice = psReplController.getSelectedDevice();
         if (prevDevice != null && connectedToPhone()) {
+          if (device.equals("none")) { // Special case. When the "reset" menu item is selected, we change the device to this
+            setConnectedToPhone(false);
+            if (psReplController != null)
+              psReplController.reset();
+            psReplController.selectDevice(device); // This will reset the ipAddress in psReplController to 127.0.0.1 so USB can work.
+            updateStatusIndicators();
+            return;
+          }
           if (!device.equals(prevDevice)) {
             if (!FeedbackReporter.getConfirmation(
                 "The Blocks Editor is currently connected to device " + prevDevice + ".\n"
@@ -174,6 +182,10 @@ public class PhoneCommManager {
               return;
             }
           } else {
+            if (device.equals("WiFi")) {
+              FeedbackReporter.showErrorMessage("If the connection to your phone appears hung, or if the Companion App is no longer running, select the \"Reset connections\" menu option on the \"Connect to Device...\" menu and then reconnect.");
+              return;
+            }
             if (FeedbackReporter.getConfirmation(
                 "The Blocks Editor is already connected to device " + prevDevice + ". \n"
                 + "Do you want to restart the app on the device?")) {
@@ -186,7 +198,7 @@ public class PhoneCommManager {
         System.out.println("Selecting device " + device);
         setPhoneManager();      // Tell the replcontroller who we are
         if (!psReplController.selectDevice(device)) {
-          if (!device.equals("WiFi")) { // Only generate a warning if we are not wifi, wifi always returns false here
+          if (!device.equals("WiFi") && !device.equals("none")) { // Only generate a warning if we are not wifi, wifi always returns false here
             if (DEBUG) {
               System.out.println("Selected device is no longer attached");
             }

@@ -762,6 +762,9 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public void selectDevice(String device) throws AndroidControllerException {
+    usingwifi = false;
+    if (device.equals("none"))  // Nothing more to do
+      return;
     if (devices.containsKey(device)) {
       starterAppManager.selectDevice(devices.get(device));
     } else {
