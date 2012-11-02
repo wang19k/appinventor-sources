@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.collect.Lists;
+import com.google.appinventor.components.runtime.Notifier;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -101,37 +102,8 @@ public class ReplCommController {
     blocksEditorReplController.StartServer();
     everStarted = true;
     if (showAlert) {
-      ShowAlert("Listening to App Inventor. Your Blocks should display shortly.");
+      (new Notifier(form)).ShowAlert("Listening to App Inventor. Your Blocks should display shortly.");
     }
-  }
-
-  private void ShowAlert(final String notice) {
-    // In REPL, it is currently ok to show notices that are in English.
-    // However, in a component, it is not ok to do so. Therefore, this method should never be used
-    // to show messages from a component such as GameClient or Voting.
-    handler.post(new Runnable() {
-      public void run() {
-          toastNow(notice);
-      }
-    });
-  }
-
-  // show a toast using a TextView, which allows us to set the
-  // font size.  The default toast is too small.
-  // This code is lifted from the Notifier component
-  private void toastNow (String message) {
-    Toast toast = Toast.makeText(form, message, Toast.LENGTH_LONG);
-    toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
-    TextView textView = new TextView(form);
-    textView.setBackgroundColor(Color.DKGRAY);
-    textView.setTextColor(Color.WHITE);
-    textView.setTextSize(30);
-    Typeface typeface = Typeface.create("serif", Typeface.BOLD);
-    textView.setTypeface(typeface);
-    textView.setPadding(10, 10, 10, 10);
-    textView.setText(message);
-    toast.setView(textView);
-    toast.show();
   }
 
   /**
