@@ -252,7 +252,12 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
     if (inputThread != null) {
       inputThread.stopRunning();
     }
-    socket = new Socket(host, port);
+    try {
+      socket = new Socket(host, port);
+    } catch (java.net.ConnectException e) { // Hackito ergo sum: This is a complete hack. This code will be removed.
+      if (port == 9987)                     // Its purpose in life is to ease the transition to the new port. This code
+        socket = new Socket(host, 9997);    // will let people use the old Companion App with the new server version
+    }
     // Note that this call does not fail even if there's nothing running on
     // the other end.  Also, there's no problem getting the streams.  Sigh.
     out = socket.getOutputStream();
