@@ -4,41 +4,7 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aicompanion.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def (badversion)
-(set-var! expired  #t)
-
-(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
-
- )
-(def (Setup)
-(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
- '())
-)
-
-(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
- 'text)
-
-(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
-
-(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
-
-(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
-
-(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
- '())
-)
- '( boolean)
- "not")
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
-
-)
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
-
-)
-)
-
- )
-(def expired #f)
+(def ipaddress "IPADDRESS")
 
 (def (PostData)
 (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
@@ -74,14 +40,53 @@ $Source $Yail
  '())
 
  )
-(def ipaddress "IPADDRESS")
+(def expired #f)
 
+(def (Setup)
+(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
+ '())
+)
+
+(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
+ 'text)
+
+(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
+
+(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
+ '())
+)
+ '( boolean)
+ "not")
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
+
+)
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
+
+)
+)
+
+ )
+(def (badversion)
+(set-var! expired  #t)
+
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
+
+ )
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
 (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
 (set-and-coerce-property! 'Screen1 'Title "App Inventor Companion" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 10 'number)
 (set-and-coerce-property! 'Screen1 'VersionName "1.9m" 'text)
+)
+(define-event Screen1 ErrorOccurred( component  functionName  errorNumber  message )
+ (set-this-form)
+ (set-and-coerce-property! 'Label8 'Visible #t 'boolean)
+
 )
 (define-event Screen1 Initialize()
  (set-this-form)
@@ -103,7 +108,7 @@ $Source $Yail
 (set-and-coerce-property! 'Label5 'Width -2 'number)
 )
 ;;; Label2
-(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "\n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Go' button below.\n4) Click the 'Connect to phone' button on the Blocks Editor. \n5) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Go' button below.\n4) Click the 'Connect to phone' button on the Blocks Editor. \n5) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
 (set-and-coerce-property! 'Label2 'Width -2 'number)
 )
 ;;; Label6
@@ -155,6 +160,8 @@ $Source $Yail
 
 (set-and-coerce-property! 'HorizontalArrangement5 'Visible #f 'boolean)
 
+(set-and-coerce-property! 'Label8 'Visible #f 'boolean)
+
 )
  (begin (set-and-coerce-property! 'HorizontalArrangement5 'Visible #t 'boolean)
 
@@ -164,6 +171,11 @@ $Source $Yail
 )
 )
 
+)
+;;; Label8
+(add-component Screen1 Label Label8 (set-and-coerce-property! 'Label8 'Text "An Error Occurred. Please try pressing \"Connect to App Inventor\" again." 'text)
+(set-and-coerce-property! 'Label8 'TextColor #xFFFF0000 'number)
+(set-and-coerce-property! 'Label8 'Visible #f 'boolean)
 )
 ;;; HorizontalArrangement5
 (add-component Screen1 HorizontalArrangement HorizontalArrangement5 (set-and-coerce-property! 'HorizontalArrangement5 'Visible #f 'boolean)
