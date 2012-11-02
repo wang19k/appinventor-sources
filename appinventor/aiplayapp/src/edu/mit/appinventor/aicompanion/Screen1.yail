@@ -80,8 +80,8 @@ $Source $Yail
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
 (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
 (set-and-coerce-property! 'Screen1 'Title "App Inventor Companion" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 8 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "1.7" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 10 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "1.9m" 'text)
 )
 (define-event Screen1 Initialize()
  (set-this-form)
@@ -103,7 +103,7 @@ $Source $Yail
 (set-and-coerce-property! 'Label5 'Width -2 'number)
 )
 ;;; Label2
-(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n2) Click the 'Go' button below.\n3) Click the 'Connect to phone' button on the Blocks Editor. \n4) If not connected in 30 seconds, click reset and repeat." 'text)
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "\n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Go' button below.\n4) Click the 'Connect to phone' button on the Blocks Editor. \n5) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
 (set-and-coerce-property! 'Label2 'Width -2 'number)
 )
 ;;; Label6
@@ -128,7 +128,7 @@ $Source $Yail
 (set-and-coerce-property! 'code 'Width -2 'number)
 )
 ;;; Button1
-(add-component Screen1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Go!" 'text)
+(add-component Screen1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Connect to App Inventor" 'text)
 (set-and-coerce-property! 'Button1 'Width -2 'number)
 )
 (define-event Button1 Click()
