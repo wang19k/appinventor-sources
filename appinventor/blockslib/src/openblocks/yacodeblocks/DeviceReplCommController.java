@@ -546,7 +546,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
 
   private boolean showWirelessNotice(String code) {
     String title = "Starting the wireless connection.";
-    String msgText = "Instructions:<br />\n<ul>\n<li>Start the App Inventor Instant App Companion app on the phone</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press GO<br />&nbsp;<br /></li>\n<li>Press the Connect to Phone button below</li>\n</ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
+    String msgText = "Instructions:<br />\n<ul>\n<li>Start the <a href=\"http://appinventor.mit.edu\" target=\"_blank\">App Inventor Companion App</a> on your phone or tablet.</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press GO<br />&nbsp;<br /></li>\n<li>Press the Connect to Phone button below</li>\n</ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
     ImageIcon qrcode = generateQRCode(code);
     if (qrcode == null)
       System.out.println ("qrcode is null");
