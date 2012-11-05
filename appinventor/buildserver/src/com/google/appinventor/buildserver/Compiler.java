@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -50,6 +52,8 @@ import javax.imageio.ImageIO;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class Compiler {
+  public static int currentProgress = 10;
+
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
@@ -70,7 +74,7 @@ public final class Compiler {
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
-  
+
   private static final String COMPONENT_LIBRARIES =
     RUNTIME_FILES_DIR + "simple_components_libraries.json";
 
@@ -94,10 +98,16 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "bugsense3.0.5.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
-  
+
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
+  private static final String MAC_ZIPALIGN_TOOL =
+      "/tools/mac/zipalign";
+  private static final String WINDOWS_ZIPALIGN_TOOL =
+      "/tools/windows/zipalign";
+  private static final String LINUX_ZIPALIGN_TOOL =
+      "/tools/linux/zipalign";
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
@@ -107,7 +117,7 @@ public final class Compiler {
 
   private static final ConcurrentMap<String, Set<String>> componentLibraries =
     new ConcurrentHashMap<String, Set<String>>();
-  
+
   /**
    * Map used to hold the names and paths of resources that we've written out
    * as temp files.
@@ -166,7 +176,7 @@ public final class Compiler {
     }
     return permissions;
   }
-  
+
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -187,14 +197,14 @@ public final class Compiler {
       return null;
     }
 
-    
+
     Set<String> libraries = Sets.newHashSet();
     for (String componentType : componentTypes) {
       libraries.addAll(componentLibraries.get(componentType));
     }
     return libraries;
   }
-  
+
 
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
@@ -332,12 +342,14 @@ public final class Compiler {
    * @param keystoreFilePath
    * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
+   * @throws JSONException
+   * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) {
+                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
     long start = System.currentTimeMillis();
-    
+
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
@@ -356,6 +368,7 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
+    setProgress(10);
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");
@@ -370,6 +383,7 @@ public final class Compiler {
     if (permissionsNeeded == null) {
       return false;
     }
+    setProgress(15);
 
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
@@ -377,6 +391,7 @@ public final class Compiler {
     if (!compiler.writeAndroidManifest(manifestFile, permissionsNeeded)) {
       return false;
     }
+    setProgress(20);
 
     // Create class files.
     out.println("________Compiling source files");
@@ -384,6 +399,7 @@ public final class Compiler {
     if (!compiler.generateClasses(classesDir)) {
       return false;
     }
+    setProgress(35);
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -401,6 +417,7 @@ public final class Compiler {
     if (!compiler.runDx(classesDir, dexedClasses)) {
       return false;
     }
+    setProgress(85);
 
     // Invoke aapt to package everything up
     out.println("________Invoking AAPT");
@@ -410,6 +427,7 @@ public final class Compiler {
     if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName)) {
       return false;
     }
+    setProgress(90);
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
@@ -418,12 +436,21 @@ public final class Compiler {
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClasses)) {
       return false;
     }
+    setProgress(95);
 
     // Sign the apk file
     out.println("________Signing the apk file");
     if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
       return false;
     }
+
+    // ZipAlign the apk file
+    out.println("________ZipAligning the apk file");
+    if (!compiler.runZipAlign(apkAbsolutePath, tmpDir)) {
+      return false;
+    }
+
+    setProgress(100);
 
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
@@ -542,7 +569,7 @@ public final class Compiler {
         .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
           classFileName = classesDir.getAbsolutePath()
-          .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
@@ -575,14 +602,14 @@ public final class Compiler {
       String classpath =
         getResource(KAWA_RUNTIME) + File.pathSeparator +
         getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator; 
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
       for (String library : librariesNeeded) {
         classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
       }
-      
-      classpath += 
+
+      classpath +=
         getResource(ANDROID_RUNTIME);
 
       String yailRuntime = getResource(YAIL_RUNTIME);
@@ -655,7 +682,7 @@ public final class Compiler {
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
       if (System.getProperty("os.name").startsWith("Windows")){
-                jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+        jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
             File.separator + "jarsigner.exe");
       }
       if (!jarsignerFile.exists()) {
@@ -684,6 +711,57 @@ public final class Compiler {
 
     return true;
   }
+
+  private boolean runZipAlign(String apkAbsolutePath, File tmpDir) {
+    // TODO(user): add zipalign tool appinventor->lib->android->tools->linux and windows
+    // Need to make sure assets directory exists otherwise zipalign will fail.
+    createDirectory(project.getAssetsDirectory());
+    String zipAlignTool;
+    String osName = System.getProperty("os.name");
+    if (osName.equals("Mac OS X")) {
+      zipAlignTool = MAC_ZIPALIGN_TOOL;
+    } else if (osName.equals("Linux")) {
+      zipAlignTool = LINUX_ZIPALIGN_TOOL;
+    } else if (osName.startsWith("Windows")) {
+      zipAlignTool = WINDOWS_ZIPALIGN_TOOL;
+    } else {
+      LOG.warning("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      err.println("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    // TODO: create tmp file for zipaling result
+    String zipAlignedPath = tmpDir.getAbsolutePath() + File.separator + "zipaligned.apk";
+    // zipalign -f -v 4 infile.zip outfile.zip
+    String[] zipAlignCommandLine = {
+        getResource(zipAlignTool),
+        "-f",
+        "4",
+        apkAbsolutePath,
+        zipAlignedPath
+    };
+    long startAapt = System.currentTimeMillis();
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
+    // tools output
+    if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - ZIPALIGN execution failed.");
+      err.println("YAIL compiler - ZIPALIGN execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    if(!copyFile(zipAlignedPath, apkAbsolutePath)) {
+      LOG.warning("YAIL compiler - ZIPALIGN file copy failed.");
+      err.println("YAIL compiler - ZIPALIGN file copy failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    String zipALignTimeMessage = "ZIPALIGN time: " +
+        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+    out.println(zipALignTimeMessage);
+    LOG.info(zipALignTimeMessage);
+    return true;
+  }
+
 
   /*
    * Loads the icon for the application, either a user provided one or the default one.
@@ -733,22 +811,24 @@ public final class Compiler {
     commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
     commandLineList.add(getResource(KAWA_RUNTIME));
     commandLineList.add(getResource(BUGSENSE_RUNTIME));
-    
+
     // Add libraries to command line arguments
     for (String library : librariesNeeded) {
       commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
     }
-    
+
     // Convert command line to an array
     String[] dxCommandLine = new String[commandLineList.size()];
     commandLineList.toArray(dxCommandLine);
-    
+
    long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
     // tools output
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
+      setProgress(50);
       dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+      setProgress(75);
     }
     if (!dxSuccess) {
       LOG.warning("YAIL compiler - DX execution failed.");
@@ -763,7 +843,7 @@ public final class Compiler {
 
     return true;
   }
-  
+
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     createDirectory(project.getAssetsDirectory());
@@ -774,8 +854,8 @@ public final class Compiler {
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
     } else if (osName.startsWith("Windows")) {
-                aaptTool = WINDOWS_AAPT_TOOL;
-        } else {
+      aaptTool = WINDOWS_AAPT_TOOL;
+    } else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
@@ -873,11 +953,11 @@ public final class Compiler {
       }
     }
   }
-  
+
   /**
    * Loads the names of library jars for each component and stores them in
    * componentLibraries.
-   * 
+   *
    * @throws IOException
    * @throws JSONException
    */
@@ -908,6 +988,32 @@ public final class Compiler {
   }
 
   /**
+   * Copy one file to another. If destination file does not exist, it is created.
+   *
+   * @param srcPath absolute path to source file
+   * @param dstPath absolute path to destination file
+   * @return  {@code true} if the copy succeeds, {@code false} otherwise
+   */
+  private static Boolean copyFile(String srcPath, String dstPath) {
+    try{
+      FileInputStream in = new FileInputStream(srcPath);
+      FileOutputStream out = new FileOutputStream(dstPath);
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+      in.close();
+      out.close();
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Creates a new directory (if it doesn't exist already).
    *
    * @param dir  new directory
@@ -933,5 +1039,21 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static int setProgress(int increments){
+    Compiler.currentProgress = increments;
+    LOG.info("The current progress is "
+              + Compiler.currentProgress + "%");
+    return Compiler.currentProgress;
+  }
+
+  public static int getProgress(){
+    if (Compiler.currentProgress==100){
+      Compiler.currentProgress = 10;
+      return 100;
+    }else{
+      return Compiler.currentProgress;
+    }
   }
 }
