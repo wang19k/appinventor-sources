@@ -108,7 +108,7 @@ $Source $Yail
 (set-and-coerce-property! 'Label5 'Width -2 'number)
 )
 ;;; Label2
-(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Go' button below.\n4) Click the 'Connect to phone' button on the Blocks Editor. \n5) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Connect to App Inventor' button below.\n4) Click the 'Connect to phone' button on the Blocks Editor. \n5) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
 (set-and-coerce-property! 'Label2 'Width -2 'number)
 )
 ;;; Label6
