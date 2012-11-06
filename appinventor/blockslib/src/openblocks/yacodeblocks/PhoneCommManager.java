@@ -183,7 +183,7 @@ public class PhoneCommManager {
             }
           } else {
             if (device.equals("WiFi")) {
-              FeedbackReporter.showErrorMessage("If the connection to your phone appears hung, or if the Companion App is no longer running, select the \"Reset connections\" menu option on the \"Connect to Device...\" menu and then reconnect.");
+              FeedbackReporter.showErrorMessage("If the connection to your phone appears hung, or if the Companion App is no longer running, select the \"Reset connections\" menu option on the \"Connect to Device...\" menu and then restart the Comapanion App on the the phone and reconnect.");
               return;
             }
             if (FeedbackReporter.getConfirmation(

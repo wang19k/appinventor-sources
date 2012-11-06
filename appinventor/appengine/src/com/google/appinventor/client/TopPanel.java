@@ -11,7 +11,6 @@ import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -29,11 +28,14 @@ public class TopPanel extends Composite {
   private static final String KNOWN_ISSUES_LINK_URL =
       Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
   private static final String RELEASE_NOTES_LINK_URL =
-	  Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
+      Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
   private static final String KNOWN_ISSUES_LINK_AND_TEXT =
       "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
-	  "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
+      "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
+  private static final String GALLERY_LINK_AND_TEXT =
+      "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
+      "Try the App Inventor Community Gallery (Beta)</a>";
 
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
@@ -44,7 +46,7 @@ public class TopPanel extends Composite {
 
     //This is an experimental version of App Inventor. "
     //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
-  
+
   private HTML divider() {
     return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
   }
@@ -58,7 +60,7 @@ public class TopPanel extends Composite {
      *
      *  +-- topPanel ------------------------------+
      *  |+-- logo --++--middleLinks--++--account--+|
-     *  ||          ||               ||            | 
+     *  ||          ||               ||            |
      *  |+----------++---------------++-----------+|
      *  +------------------------------------------+
      */
@@ -72,7 +74,7 @@ public class TopPanel extends Composite {
     account.setStyleName("ode-TopPanelAccount");
     account.add(userEmail);
     account.add(divider());
-    
+
     if (AppInventorFeatures.sendBugReports()) {
       HTML reportBugLink =
           new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +

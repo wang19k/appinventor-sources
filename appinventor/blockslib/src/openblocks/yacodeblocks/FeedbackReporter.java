@@ -262,7 +262,7 @@ public class FeedbackReporter extends JOptionPane {
   /**
    * ShowQRCode show a pop-up which displays the wireless code used to
    * get the Wireless Devices ipAddress from the Rendezvous server (see
-   * code in DeviceReplCommController). It display "OK" or "Cancel" so
+   * code in DeviceReplCommController). It displays "OK" or "Cancel" so
    * the user can cancel the operation. Returns true when OK is pressed
    * and false when Cancel is pressed. A QR Code is also displayed which
    * can be scanned by the phone if it has the necessary scanning app
