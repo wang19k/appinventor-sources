@@ -87,6 +87,8 @@ $Source $Yail
  (set-this-form)
  (set-and-coerce-property! 'Label8 'Visible #t 'boolean)
 
+((get-var Setup))
+
 )
 (define-event Screen1 Initialize()
  (set-this-form)
@@ -256,6 +258,13 @@ $Source $Yail
 
 ((get-var PostData))
 ((get-var *start-httpd*))
+
+(set-and-coerce-property! 'RetryButton 'Visible #t 'boolean)
+
+(set-and-coerce-property! 'Button1 'Enabled #f 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #f 'boolean)
+
 )
 )
 
