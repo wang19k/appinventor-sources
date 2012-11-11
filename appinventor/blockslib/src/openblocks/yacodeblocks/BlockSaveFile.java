@@ -460,6 +460,9 @@ public class BlockSaveFile {
       } else if (genus.equals("TextBox")) {
         blkCompVersion = upgradeTextBoxBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("Texting")) {
+        blkCompVersion = upgradeTextingBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("TinyWebDB")) {
         blkCompVersion = upgradeTinyWebDBBlocks(blkCompVersion, componentName);
 
@@ -579,8 +582,8 @@ public class BlockSaveFile {
           "from the drawer";
       for (Element block : getAllMatchingGenusBlocks("Ball-Flung")) {
         markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
-        blkCompVersion = 5;
       }
+      blkCompVersion = 5;
     }
     return blkCompVersion;
   }
@@ -856,8 +859,6 @@ public class BlockSaveFile {
       blkCompVersion = 5;
     }
     if (blkCompVersion < 6) {
-      // speed and heading were added to the Flung event(for all sprites)
-      if (blkCompVersion < 5) {
         // speed and hearing were added to the Flung event (for all sprites)
         // speed and heading were added to the Flung event
         final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
@@ -866,9 +867,7 @@ public class BlockSaveFile {
             "from the drawer";
         for (Element block : getAllMatchingGenusBlocks("ImageSprite-Flung")) {
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
-          blkCompVersion = 5;
         }
-      }
       blkCompVersion = 6;
     }  
     
@@ -1031,6 +1030,15 @@ public class BlockSaveFile {
       // block need to have MultiLine explicitly set to true, since the new default
       // is false (see YoungAndroidFormUpgrade).
       blkCompVersion = 4;
+    }
+    return blkCompVersion;
+  }
+  
+  private int upgradeTextingBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // No changes required
+      // The GoogleVoiceEnabled property was added.
+      blkCompVersion = 2;
     }
     return blkCompVersion;
   }
