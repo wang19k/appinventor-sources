@@ -74,6 +74,9 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
 
   private volatile boolean connectionHappy = false;  // is there a device connected and working
   private volatile int devicesPluggedIn = 0;
+  private volatile boolean stopWireless = false; // set to true to break out of the rendezvous server read loop prematurely
+
+  private final String rendezvousUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/"; // This should be parameterized (will be!)
 
   public DeviceReplCommController(String host, int port,
       AndroidController androidController, PostProcessor postProcessor) {
@@ -455,104 +458,83 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   }
 
   private void rendevzousIpAddress() {
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    // Generate the random 6 digit code and the QRCode that contains it.
+    String AB = "abcdefghijklmnopqrstuvwxyz";
+    Random rnd = new Random();
+    StringBuilder sb = new StringBuilder(6);
+    for(int i=0; i<6; i++)
+      sb.append(AB.charAt(rnd.nextInt(AB.length())));
+    final String code = sb.toString();
+    final ImageIcon qrcode = generateQRCode(code);
+    stopWireless = false;       // Re-initialize in case it was set in a previous attempt
+    final JDialog displayedCode = FeedbackReporter.showWirelessCodeDialog(code, qrcode, new Runnable() {
         public void run() {
-          String AB = "abcdefghijklmnopqrstuvwxyz";
-          Random rnd = new Random();
-          ImageIcon qrcode = new ImageIcon();
-          StringBuilder sb = new StringBuilder(6);
-          final String theUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/";
+          setStopWireless();
+        }});
+    Thread t = new Thread(new Runnable() {
+        public void run() {
+          try {
+            // Put up the wireless dialog box
+            Thread.sleep(4000); // Sleep 4 seconds, time to give the user a chance to start the Companion App
+            String jsonString = fetchJsonString(code);
+            int count = 0;
+            while (jsonString == null) {
+              if (count++ > 20) { // This limits this loop to 20 seconds or so
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                      displayedCode.setVisible(false); // Take down pending message
+                      FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
+                    }});
+                return;
+              }
+              if (stopWireless) {
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                      displayedCode.setVisible(false); // Take down pending message
+                    }});
+                return;
+              }
+              Thread.sleep(1000); // Pause a second (so the total wait time for the first loop is really 5 seconds subsequent loops are 1 second
+              jsonString = fetchJsonString(code);
+              System.out.println("JSON read the line");
+            }
+            System.out.println("Cool, it stopped being NULL and connected");
+            JSONObject jsonObject = new JSONObject(jsonString);
+            System.out.println("Made the JSON object");
+            final String ipAddress = (String) jsonObject.get("ipaddr");
+            System.out.println("Got ipaddr = " + ipAddress);
 
-          for(int i=0; i<6; i++)
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-          final String code = sb.toString();
-          boolean go = showWirelessNotice(code);
-          if (!go) {
-            System.out.println("Cancel Selected, punting.");
-            return;             // XXX Do we need to cleanup?
-          }
-          final JDialog pending = FeedbackReporter.showConnecting("Attempting to contact your phone/tablet.");
-          Thread t = new Thread(new Runnable() {
-              public void run() {
-                try {
-                  URL url = new URL(theUrl + code);
-                  URLConnection con = url.openConnection();
-                  System.out.println("Opening a URL connection");
-                  InputStream in = con.getInputStream();
-                  System.out.println("Well, input stream worked fine.");
-                  BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                  System.out.println("BufferedReader worked fine.");
-                  String jsonString = reader.readLine();
-                  int count = 0;
-                  while (jsonString == null) {
-                    if (count++ > 200) { // This limits this loop to 20 seconds
-                      javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                          public void run() {
-                            pending.setVisible(false); // Take down pending message
-                            FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
-                          }});
-                      return;
-                    }
-                    url = new URL(theUrl + code);
-                    con = url.openConnection();
-                    System.out.println("Opening a URL connection");
-                    in = con.getInputStream();
-                    System.out.println("Well, input stream worked fine.");
-                    reader = new BufferedReader(new InputStreamReader(in));
-                    System.out.println("BufferedReader worked fine.");
-                    jsonString = reader.readLine();
-                    System.out.println("JSON read the line");
-                    Thread.sleep(100);
-                  }
-                  System.out.println("Cool, it stopped being NULL and connected");
-                  JSONObject jsonObject = new JSONObject(jsonString);
-                  System.out.println("Made the JSON object");
-                  final String ipAddress = (String) jsonObject.get("ipaddr");
-                  System.out.println("Got ipaddr = " + ipAddress);
-
-                  // We have the IP address, we now send our version to the phone which
-                  // starts the phone TelnetRepl listening. If this version doesn't match
-                  // The phone will display an error and not listen. We don't need to know
-                  // the result because if the phone fails to listen it will reject the
-                  // connection that is attempted when we call selectDevice()
-                  String curl = "http://" + ipAddress + ":8000/_version?version=" +
-                    YaVersion.YOUNG_ANDROID_VERSION;
-                  System.out.println("Connecting to: " + curl);
-                  url = new URL(curl);
-                  try {
-                    con = url.openConnection();
-                    con.getInputStream().close(); // We don't care about the return value
-                  } catch (FileNotFoundException fnf) {
-                    System.out.println("Exception setting version, ignoring for now.");
-                    fnf.printStackTrace(System.out); // Let's not hide it though!
-                  }
-                  javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                      public void run() {
-                        pending.setVisible(false);
-                        selectDevice("WiFi", ipAddress); // This is run on the UI thread
-                      }});
-                } catch(Exception e) {
-                  System.out.println("It did not work." + e.toString());//return
-                  e.printStackTrace(System.out);
-                  javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                      public void run() {
-                        if (pending != null) pending.setVisible(false);
-                      }});
-                }}});
-          t.start();
-        }
-      });
-  }
-
-  private boolean showWirelessNotice(String code) {
-    String title = "Starting the wireless connection.";
-    String msgText = "Instructions:<br />\n<ul>\n<li>Start the App Inventor Companion App on your phone or tablet.</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press GO<br />&nbsp;<br /></li>\n<li>Press the Connect to Phone button below</li>\n</ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
-    ImageIcon qrcode = generateQRCode(code);
-    if (qrcode == null)
-      System.out.println ("qrcode is null");
-    else
-      System.out.println ("qrcode is not null");
-    return FeedbackReporter.showQRCode(msgText, qrcode);
+            // We have the IP address, we now send our version to the phone which
+            // starts the phone TelnetRepl listening. If this version doesn't match
+            // The phone will display an error and not listen. We don't need to know
+            // the result because if the phone fails to listen it will reject the
+            // connection that is attempted when we call selectDevice()
+            String curl = "http://" + ipAddress + ":8000/_version?version=" +
+              YaVersion.YOUNG_ANDROID_VERSION;
+            System.out.println("Connecting to: " + curl);
+            URL url = new URL(curl);
+            URLConnection con = null;
+            try {
+              con = url.openConnection();
+              con.getInputStream().close(); // We don't care about the return value
+            } catch (FileNotFoundException fnf) {
+              System.out.println("Exception setting version, ignoring for now.");
+              fnf.printStackTrace(System.out); // Let's not hide it though!
+            }
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  displayedCode.setVisible(false);
+                  selectDevice("WiFi", ipAddress); // This is run on the UI thread
+                }});
+          } catch(Exception e) {
+            System.out.println("It did not work." + e.toString());//return
+            e.printStackTrace(System.out);
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  if (displayedCode != null) displayedCode.setVisible(false);
+                }});
+          }}});
+    t.start();
   }
 
   private ImageIcon generateQRCode(String code) {
@@ -589,6 +571,21 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       System.out.println(e.getMessage());
     }
     return null;
+  }
+
+  private String fetchJsonString(String code) throws IOException {
+    URL url = new URL(rendezvousUrl + code); //
+    URLConnection con = url.openConnection();
+    System.out.println("Opening a URL connection");
+    InputStream in = con.getInputStream();
+    System.out.println("Well, input stream worked fine.");
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    System.out.println("BufferedReader worked fine.");
+    return (reader.readLine());
+  }
+
+  private void setStopWireless() {
+    stopWireless = true;
   }
 
   public void setPhoneManager(PhoneCommManager phoneManager) {
