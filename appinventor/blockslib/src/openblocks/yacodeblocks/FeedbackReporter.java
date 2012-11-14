@@ -269,11 +269,14 @@ public class FeedbackReporter extends JOptionPane {
 
   /**
    * ShowWirelessCodeDialog show a pop-up which displays the wireless
-   * code both in text and via a QR Code used to get the Wireless
-   * Devices ipAddress from the Rendezvous server (see code in
-   * DeviceReplCommController). It "Cancel" so the user can cancel the
-   * operation. Returns the dialog box so it can be dismissed when the
-   * connection is made.
+   * code both in text and via a QR Code. This code is entered into
+   * the Companion App (aka REPL App) which then posts to the
+   * rendezvous server this code along with the ipaddress of the
+   * phone.  While this dialog is displayed, the blocks editor polls
+   * the rendezvous server (in a separate thread) until it receives
+   * the ip address. If the user selected the "Cancel" button, the
+   * dialog is dismissed and the polling terminates.
+   *
    * @param msgText The code to show complete with explanation text.
    * @param qrcode The ImageIcon with the QR Code to display.
    * @return JDialog The actual displayed dialog
