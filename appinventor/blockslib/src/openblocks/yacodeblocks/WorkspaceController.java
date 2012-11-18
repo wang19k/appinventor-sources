@@ -69,7 +69,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 // keyword else other classes could cause deadlocks by synchronizing on the
 // WorkspaceController instance.
 public class WorkspaceController implements IWorkspaceController, WorkspaceListener {
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   // Save button constants
   private static final int BUTTON_WIDTH = 70;
