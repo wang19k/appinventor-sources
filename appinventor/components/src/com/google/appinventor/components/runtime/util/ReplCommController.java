@@ -102,7 +102,7 @@ public class ReplCommController {
     blocksEditorReplController.StartServer();
     everStarted = true;
     if (showAlert) {
-      (new Notifier(form)).ShowAlert("Listening to App Inventor. Your Blocks should display shortly.");
+      (new Notifier(form)).ShowAlert("Listening to App Inventor. Your App should display shortly.");
     }
   }
 

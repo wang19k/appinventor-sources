@@ -385,7 +385,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
   private boolean usingwifi = false; // Set to true when we are using a WiFi connection
 
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String MOUNT_COMMAND = "mount";
 

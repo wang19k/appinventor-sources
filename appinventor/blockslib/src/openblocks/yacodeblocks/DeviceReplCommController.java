@@ -500,14 +500,14 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
                 return;
               }
               Thread.sleep(1000); // Pause a second (so the total wait time for the first loop is really 5 seconds subsequent loops are 1 second
+              if (DEBUG)
+                System.out.println("DeviceReplCommController (WiFi Connect) looping count = " + count);
               jsonString = fetchJsonString(code);
-              System.out.println("JSON read the line");
             }
-            System.out.println("Cool, it stopped being NULL and connected");
             JSONObject jsonObject = new JSONObject(jsonString);
-            System.out.println("Made the JSON object");
             final String ipAddress = (String) jsonObject.get("ipaddr");
-            System.out.println("Got ipaddr = " + ipAddress);
+            if (DEBUG)
+              System.out.println("Got ipaddr = " + ipAddress);
 
             // We have the IP address, we now send our version to the phone which
             // starts the phone TelnetRepl listening. If this version doesn't match
@@ -516,7 +516,8 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
             // connection that is attempted when we call selectDevice()
             String curl = "http://" + ipAddress + ":8000/_version?version=" +
               YaVersion.YOUNG_ANDROID_VERSION;
-            System.out.println("Connecting to: " + curl);
+            if (DEBUG)
+              System.out.println("Connecting to: " + curl);
             URL url = new URL(curl);
             URLConnection con = null;
             try {
@@ -581,11 +582,8 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   private String fetchJsonString(String code) throws IOException {
     URL url = new URL(rendezvousUrl + code); //
     URLConnection con = url.openConnection();
-    System.out.println("Opening a URL connection");
     InputStream in = con.getInputStream();
-    System.out.println("Well, input stream worked fine.");
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-    System.out.println("BufferedReader worked fine.");
     return (reader.readLine());
   }
 
