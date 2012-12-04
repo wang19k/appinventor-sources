@@ -207,10 +207,8 @@ public class YaVersion {
   // - TEXTING_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 68:
   // - Phone Status Block was added.
-  // For YOUNG_ANDROID_VERSION 69:
-  // - IMAGEPICKER_COMPONENT_VERSION was incremented to 5.
 
-  public static final int YOUNG_ANDROID_VERSION = 69;
+  public static final int YOUNG_ANDROID_VERSION = 68;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -418,11 +416,7 @@ public class YaVersion {
   // - The method Open was added.
   // For IMAGEPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  // For IMAGEPICKER_COMPONENT_VERSION 5:
-  // - The ImagePath property was changed to Selection, and now returns a file path to
-  //   external storage
-  
-  public static final int IMAGEPICKER_COMPONENT_VERSION = 5;
+  public static final int IMAGEPICKER_COMPONENT_VERSION = 4;
 
   // For IMAGESPRITE_COMPONENT_VERSION 2:
   // - The Rotates property was added.
