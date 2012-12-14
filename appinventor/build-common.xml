@@ -346,6 +346,16 @@
   </target>
 
   <!-- ====================================================================
+       Barcode builds:
+       - build/barcode/Barcode.jar
+       ==================================================================== -->
+  
+  <target name="barcode_Barcode">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/barcode"
+         target="Barcode"/>
+  </target>
+
+  <!-- ====================================================================
        components_CommonConstants builds:
        - build/components/CommonConstants.jar
        - build/components/CommonConstants-gwt.jar

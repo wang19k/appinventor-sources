@@ -109,7 +109,7 @@
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,YailGenerator,components_AndroidRuntime,components_ComponentList">
+          depends="init,CopyToRunLibDir,YailGenerator,components_AndroidRuntime,barcode_Barcode,components_ComponentList">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -139,8 +139,10 @@
     <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
+    <copy toFile="${classes.files.dir}/core.jar" file="${lib.dir}/QRGenerator/core.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <copy toFile="${classes.files.dir}/Barcode.jar" file="${build.dir}/barcode/Barcode.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
@@ -342,7 +344,7 @@
   </path>
 
   <target name="BuildServerTests"
-          depends="common_CommonTestUtils,components_AndroidRuntime,BuildServer"
+          depends="common_CommonTestUtils,components_AndroidRuntime,barcode_Barcode,BuildServer"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="BuildServerTests"
                 aij-dir="${buildserver.pkg}/" >

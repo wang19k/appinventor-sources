@@ -315,6 +315,9 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
+      // Barcode Activity
+      out.write("    <activity android:name=\"com.google.zxing.client.android.CaptureActivity\" />\n");
+
       // ListPickerActivity
       out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +
           "android:configChanges=\"orientation|keyboardHidden\" " +
