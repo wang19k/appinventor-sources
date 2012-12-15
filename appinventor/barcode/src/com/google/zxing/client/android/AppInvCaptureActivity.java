@@ -131,7 +131,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
 
     Window window = getWindow();
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    LinearLayout viewLayout = new LinearLayout(this);
+    viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.HORIZONTAL);
     setContentView(viewLayout);
 
@@ -150,19 +150,23 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
 
     viewfinderView =  new ViewfinderView(this, null);
     viewfinderView.setCameraManager(cameraManager);
-    viewfinderView.setVisibility(View.VISIBLE);
+    viewLayout.addView(viewfinderView);
 
     resultView = new LinearLayout(this);
     resultView.setOrientation(LinearLayout.HORIZONTAL);
+    viewLayout.addView(resultView);
     statusView = new TextView(this);
+    resultView.addView(statusView);
 
     handler = null;
     lastResult = null;
 
     resetStatusView();
 
-    if (surfaceView == null)
+    if (surfaceView == null) {
       surfaceView = new SurfaceView(this);
+      viewLayout.addView(surfaceView);
+    }
     SurfaceHolder surfaceHolder = surfaceView.getHolder();
     if (hasSurface) {
       // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -223,7 +227,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     }
     cameraManager.closeDriver();
     if (!hasSurface) {
-      SurfaceView surfaceView = new SurfaceView(this);
+      surfaceView = new SurfaceView(this);
       SurfaceHolder surfaceHolder = surfaceView.getHolder();
       surfaceHolder.removeCallback(this);
     }
