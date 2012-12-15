@@ -111,6 +111,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private String characterSet;
   private BeepManager beepManager;
   private LinearLayout viewLayout;
+  private SurfaceView surfaceView;
 
   ViewfinderView getViewfinderView() {
     return viewfinderView;
@@ -149,6 +150,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
 
     viewfinderView =  new ViewfinderView(this, null);
     viewfinderView.setCameraManager(cameraManager);
+    viewfinderView.setVisibility(View.VISIBLE);
 
     resultView = new LinearLayout(this);
     resultView.setOrientation(LinearLayout.HORIZONTAL);
@@ -159,7 +161,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
 
     resetStatusView();
 
-    SurfaceView surfaceView = new SurfaceView(this);
+    if (surfaceView == null)
+      surfaceView = new SurfaceView(this);
     SurfaceHolder surfaceHolder = surfaceView.getHolder();
     if (hasSurface) {
       // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -170,6 +173,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
       surfaceHolder.addCallback(this);
       surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
+
+    surfaceView.setVisibility(View.VISIBLE);
 
     Intent intent = getIntent();
 
@@ -516,6 +521,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   }
 
   private void initCamera(SurfaceHolder surfaceHolder) {
+    Log.w(TAG, "initCamera() was called");
     if (surfaceHolder == null) {
       throw new IllegalStateException("No SurfaceHolder provided");
     }
