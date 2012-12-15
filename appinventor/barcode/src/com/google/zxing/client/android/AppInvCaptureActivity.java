@@ -54,6 +54,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -111,6 +112,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private String characterSet;
   private BeepManager beepManager;
   private LinearLayout viewLayout;
+  private FrameLayout frameLayout;
   private SurfaceView surfaceView;
 
   ViewfinderView getViewfinderView() {
@@ -133,7 +135,13 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     viewLayout = new LinearLayout(this);
     viewLayout.setOrientation(LinearLayout.HORIZONTAL);
-    setContentView(viewLayout);
+    frameLayout = new FrameLayout(this);
+    frameLayout.addView(viewLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+	ViewGroup.LayoutParams.FILL_PARENT));
+    frameLayout.setBackgroundColor(0xFFFFFFFF); // COLOR_WHITE XXX
+
+    setContentView(frameLayout);
+    frameLayout.requestLayout();
 
     hasSurface = false;
   }
@@ -150,11 +158,11 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
 
     viewfinderView =  new ViewfinderView(this, null);
     viewfinderView.setCameraManager(cameraManager);
-    viewLayout.addView(viewfinderView);
+    frameLayout.addView(viewfinderView);
 
     resultView = new LinearLayout(this);
     resultView.setOrientation(LinearLayout.HORIZONTAL);
-    viewLayout.addView(resultView);
+    frameLayout.addView(resultView);
     statusView = new TextView(this);
     resultView.addView(statusView);
 
