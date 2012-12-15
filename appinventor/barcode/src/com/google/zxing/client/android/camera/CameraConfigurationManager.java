@@ -25,8 +25,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
-import com.google.zxing.client.android.PreferencesActivity;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,13 +90,11 @@ final class CameraConfigurationManager {
       Log.w(TAG, "In camera config safe mode -- most settings will not be honored");
     }
 
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-    initializeTorch(parameters, prefs, safeMode);
+    initializeTorch(parameters, safeMode);
 
     String focusMode = null;
-    if (prefs.getBoolean(PreferencesActivity.KEY_AUTO_FOCUS, true)) {
-      if (safeMode || prefs.getBoolean(PreferencesActivity.KEY_DISABLE_CONTINUOUS_FOCUS, false)) {
+    if (/* prefs.getBoolean(PreferencesActivity.KEY_AUTO_FOCUS, */true) {
+      if (safeMode) {
         focusMode = findSettableValue(parameters.getSupportedFocusModes(),
                                       Camera.Parameters.FOCUS_MODE_AUTO);
       } else {
@@ -134,18 +130,11 @@ final class CameraConfigurationManager {
     Camera.Parameters parameters = camera.getParameters();
     doSetTorch(parameters, newSetting, false);
     camera.setParameters(parameters);
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-    boolean currentSetting = prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false);
-    if (currentSetting != newSetting) {
-      SharedPreferences.Editor editor = prefs.edit();
-      editor.putBoolean(PreferencesActivity.KEY_FRONT_LIGHT, newSetting);
-      editor.commit();
-    }
+    boolean currentSetting = false;
   }
 
-  private void initializeTorch(Camera.Parameters parameters, SharedPreferences prefs, boolean safeMode) {
-    boolean currentSetting = prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false);
-    doSetTorch(parameters, currentSetting, safeMode);
+  private void initializeTorch(Camera.Parameters parameters, boolean safeMode) {
+    doSetTorch(parameters, false, safeMode);
   }
 
   private void doSetTorch(Camera.Parameters parameters, boolean newSetting, boolean safeMode) {

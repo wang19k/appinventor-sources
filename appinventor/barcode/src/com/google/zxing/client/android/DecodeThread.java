@@ -40,12 +40,12 @@ final class DecodeThread extends Thread {
 
   public static final String BARCODE_BITMAP = "barcode_bitmap";
 
-  private final CaptureActivity activity;
+  private final AppInvCaptureActivity activity;
   private final Map<DecodeHintType,Object> hints;
   private Handler handler;
   private final CountDownLatch handlerInitLatch;
 
-  DecodeThread(CaptureActivity activity,
+  DecodeThread(AppInvCaptureActivity activity,
                Collection<BarcodeFormat> decodeFormats,
                String characterSet,
                ResultPointCallback resultPointCallback) {
@@ -59,13 +59,13 @@ final class DecodeThread extends Thread {
     if (decodeFormats == null || decodeFormats.isEmpty()) {
       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
       decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-      if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_1D, false)) {
+      if (true) {
         decodeFormats.addAll(DecodeFormatManager.ONE_D_FORMATS);
       }
-      if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_QR, false)) {
+      if (true) {
         decodeFormats.addAll(DecodeFormatManager.QR_CODE_FORMATS);
       }
-      if (prefs.getBoolean(PreferencesActivity.KEY_DECODE_DATA_MATRIX, false)) {
+      if (false) {
         decodeFormats.addAll(DecodeFormatManager.DATA_MATRIX_FORMATS);
       }
     }

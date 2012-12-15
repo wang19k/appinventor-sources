@@ -17,8 +17,6 @@
 package com.google.zxing.client.android;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -159,20 +157,11 @@ public final class LocaleManager {
 
   public static String getTranslatedAssetLanguage() {
     String language = getSystemLanguage();
-    return TRANSLATED_HELP_ASSET_LANGUAGES.contains(language) ? language : DEFAULT_LANGUAGE;
+    return (language);
   }
 
   private static String doGetTLD(Map<String,String> map, Context context) {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-    String countryOverride = prefs.getString(PreferencesActivity.KEY_SEARCH_COUNTRY, null);
-    if (countryOverride != null && countryOverride.length() > 0 && !"-".equals(countryOverride)) {
-      String tld = map.get(countryOverride);
-      if (tld != null) {
-        return tld;
-      }
-    }
-    String tld = map.get(getSystemCountry());
-    return tld == null ? DEFAULT_TLD : tld;
+    return DEFAULT_TLD;
   }
 
 }

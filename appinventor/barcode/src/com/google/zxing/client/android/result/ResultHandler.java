@@ -20,9 +20,6 @@ import com.google.zxing.Result;
 import com.google.zxing.client.android.Contents;
 import com.google.zxing.client.android.Intents;
 import com.google.zxing.client.android.LocaleManager;
-import com.google.zxing.client.android.PreferencesActivity;
-import com.google.zxing.client.android.R;
-import com.google.zxing.client.android.book.SearchBookContentsActivity;
 import com.google.zxing.client.result.ParsedResult;
 import com.google.zxing.client.result.ParsedResultType;
 import com.google.zxing.client.result.ResultParser;
@@ -116,8 +113,6 @@ public abstract class ResultHandler {
 
     // Make sure the Shopper button is hidden by default. Without this, scanning a product followed
     // by a QR Code would leave the button on screen among the QR Code actions.
-    View shopperButton = activity.findViewById(R.id.shopper_button);
-    shopperButton.setVisibility(View.GONE);
   }
 
   public ParsedResult getResult() {
@@ -171,9 +166,6 @@ public abstract class ResultHandler {
    * @param listener The on click listener to install for this button.
    */
   void showGoogleShopperButton(View.OnClickListener listener) {
-    View shopperButton = activity.findViewById(R.id.shopper_button);
-    shopperButton.setVisibility(View.VISIBLE);
-    shopperButton.setOnClickListener(listener);
   }
 
   /**
@@ -307,8 +299,8 @@ public abstract class ResultHandler {
   }
 
   final void shareByEmail(String contents) {
-    sendEmailFromUri("mailto:", null, activity.getString(R.string.msg_share_subject_line),
-        contents);
+    // sendEmailFromUri("mailto:", null, activity.getString(R.string.msg_share_subject_line),
+    //     contents);
   }
 
   final void sendEmail(String address, String subject, String body) {
@@ -328,8 +320,8 @@ public abstract class ResultHandler {
   }
 
   final void shareBySMS(String contents) {
-    sendSMSFromUri("smsto:", activity.getString(R.string.msg_share_subject_line) + ":\n" +
-        contents);
+    // sendSMSFromUri("smsto:", activity.getString(R.string.msg_share_subject_line) + ":\n" +
+    //     contents);
   }
 
   final void sendSMS(String phoneNumber, String body) {
@@ -349,16 +341,16 @@ public abstract class ResultHandler {
   }
 
   final void sendMMSFromUri(String uri, String subject, String body) {
-    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
-    // The Messaging app needs to see a valid subject or else it will treat this an an SMS.
-    if (subject == null || subject.length() == 0) {
-      putExtra(intent, "subject", activity.getString(R.string.msg_default_mms_subject));
-    } else {
-      putExtra(intent, "subject", subject);
-    }
-    putExtra(intent, "sms_body", body);
-    intent.putExtra("compose_mode", true);
-    launchIntent(intent);
+    // Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse(uri));
+    // // The Messaging app needs to see a valid subject or else it will treat this an an SMS.
+    // if (subject == null || subject.length() == 0) {
+    //   putExtra(intent, "subject", activity.getString(R.string.msg_default_mms_subject));
+    // } else {
+    //   putExtra(intent, "subject", subject);
+    // }
+    // putExtra(intent, "sms_body", body);
+    // intent.putExtra("compose_mode", true);
+    // launchIntent(intent);
   }
 
   final void dialPhone(String phoneNumber) {
@@ -406,10 +398,10 @@ public abstract class ResultHandler {
   }
 
   final void searchBookContents(String isbnOrUrl) {
-    Intent intent = new Intent(Intents.SearchBookContents.ACTION);
-    intent.setClassName(activity, SearchBookContentsActivity.class.getName());
-    putExtra(intent, Intents.SearchBookContents.ISBN, isbnOrUrl);
-    launchIntent(intent);
+    // Intent intent = new Intent(Intents.SearchBookContents.ACTION);
+    // intent.setClassName(activity, SearchBookContentsActivity.class.getName());
+    // putExtra(intent, Intents.SearchBookContents.ISBN, isbnOrUrl);
+    // launchIntent(intent);
   }
 
   final void openURL(String url) {
@@ -436,28 +428,28 @@ public abstract class ResultHandler {
 
   final void openGoogleShopper(String query) {
 
-    // Construct Intent to launch Shopper
-    Intent intent = new Intent(Intent.ACTION_SEARCH);
-    intent.setClassName(GOOGLE_SHOPPER_PACKAGE, GOOGLE_SHOPPER_ACTIVITY);
-    intent.putExtra(SearchManager.QUERY, query);
+    // // Construct Intent to launch Shopper
+    // Intent intent = new Intent(Intent.ACTION_SEARCH);
+    // intent.setClassName(GOOGLE_SHOPPER_PACKAGE, GOOGLE_SHOPPER_ACTIVITY);
+    // intent.putExtra(SearchManager.QUERY, query);
 
-    // Is it available?
-    PackageManager pm = activity.getPackageManager();
-    Collection<?> availableApps = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+    // // Is it available?
+    // PackageManager pm = activity.getPackageManager();
+    // Collection<?> availableApps = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 
-    if (availableApps != null && !availableApps.isEmpty()) {
-      // If something can handle it, start it
-      activity.startActivity(intent);
-    } else {
-      // Otherwise offer to install it from Market.
-      AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-      builder.setTitle(R.string.msg_google_shopper_missing);
-      builder.setMessage(R.string.msg_install_google_shopper);
-      builder.setIcon(R.drawable.shopper_icon);
-      builder.setPositiveButton(R.string.button_ok, shopperMarketListener);
-      builder.setNegativeButton(R.string.button_cancel, null);
-      builder.show();
-    }
+    // if (availableApps != null && !availableApps.isEmpty()) {
+    //   // If something can handle it, start it
+    //   activity.startActivity(intent);
+    // } else {
+    //   // Otherwise offer to install it from Market.
+    //   AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    //   builder.setTitle(R.string.msg_google_shopper_missing);
+    //   builder.setMessage(R.string.msg_install_google_shopper);
+    //   builder.setIcon(R.drawable.shopper_icon);
+    //   builder.setPositiveButton(R.string.button_ok, shopperMarketListener);
+    //   builder.setNegativeButton(R.string.button_cancel, null);
+    //   builder.show();
+    // }
   }
 
   /**
@@ -481,11 +473,11 @@ public abstract class ResultHandler {
     try {
       rawLaunchIntent(intent);
     } catch (ActivityNotFoundException e) {
-      AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-      builder.setTitle(R.string.app_name);
-      builder.setMessage(R.string.msg_intent_failed);
-      builder.setPositiveButton(R.string.button_ok, null);
-      builder.show();
+      // AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+      // builder.setTitle(R.string.app_name);
+      // builder.setMessage(R.string.msg_intent_failed);
+      // builder.setPositiveButton(R.string.button_ok, null);
+      // builder.show();
     }
   }
 
@@ -496,13 +488,14 @@ public abstract class ResultHandler {
   }
 
   private String parseCustomSearchURL() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-    String customProductSearch = prefs.getString(PreferencesActivity.KEY_CUSTOM_PRODUCT_SEARCH,
-        null);
-    if (customProductSearch != null && customProductSearch.trim().length() == 0) {
-      return null;
-    }
-    return customProductSearch;
+    // SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+    // String customProductSearch = prefs.getString(PreferencesActivity.KEY_CUSTOM_PRODUCT_SEARCH,
+    //     null);
+    // if (customProductSearch != null && customProductSearch.trim().length() == 0) {
+    //   return null;
+    // }
+    // return customProductSearch;
+    return null;
   }
 
   String fillInCustomSearchURL(String text) {

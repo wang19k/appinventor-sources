@@ -44,7 +44,7 @@ public final class CaptureActivityHandler extends Handler {
 
   private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
-  private final CaptureActivity activity;
+  private final AppInvCaptureActivity activity;
   private final DecodeThread decodeThread;
   private State state;
   private final CameraManager cameraManager;
@@ -55,7 +55,7 @@ public final class CaptureActivityHandler extends Handler {
     DONE
   }
 
-  CaptureActivityHandler(CaptureActivity activity,
+  CaptureActivityHandler(AppInvCaptureActivity activity,
                          Collection<BarcodeFormat> decodeFormats,
                          String characterSet,
                          CameraManager cameraManager) {
@@ -74,11 +74,11 @@ public final class CaptureActivityHandler extends Handler {
   @Override
   public void handleMessage(Message message) {
     switch (message.what) {
-      case R.id.restart_preview:
+      case Constants.restart_preview:
         Log.d(TAG, "Got restart preview message");
         restartPreviewAndDecode();
         break;
-      case R.id.decode_succeeded:
+      case Constants.decode_succeeded:
         Log.d(TAG, "Got decode succeeded message");
         state = State.SUCCESS;
         Bundle bundle = message.getData();
@@ -86,52 +86,22 @@ public final class CaptureActivityHandler extends Handler {
             (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);
         activity.handleDecode((Result) message.obj, barcode);
         break;
-      case R.id.decode_failed:
+      case Constants.decode_failed:
         // We're decoding as fast as possible, so when one decode fails, start another.
         state = State.PREVIEW;
-        cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+        cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constants.decode);
         break;
-      case R.id.return_scan_result:
+      case Constants.return_scan_result:
         Log.d(TAG, "Got return scan result message");
         activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
         activity.finish();
-        break;
-      case R.id.launch_product_query:
-        Log.d(TAG, "Got product query message");
-        String url = (String) message.obj;
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-        intent.setData(Uri.parse(url));
-
-        ResolveInfo resolveInfo =
-            activity.getPackageManager().resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        String browserPackageName = null;
-        if (resolveInfo.activityInfo != null) {
-          browserPackageName = resolveInfo.activityInfo.packageName;
-          Log.d(TAG, "Using browser in package " + browserPackageName);
-        }
-
-        // Needed for default Android browser only apparently
-        if ("com.android.browser".equals(browserPackageName)) {
-          intent.setPackage(browserPackageName);
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          intent.putExtra(Browser.EXTRA_APPLICATION_ID, browserPackageName);
-        }
-
-        try {
-          activity.startActivity(intent);
-        } catch (ActivityNotFoundException anfe) {
-          Log.w(TAG, "Can't find anything to handle VIEW of URI " + url);
-        }
-        break;
     }
   }
 
   public void quitSynchronously() {
     state = State.DONE;
     cameraManager.stopPreview();
-    Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
+    Message quit = Message.obtain(decodeThread.getHandler(), Constants.quit);
     quit.sendToTarget();
     try {
       // Wait at most half a second; should be enough time, and onPause() will timeout quickly
@@ -141,14 +111,14 @@ public final class CaptureActivityHandler extends Handler {
     }
 
     // Be absolutely sure we don't send any queued up messages
-    removeMessages(R.id.decode_succeeded);
-    removeMessages(R.id.decode_failed);
+    removeMessages(Constants.decode_succeeded);
+    removeMessages(Constants.decode_failed);
   }
 
   private void restartPreviewAndDecode() {
     if (state == State.SUCCESS) {
       state = State.PREVIEW;
-      cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+      cameraManager.requestPreviewFrame(decodeThread.getHandler(), Constants.decode);
       activity.drawViewfinder();
     }
   }

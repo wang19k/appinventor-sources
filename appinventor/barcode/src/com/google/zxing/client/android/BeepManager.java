@@ -29,7 +29,7 @@ import android.util.Log;
 import java.io.IOException;
 
 /**
- * Manages beeps and vibrations for {@link CaptureActivity}.
+ * Manages beeps and vibrations for {@link AppInvCaptureActivity}.
  */
 final class BeepManager {
 
@@ -46,19 +46,6 @@ final class BeepManager {
   BeepManager(Activity activity) {
     this.activity = activity;
     this.mediaPlayer = null;
-    updatePrefs();
-  }
-
-  void updatePrefs() {
-    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-    playBeep = shouldBeep(prefs, activity);
-    vibrate = prefs.getBoolean(PreferencesActivity.KEY_VIBRATE, false);
-    if (playBeep && mediaPlayer == null) {
-      // The volume on STREAM_SYSTEM is not adjustable, and users found it too loud,
-      // so we now play on the music stream.
-      activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
-      mediaPlayer = buildMediaPlayer(activity);
-    }
   }
 
   void playBeepSoundAndVibrate() {
@@ -72,39 +59,39 @@ final class BeepManager {
   }
 
   private static boolean shouldBeep(SharedPreferences prefs, Context activity) {
-    boolean shouldPlayBeep = prefs.getBoolean(PreferencesActivity.KEY_PLAY_BEEP, true);
-    if (shouldPlayBeep) {
+    if (true) {
       // See if sound settings overrides this
       AudioManager audioService = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-      if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
-        shouldPlayBeep = false;
-      }
+      // if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+      //   shouldPlayBeep = false;
+      // }
     }
-    return shouldPlayBeep;
+    return false;
   }
 
   private static MediaPlayer buildMediaPlayer(Context activity) {
-    MediaPlayer mediaPlayer = new MediaPlayer();
-    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-    // When the beep has finished playing, rewind to queue up another one.
-    mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-      @Override
-      public void onCompletion(MediaPlayer player) {
-        player.seekTo(0);
-      }
-    });
+    // MediaPlayer mediaPlayer = new MediaPlayer();
+    // mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+    // // When the beep has finished playing, rewind to queue up another one.
+    // mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+    //   @Override
+    //   public void onCompletion(MediaPlayer player) {
+    //     player.seekTo(0);
+    //   }
+    // });
 
-    AssetFileDescriptor file = activity.getResources().openRawResourceFd(R.raw.beep);
-    try {
-      mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
-      file.close();
-      mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
-      mediaPlayer.prepare();
-    } catch (IOException ioe) {
-      Log.w(TAG, ioe);
-      mediaPlayer = null;
-    }
-    return mediaPlayer;
+    // AssetFileDescriptor file = activity.getResources().openRawResourceFd(R.raw.beep);
+    // try {
+    //   mediaPlayer.setDataSource(file.getFileDescriptor(), file.getStartOffset(), file.getLength());
+    //   file.close();
+    //   mediaPlayer.setVolume(BEEP_VOLUME, BEEP_VOLUME);
+    //   mediaPlayer.prepare();
+    // } catch (IOException ioe) {
+    //   Log.w(TAG, ioe);
+    //   mediaPlayer = null;
+    // }
+    // return mediaPlayer;
+    return null;
   }
 
 }

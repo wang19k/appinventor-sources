@@ -316,7 +316,13 @@ public final class Compiler {
       }
 
       // Barcode Activity
-      out.write("    <activity android:name=\"com.google.zxing.client.android.CaptureActivity\" />\n");
+      out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
+      out.write("              android:screenOrientation=\"landscape\"\n");
+//      out.write("              android:clearTaskOnLaunch=\"true\"\n");
+      out.write("              android:stateNotNeeded=\"true\"\n");
+      out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
+      out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
+      out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
 
       // ListPickerActivity
       out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +

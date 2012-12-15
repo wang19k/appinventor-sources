@@ -17,8 +17,9 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.content.ComponentName;
 import android.util.Log;
 
 /**
@@ -38,6 +39,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
 
   private static final String SCAN_INTENT = "com.google.zxing.client.android.SCAN";
+  private static final String LOCAL_SCAN = "com.google.zxing.client.android.AppInvCaptureActivity";
   private static final String SCANNER_RESULT_NAME = "SCAN_RESULT";
   private String result = "";
   private final ComponentContainer container;
@@ -72,12 +74,17 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   @SimpleFunction
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
+    if (true) {
+      String packageName = container.$form().getPackageName();
+      intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
+    }
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);
     }
     try {
       container.$context().startActivityForResult(intent, requestCode);
     } catch (ActivityNotFoundException e) {
+      e.printStackTrace();
       container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
         ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
     }
