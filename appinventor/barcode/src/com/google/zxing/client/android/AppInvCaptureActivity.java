@@ -356,7 +356,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     if (points != null && points.length > 0) {
       Canvas canvas = new Canvas(barcode);
       Paint paint = new Paint();
-      paint.setColor(getResources().getColor(0xc099cc00));
+      paint.setColor(0xc099cc00);
       if (points.length == 2) {
         paint.setStrokeWidth(4.0f);
         drawLine(canvas, paint, points[0], points[1]);
@@ -473,7 +473,7 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     // barcode was found (e.g. contact info) rather than the full contents, which they won't
     // have time to read.
     if (resultDurationMS > 0) {
-      statusView.setText(getString(resultHandler.getDisplayTitle()));
+      statusView.setText("Barcode Read!");
     }
 
     if (copyToClipboard && !resultHandler.areContentsSecure()) {
