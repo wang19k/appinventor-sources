@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 /*
  * Copyright (C) 2012 ZXing authors
  *
@@ -19,6 +20,7 @@ package com.google.zxing.client.android.camera.open;
 /* import android.annotation.TargetApi; */
 import android.hardware.Camera;
 import android.util.Log;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.io.IOException;
@@ -40,44 +42,46 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
    */
   @Override
   public Camera open() {
-    
+
     // We have to use reflection because we are currently linked against Froyo (2.2).
 
-    // Class AndroidCamera;
-    // try {
-    // 	AndroidCamera = Class.forName("android.hardware.Camera");
-    // } catch (ClassNotFoundException e) {
-    // 	return null;
-    // }
+    try {
 
-    // int numCameras = (int) invokeStaticMethod(getMethod(AndroidCamera, "getNumberOfCameras"));
-    // if (numCameras == 0) {
-    //   Log.w(TAG, "No cameras!");
-    //   return null;
-    // }
+      Class AndroidCamera;
+      AndroidCamera = Class.forName("android.hardware.Camera");
 
-    // int index = 0;
-    // while (index < numCameras) {
-    //   Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-    //   Camera.getCameraInfo(index, cameraInfo);
-    //   if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-    //     break;
-    //   }
-    //   index++;
-    // }
-    
-    // Camera camera;
-    // if (index < numCameras) {
-    //   Log.i(TAG, "Opening camera #" + index);
-    //   camera = Camera.open(index);
-    // } else {
-    //   Log.i(TAG, "No camera facing back; returning camera #0");
-    //   camera = Camera.open(0);
-    // }
+      int numCameras = ((Integer) invokeStaticMethod(getMethod(AndroidCamera, "getNumberOfCameras"))).intValue();
+      if (numCameras == 0) {
+        Log.w(TAG, "No cameras!");
+        return null;
+      }
 
-    Camera camera = Camera.open(); // Foo!
+      int index = 0;
+      Class CameraInfo = Class.forName("android.hardware.Camera$CameraInfo");
 
-    return camera;
+      Field facingField = CameraInfo.getField("facing");
+      while (index < numCameras) {
+        Object cameraInfo = CameraInfo.getConstructor().newInstance();
+        AndroidCamera.getMethod("getCameraInfo", int.class, CameraInfo).invoke(null, index, cameraInfo);
+        if (facingField.getInt(cameraInfo) == CameraInfo.getDeclaredField("CAMERA_FACING_BACK").getInt(CameraInfo))
+          break;
+        index++;
+      }
+
+      if (index < numCameras) {
+        Log.i(TAG, "Opening camera #" + index);
+      } else {
+        Log.i(TAG, "No camera facing back; returning camera #0");
+        index = 0;
+      }
+
+      Camera camera = (Camera) getMethod(AndroidCamera, "open", int.class).invoke(null, index);
+      return camera;
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
   }
 
   // Reflection helper methods
@@ -131,7 +135,7 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
   }
 
   private static Object invokeMethodThrowsIllegalArgumentException(Method method,
-      Object thisObject, Object... args) throws IllegalArgumentException {
+    Object thisObject, Object... args) throws IllegalArgumentException {
     try {
       return method.invoke(thisObject, args);
     } catch (IllegalAccessException e) {
@@ -150,7 +154,7 @@ public final class GingerbreadOpenCameraInterface implements OpenCameraInterface
   }
 
   private static Object invokeMethodThrowsIOException(Method method, Object thisObject,
-      Object... args) throws IOException {
+    Object... args) throws IOException {
     try {
       return method.invoke(thisObject, args);
     } catch (IllegalAccessException e) {
