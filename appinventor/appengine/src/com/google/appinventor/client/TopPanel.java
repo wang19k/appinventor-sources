@@ -42,10 +42,7 @@ public class TopPanel extends Composite {
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor wireless test. Check <a href=\"http://appinventor.mit.edu/testwirelessdoc/index.html\" target=\"_blank\">Wireless Documentation</a> for information on this test.<br/><font color=red>WARNING: This is a test server. It will not always be available, please backup your projects!</font><br/><b><a href=\"http://appinventor.mit.edu/testwirelessdoc/news.html\" target=\"_blank\">Read our NEWS Update.</a></b>");
-
-    //This is an experimental version of App Inventor. "
-    //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
+  private final HTML welcome = new HTML("<font color=red>The App Inventor wireless test is over. This server will be <b>shutting down</b> soon. Please move your projects to our <a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">Production Server</a>. More info in our <a href=\"http://appinventor.mit.edu/testwirelessdoc/news.html\" target=\"_blank\">News Page</a>.");
 
   private HTML divider() {
     return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
