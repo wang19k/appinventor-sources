@@ -99,8 +99,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
   private CaptureActivityHandler handler;
   private Result savedResultToShow;
   private ViewfinderView viewfinderView;
-  private TextView statusView;
-  private LinearLayout resultView;
   private Result lastResult;
   private boolean hasSurface;
   private boolean copyToClipboard;
@@ -160,16 +158,8 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     viewfinderView.setCameraManager(cameraManager);
     frameLayout.addView(viewfinderView);
 
-    resultView = new LinearLayout(this);
-    resultView.setOrientation(LinearLayout.HORIZONTAL);
-    frameLayout.addView(resultView);
-    statusView = new TextView(this);
-    resultView.addView(statusView);
-
     handler = null;
     lastResult = null;
-
-    resetStatusView();
 
     if (surfaceView == null) {
       surfaceView = new SurfaceView(this);
@@ -214,12 +204,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
             cameraManager.setManualFramingRect(width, height);
           }
         }
-        
-        String customPromptMessage = intent.getStringExtra(Intents.Scan.PROMPT_MESSAGE);
-        if (customPromptMessage != null) {
-          statusView.setText(customPromptMessage);
-        }
-
       }
 
       characterSet = intent.getStringExtra(Intents.Scan.CHARACTER_SET);
@@ -469,13 +453,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
                                                   DEFAULT_INTENT_RESULT_DURATION_MS);
     }
 
-    // Since this message will only be shown for a second, just tell the user what kind of
-    // barcode was found (e.g. contact info) rather than the full contents, which they won't
-    // have time to read.
-    if (resultDurationMS > 0) {
-      statusView.setText("Barcode Read!");
-    }
-
     if (copyToClipboard && !resultHandler.areContentsSecure()) {
       ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
       CharSequence text = resultHandler.getDisplayContents();
@@ -572,15 +549,6 @@ public final class AppInvCaptureActivity extends Activity implements SurfaceHold
     if (handler != null) {
       handler.sendEmptyMessageDelayed(Constants.restart_preview, delayMS);
     }
-    resetStatusView();
-  }
-
-  private void resetStatusView() {
-    resultView.setVisibility(View.GONE);
-    statusView.setText("");
-    statusView.setVisibility(View.VISIBLE);
-    viewfinderView.setVisibility(View.VISIBLE);
-    lastResult = null;
   }
 
   public void drawViewfinder() {
