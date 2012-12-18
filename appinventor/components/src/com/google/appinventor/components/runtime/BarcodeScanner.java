@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
@@ -14,8 +15,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -44,14 +47,16 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   private static final String LOCAL_SCAN = "com.google.zxing.client.android.AppInvCaptureActivity";
   private static final String SCANNER_RESULT_NAME = "SCAN_RESULT";
   private String result = "";
+  private boolean useExternalScanner = true;
   private final ComponentContainer container;
+
 
   /* Used to identify the call to startActivityForResult. Will be passed back into the
   resultReturned() callback method. */
   private int requestCode;
 
   /**
-   * Creates a Phone Call component.
+   * Creates a Bar Code scanning component.
    *
    * @param container container, component will be placed in
    */
@@ -76,7 +81,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   @SimpleFunction
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
-    if (true) {
+    if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
       String packageName = container.$form().getPackageName();
       intent.setComponent(new ComponentName(packageName, "com.google.zxing.client.android.AppInvCaptureActivity"));
     }
@@ -111,6 +116,37 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   @SimpleEvent
   public void AfterScan(String result) {
     EventDispatcher.dispatchEvent(this, "AfterScan", result);
+  }
+
+  /**
+   * Gets whether or not you want to use an external scanning program to
+   *  scan barcodes.
+   *
+   * @return 'true' or 'false' depending on whether or not you want to use
+   *         an external scanning program.
+   */
+
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+    description = "If true App Inventor will first look for an external scanning" +
+    " program such as \"Bar Code Scanner\" before using its own internal bar " +
+    "code scanning code.")
+  public boolean UseExternalScanner() {
+    return useExternalScanner;
+  }
+
+  /**
+   * Set whether or not you wish to use an External Scanning program such as
+   * Bar Code Scanner. If false a version of ZXing integrated into App Inventor
+   * Will be used.
+   *
+   * @param useExternalScanner  Set true to use an external scanning program,
+   *                            false to use internal copy of ZXing.
+   *
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @SimpleProperty()
+  public void UseExternalScanner(boolean useExternalScanner) {
+    this.useExternalScanner = useExternalScanner;
   }
 
 }

@@ -394,6 +394,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Ball")) {
         blkCompVersion = upgradeBallBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("BarcodeScanner")) {
+        blkCompVersion = upgradeBarcodeScannerBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("BluetoothClient")) {
         blkCompVersion = upgradeBluetoothClientBlocks(blkCompVersion, componentName);
 
@@ -560,6 +563,15 @@ public class BlockSaveFile {
     return blkCompVersion;
   }
 
+  private int upgradeBarcodeScannerBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // No changes required
+      // The UseExternalScanner property was added.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+
   private int upgradeBallBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The PointTowards method was added (for all sprites).
@@ -577,7 +589,7 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
-    
+
     if (blkCompVersion < 5) {
       // speed and hearing were added to the Flung event (for all sprites)
       // speed and heading were added to the Flung event
@@ -716,7 +728,7 @@ public class BlockSaveFile {
       // The TouchUp and TouchDown events were added.
       blkCompVersion = 6;
     }
-    
+
     if (blkCompVersion < 7) {
       // speed and heading were added to the Flung event
       final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
@@ -725,7 +737,7 @@ public class BlockSaveFile {
           "from the drawer";
       for (Element block : getAllMatchingGenusBlocks("Canvas-Flung")) {
         markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
-      }    
+      }
       blkCompVersion = 7;
     }
     return blkCompVersion;
@@ -827,7 +839,7 @@ public class BlockSaveFile {
     }
     return blkCompVersion;
   }
-  
+
   private int upgradeHorizontalArrangementBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
@@ -859,7 +871,7 @@ public class BlockSaveFile {
       handlePropertyRename(componentName, "ImagePath", "Selection");
       // Blocks related to this component have now been upgraded to version 5.
       blkCompVersion = 5;
-    } 
+    }
     return blkCompVersion;
   }
 
@@ -895,9 +907,9 @@ public class BlockSaveFile {
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
         }
       blkCompVersion = 6;
-    }  
-    
-    
+    }
+
+
     return blkCompVersion;
   }
 
@@ -1059,7 +1071,7 @@ public class BlockSaveFile {
     }
     return blkCompVersion;
   }
-  
+
   private int upgradeTextingBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // No changes required
