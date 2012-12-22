@@ -120,7 +120,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
 
   /**
    * Gets whether or not you want to use an external scanning program to
-   *  scan barcodes.
+   * scan barcodes.
    *
    * @return 'true' or 'false' depending on whether or not you want to use
    *         an external scanning program.
