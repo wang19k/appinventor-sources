@@ -50,7 +50,7 @@ public final class AppInventorFeatures {
   public static boolean showSplashScreen() {
     // Set this to true to display a splash screen with an informative message
     // each time MIT App Inventor is started. See Ode.java
-    return false;
+    return true;
   }
 
 }

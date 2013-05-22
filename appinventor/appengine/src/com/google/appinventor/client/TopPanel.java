@@ -161,6 +161,8 @@ public class TopPanel extends Composite {
     //    rightMiddleLinks.add(aboutButton);
     aboutButton.setStyleName("gwt-TitleLabel");
     middleLinks.add(aboutButton);
+    Anchor feedback = new Anchor("Feedback", "http://appinventor.mit.edu/newblocks/feedback.html", "_blank");
+    middleLinks.add(feedback);
 
     Label spacer = new Label("|");
     //    spacer.setWidth("50px");
