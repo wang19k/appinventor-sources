@@ -25,16 +25,30 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class TopPanel extends Composite {
-  // Strings for links and dropdown menus:
-  private final DropDownButton accountButton;
-  private final String WIDGET_NAME_SIGN_OUT = "Signout";
-  private final String WIDGET_NAME_USER = "User";
+  private static final String KNOWN_ISSUES_LINK_URL =
+    Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
+  private static final String RELEASE_NOTES_LINK_URL =
+    Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
   private static final String SIGNOUT_URL = "/ode/_logout";
+
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
+
+  private HTML divider() {
+    return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
+  }
+
+  private final DropDownButton accountButton;
+
   final Ode ode = Ode.getInstance();
+
+  // Strings for Drop Down Menus:
+  private final String WIDGET_NAME_MY_PROJECTS = "myProjects";
+  private final String WIDGET_NAME_FEEDBACK = "reportissue";
+  private final String WIDGET_NAME_SIGN_OUT = "signout";
+  private final String WIDGET_NAME_USER = "user";
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -61,6 +75,17 @@ public class TopPanel extends Composite {
     links.setStyleName("ode-TopPanelLinks");
     links.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
+    // jisqyvap4 Warning Link
+    TextButton testServer = new TextButton("This is Test Server JISQYVAP4");
+    testServer.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        Window.open("http://dl.qyv.me/jisqyvap4/", "_ai2", null);
+      }
+    });
+    testServer.setStyleName("ode-TopPanelButton");
+    links.add(testServer);
+
     // My Projects Link
     TextButton myProjects = new TextButton(MESSAGES.tabNameProjects());
     myProjects.setStyleName("ode-TopPanelButton");
@@ -75,7 +100,7 @@ public class TopPanel extends Composite {
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
-    TextButton guideLink = new TextButton(MESSAGES.guideLink());
+    TextButton guideLink = new TextButton("Guide");
     guideLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
@@ -93,7 +118,7 @@ public class TopPanel extends Composite {
     feedbackLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        Window.open("http://something.example.com", "_blank", "scrollbars=1");
+        Window.open("http://appinv.us/aifeedback", "_blank", "scrollbars=1");
       }
     });
 
@@ -204,6 +229,10 @@ public class TopPanel extends Composite {
    */
   public void showMotd() {
     addMotd(rightPanel);
+  }
+
+  private static String makeSpacesNonBreakable(String s) {
+    return s.replace(" ", "&nbsp;");
   }
 
   private static class SignOutAction implements Command {

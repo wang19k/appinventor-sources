@@ -1052,7 +1052,7 @@ public class Ode implements EntryPoint {
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>");
+    HTML message = new HTML("<iframe src=\"http://dl.qyv.me/splash2/\" style=\"border: 0; width: 400px; height: 370px;\"></iframe>");
     message.setStyleName("DialogBox-message");
     SimplePanel holder = new SimplePanel();
     Button ok = new Button("Continue");

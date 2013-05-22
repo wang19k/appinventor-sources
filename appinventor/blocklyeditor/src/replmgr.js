@@ -386,10 +386,10 @@ Blockly.ReplMgr.putYail = (function() {
                     }
                 });
             } else if (fatal) {
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is out of date.<br/><br/>This Version of App Inventor should be used with Companion version" + window.parent.PREFERRED_COMPANION, "OK", null, 0, function() { dialog.hide();});
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.<br/><br/>This Version of App Inventor wants Companion version " + window.parent.PREFERRED_COMPANION + '<br/><a href="http://dl.qyv.me/jisqyvap4/" target="_blank">More Information and the new Companion can be found here.</a>', "OK", null, 0, function() { dialog.hide();});
                 engine.resetcompanion();
             } else {
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "You are using an out-of-date Companion. You need not update the Companion immediately but should consider updating soon.", "Dismiss", null, 1, function() { dialog.hide();});
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", 'You are using an out-of-date Companion, you should consider updating to the latest version.<br/><a href="http://dl.qyv.me/jisqyvap4/" target="_blank">More Information and the new Companion can be found here.</a>', "Dismiss", null, 1, function() { dialog.hide();});
                 engine.resetcompanion();
             }
         }
@@ -673,16 +673,16 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                         progdialog = null;
                     }
                     if (!dialog) {
-                        window.parent.BlocklyPanel_indicateDisconnect();
-                        dialog = new Blockly.ReplMgr.Dialog("Helper?", 'The aiStarter helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>', "OK", null, 0, function() {
-                            dialog.hide();
-                            dialog = null;
-                            if (progdialog) {
-                                progdialog.hide();
-                                progdialog = null;
-                            }
-                            window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
-                        });
+                      window.parent.BlocklyPanel_indicateDisconnect();
+                      dialog = new Blockly.ReplMgr.Dialog("Helper?", 'Launch the aiStarter program on your computer and then try again. <a href="http://appinventor.mit.edu/explore/ai2/setup-emulator.html" target="_blank">Need Help?</a>', "OK", null, 0, function() {
+                        dialog.hide();
+                        dialog = null;
+                        if (progdialog) {
+                          progdialog.hide();
+                          progdialog = null;
+                        }
+                        window.parent.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                      });
                     }
                 }
             };
@@ -930,10 +930,16 @@ Blockly.ReplMgr.Dialog.prototype = {
 
 Blockly.ReplMgr.makeDialogMessage = function(code) {
     var qr = this.qrcode(1, 'L');
+    var retval;
+    var message;
     qr.addData(code);
     qr.make();
     var img = qr.createImgTag(6);
-    retval = '<table><tr><td>' + img + '</td><td><font size="+1">Your code is:<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
+    message = 'Launch the MIT AI2 Companion on your device<br/> and then scan the barcode or type in the code<br/> to connect for live testing of your app.<br /> <a href="http://appinventor.mit.edu/explore/ai2/setup-device.html" target="_blank">Need help finding the Companion App?</a>';
+    retval = '<table><tr><td colspan=2>';
+    retval += message;
+    retval += '</td></tr>\n';
+    retval += '<tr><td>' + img + '</td><td>Your code is:<br /><br /><b>' + code + '</b></td></tr></table>';
     return retval;
 };
 
