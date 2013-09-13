@@ -75,10 +75,31 @@ def parsegwtinput(input):
         raise Exception('Invalid Method')
     return call(stringtable, args)
 
-def gwtConvertInt(input):
-    import base64
-    z = base64.decodestring(input)
-    
+_base64_table = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+'m', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/', ]
+
+def gwtConvertInt(ginput):
+    acc = 0
+    while ginput != '':
+        c = ginput[0]
+        c = _base64_table.index(c)
+        acc = acc << 6
+        acc = acc + c
+        ginput = ginput[1:]
+    return acc
+
+def gwtEncodeInt(zint):
+    retval = []
+    while zint != 0:
+        retval.append(_base64_table[zint & 0x3f])
+        zint = zint >> 6
+    retval.reverse()
+    if len(retval) == 0:
+        return 'A'
+    return ''.join(retval)
 
 def gwtUserService(stringtable, args):
     response = []
