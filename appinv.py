@@ -2,6 +2,7 @@
 from bottle import run,route,app,request,response,template,default_app,Bottle,debug,abort,static_file
 import sys
 import os
+import os.path
 import subprocess
 import re
 import jsonlib
@@ -12,7 +13,7 @@ import jsonlib
 app = Bottle()
 default_app.push(app)
 
-DIR = '/u1/jis/app-inventor/appinventor/appengine/build/war/'
+DIR = os.path.join(os.path.dirname(__file__), "web") + os.path.sep
 
 @route('/')
 def index():
@@ -132,7 +133,7 @@ def gwtUserService(stringtable, args):
     response = []
     response.insert(0, 7)
     response.insert(0, 0)
-    response.insert(0, ["com.google.appinventor.shared.rpc.user.User/3496049707","Jeffrey.Schiller@gmail.com",1])
+    response.insert(0, ["com.google.appinventor.shared.rpc.user.User/3496049707","test@example.com",1])
     response = [1, 1, 3, 2, 1] + response
     response = '//OK' + str(response)
     return response
@@ -150,7 +151,7 @@ def gwtgetProjects(stringtable, args):
     pass
 
 def gwtgetProject(stringtable, args):
-    return r'''//OK[0,28,27,-1,26,25,-7,24,23,-9,22,21,0,20,-9,19,18,0,17,-9,16,15,0,14,3,3,13,1,3,12,-1,11,10,-3,9,8,0,5,-3,7,6,0,5,2,3,4,2,3,2,'GWQC',1,["com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode/3999559536","YoungAndroid","java.util.ArrayList/4159755760","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder/3524809606","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode/3698939010","assets/kitty.png","kitty.png","assets/meow.mp3","meow.mp3","assets","Assets","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceFolderNode/1539202537","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode/404162700","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode/1973959899","src/appinventor/ai_Jeffrey_Schiller/HelloPurr/Screen1.bky","Screen1.bky","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode/3242031682","src/appinventor/ai_Jeffrey_Schiller/HelloPurr/Screen1.scm","Screen1.scm","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode/3020652743","src/appinventor/ai_Jeffrey_Schiller/HelloPurr/Screen1.yail","Screen1.yail","src/appinventor/ai_Jeffrey_Schiller/HelloPurr","appinventor.ai_Jeffrey_Schiller.HelloPurr","src","Sources","1664002","HelloPurr"],0,7]'''
+    return r'''//OK[0,28,27,-1,26,25,-7,24,23,-9,22,21,0,20,-9,19,18,0,17,-9,16,15,0,14,3,3,13,1,3,12,-1,11,10,-3,9,8,0,5,-3,7,6,0,5,2,3,4,2,3,2,'GWQC',1,["com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode/3999559536","YoungAndroid","java.util.ArrayList/4159755760","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder/3524809606","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode/3698939010","assets/kitty.png","kitty.png","assets/meow.mp3","meow.mp3","assets","Assets","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceFolderNode/1539202537","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode/404162700","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode/1973959899","src/appinventor/ai_test/HelloPurr/Screen1.bky","Screen1.bky","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode/3242031682","src/appinventor/ai_test/HelloPurr/Screen1.scm","Screen1.scm","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode/3020652743","src/appinventor/ai_test/HelloPurr/Screen1.yail","Screen1.yail","src/appinventor/ai_test/HelloPurr","appinventor.ai_test.HelloPurr","src","Sources","1664002","HelloPurr"],0,7]'''
 
 def gwtloadProjectSettings(stringtable, args):
     return '//OK[1,["{\"SimpleSettings\":{\"Icon\":\"\",\"ShowHiddenComponents\":\"False\",\"VersionCode\":\"1\",\"VersionName\":\"1.0\",\"UsesLocation\":\"False\"}}"],0,7]'
@@ -211,5 +212,5 @@ GWTSERVICE = { 'com.google.appinventor.shared.rpc.user.UserInfoService-getUserIn
 
 if __name__ == '__main__':
     debug(True)
-    run(host='127.0.0.1', port=8005)
+    run(host='0.0.0.0', port=8005)
     ##WSGIServer(app).run()
