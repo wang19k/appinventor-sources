@@ -1,0 +1,16 @@
+This is a total hack!
+
+appinv.py is an implementation of the MIT App Inventor backend written
+in Python. It is based on reverse engineering the GWT RPC calls used
+by App Inventor.
+
+What is here is a Proof Of Concept (also a total hack, did I say that
+already? Yeah, I thought so). It automatically logs you in as
+test@example.com and shows one project (a hacked up version of
+HelloPurr). It does not yet implement project creation or even project
+saving.
+
+This code *might* be usable as a starting point for App Inventor “in a
+Box.”
+
+@author Jeffrey I. Schiller
