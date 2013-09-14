@@ -1,0 +1,76 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="Clock1_Timer" x="-271" y="-142">
+    <title name="COMPONENT_SELECTOR">Clock1</title>
+    <statement name="DO">
+      <block type="Label1_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">Label1</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="Clock1_FormatDateTime" inline="false">
+            <title name="COMPONENT_SELECTOR">Clock1</title>
+            <value name="ARG0">
+              <block type="Clock1_Now">
+                <title name="COMPONENT_SELECTOR">Clock1</title>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="Button1_Click" x="-271" y="-24">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="Sound1_Play">
+        <title name="COMPONENT_SELECTOR">Sound1</title>
+        <next>
+          <block type="CheckBox1_setproperty" inline="false">
+            <mutation yailtype="boolean"></mutation>
+            <title name="COMPONENT_SELECTOR">CheckBox1</title>
+            <title name="PROP">Checked</title>
+            <value name="VALUE">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="Button2_Click" x="-221" y="138">
+    <title name="COMPONENT_SELECTOR">Button2</title>
+    <statement name="DO">
+      <block type="Label1_setproperty" inline="false">
+        <mutation yailtype="number"></mutation>
+        <title name="COMPONENT_SELECTOR">Label1</title>
+        <title name="PROP">BackgroundColor</title>
+        <value name="VALUE">
+          <block type="color_make_color" inline="false">
+            <value name="COLORLIST">
+              <block type="lists_create_with" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="math_number">
+                    <title name="NUM">255</title>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="math_number">
+                    <title name="NUM">1.2</title>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="math_number">
+                    <title name="NUM">0</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

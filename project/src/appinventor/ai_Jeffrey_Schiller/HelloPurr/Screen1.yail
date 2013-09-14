@@ -1,0 +1,68 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_Jeffrey_Schiller.HelloPurr.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 Button Button1 
+(set-and-coerce-property! 'Button1 'Image "kitty.png" 'text)
+
+(set-and-coerce-property! 'Button1 'ShowFeedback #f 'boolean)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'Sound1 'Play (*list-for-runtime*   ) '())(set-and-coerce-property! 'CheckBox1 'Checked #t 'boolean))
+;;; CheckBox1
+
+(add-component Screen1 CheckBox CheckBox1 
+(set-and-coerce-property! 'CheckBox1 'Text "Text for CheckBox1" 'text)
+
+)
+
+;;; Label1
+
+(add-component Screen1 Label Label1 
+(set-and-coerce-property! 'Label1 'Text "Text for Label1" 'text)
+
+)
+
+;;; Button2
+
+(add-component Screen1 Button Button2 
+(set-and-coerce-property! 'Button2 'Text "Text for Button2" 'text)
+
+)
+
+(define-event Button2 Click()(set-this-form)
+    (set-and-coerce-property! 'Label1 'BackgroundColor (call-yail-primitive make-color (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* 255 1.2 0 ) '(any any any ) "make a list")) '(list) "make-color") 'number))
+;;; Label2
+
+(add-component Screen1 Label Label2 
+(set-and-coerce-property! 'Label2 'Text "Text for Label2" 'text)
+
+)
+
+;;; Sound1
+
+(add-component Screen1 Sound Sound1 
+(set-and-coerce-property! 'Sound1 'Source "meow.mp3" 'text)
+
+)
+
+;;; Clock1
+
+(add-component Screen1 Clock Clock1 
+)
+
+(define-event Clock1 Timer()(set-this-form)
+    (set-and-coerce-property! 'Label1 'Text (call-component-method 'Clock1 'FormatDateTime (*list-for-runtime* (call-component-method 'Clock1 'Now (*list-for-runtime*   ) '())    ) '(InstantInTime)) 'text))
+(init-runtime)

@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from bottle import run,route,app,request,response,template,default_app,Bottle,debug,abort
+from bottle import run,route,app,request,response,template,default_app,Bottle,debug,abort,static_file
 import sys
 import os
 import subprocess
@@ -16,25 +16,46 @@ DIR = '/u1/jis/app-inventor/appinventor/appengine/build/war/'
 
 @route('/')
 def index():
-    data = open(DIR + 'index.html').read()
-    return data
+    return static_file('index.html', root=DIR, mimetype='text/html')
+
+@route('/blocklyframe.html')
+def gwtcss():
+    return static_file('blocklyframe.html', root=DIR)
 
 @route('/gwt.css')
-def index():
-    data = open(DIR + 'gwt.css').read()
-    response.set_header('Content-Type', 'text/css')
-    return data
+def gwtcss():
+    return static_file('gwt.css', root=DIR, mimetype='text/css')
 
 @route('/Ya.css')
-def index():
-    data = open(DIR + 'Ya.css').read()
-    response.set_header('Content-Type', 'text/css')
-    return data
+def yacss():
+    return static_file('Ya.css', root=DIR, mimetype='text/css')
 
-@route('/images/<path>')
-def images(path):
-    data = open(DIR + 'images/' + path).read()
-    return data
+@route('/media/<filename:path>')
+def media(filename):
+    media_path = DIR + "media/"
+    return static_file(filename, root=media_path)
+
+@route('/images/<filename:re:.*\.png>')
+def images(filename):
+    image_path = DIR + "images/"
+    return static_file(filename, root=image_path , mimetype='image/png')
+
+@route('/images/<filename:re:.*\.jpg>')
+def images1(filename):
+    image_path = DIR + "images/"
+    return static_file(filename, root=image_path , mimetype='image/jpeg')
+
+@route('/ode/download/file/<filename:path>')
+def download(filename):
+    print 'DOWNLOAD: ' + filename
+    z = filename.split('/')
+    filename = '/'.join(z[1:])
+    return static_file(filename, root='project')
+
+@route('/closure-library-20120710-r2029/<filename:path>')
+def closure(filename):
+    closure_path = DIR + 'closure-library-20120710-r2029'
+    return static_file(filename, root=closure_path)
 
 @route('/fonts/<path>')
 def fonts(path):
@@ -46,16 +67,22 @@ def blockly():
     data = open(DIR + 'blockly-all.js').read()
     return data
 
-@route('/ode/<file>')
-def ode(file=None):
-    if not file:
+@route('/ode/<ifile>')
+def ode(ifile=None):
+    if not ifile:
         return 'NO'
-    data = open(DIR + 'ode/%s' % file).read()
+    if ifile.startswith('download'):
+        z = ifile.split('/')
+        pid = z[2]
+        filename = '/'.join(z[3:])
+        data = open('project/' + filename).read()
+        return data
+    data = open(DIR + 'ode/%s' % ifile).read()
     return data
 
-@route('/ode/<file>', method='POST')
-def odepost(file):
-    if file == 'getmotd':
+@route('/ode/<ifile>', method='POST')
+def odepost(ifile):
+    if ifile == 'getmotd':
         return '//OK[0,[],0,7]'
     return parsegwtinput(request.body.read())
 
@@ -64,7 +91,7 @@ def parsegwtinput(input):
     if x[0] != '7':
         raise Exception('Invalid GWT Version')
     stringtablelen = x[2]
-    stringtable = x[3:int(stringtablelen)]
+    stringtable = x[3:int(stringtablelen)+3]
     service = x[5]
     method = x[6]
     args = x[int(stringtablelen)+3:]
@@ -129,10 +156,45 @@ def gwtloadProjectSettings(stringtable, args):
     return '//OK[1,["{\"SimpleSettings\":{\"Icon\":\"\",\"ShowHiddenComponents\":\"False\",\"VersionCode\":\"1\",\"VersionName\":\"1.0\",\"UsesLocation\":\"False\"}}"],0,7]'
 
 def gwtLoadProject(stringtable, args):
-    pid = args[-2]
-    filename = args[-1]
-    
+    pid = gwtConvertInt(args[-3])
+    fileoffset = int(args[-2])
+    filename = stringtable[fileoffset-1]
+    data = open('project/' + filename).read()
+    data = data.replace('"',r'\"')
+    data = data.replace('\n', r'\n')
+    return '//OK[1,["' + data + '"],0,7]'
 
+def gwtLoadrawProject(stringtable, args):
+    def _modulo(x):
+        if x > 127:
+            return x - 256
+        else:
+            return x
+    pid = gwtConvertInt(args[-3])
+    fileoffset = int(args[-2])
+    filename = stringtable[fileoffset-1]
+    data = open('project/' + filename).read()
+    retval = []
+    datalen = len(data)
+    for i in range(datalen):
+        retval.append(ord(data[i]))
+    retval.reverse()
+    retval = [_modulo(x) for x in retval]
+    retval.append(datalen)
+    retval.append(1)
+    retval.append('["[B/3308590456"]')
+    retval.append(0)
+    retval.append(7)
+    return '//OK' + str(retval)
+
+def gwtStoreSettings(stringtable, args):
+    return "//OK[[],0,7]"
+
+def gwtSaveProject(stringtable, args):
+    return "//OK['UEYgJK$',[],0,7]"
+
+def gwtstoreProjectSettings(stringtable, args):
+    return "//OK[[],0,7]"
 
 GWTSERVICE = { 'com.google.appinventor.shared.rpc.user.UserInfoService-getUserInformation' : gwtUserService,
                'com.google.appinventor.shared.rpc.user.UserInfoService-loadUserSettings' : gwtloadUserSettings,
@@ -141,8 +203,11 @@ GWTSERVICE = { 'com.google.appinventor.shared.rpc.user.UserInfoService-getUserIn
                'com.google.appinventor.shared.rpc.project.ProjectService-getProjects' : gwtgetProjects,
                'com.google.appinventor.shared.rpc.project.ProjectService-getProject' : gwtgetProject,
                'com.google.appinventor.shared.rpc.project.ProjectService-loadProjectSettings' : gwtloadProjectSettings,
-               'com.google.appinventor.shared.rpc.project.ProjectService-load' : gwtLoadProject,}
-
+               'com.google.appinventor.shared.rpc.project.ProjectService-storeProjectSettings' : gwtstoreProjectSettings,
+               'com.google.appinventor.shared.rpc.project.ProjectService-load' : gwtLoadProject,
+               'com.google.appinventor.shared.rpc.project.ProjectService-loadraw' : gwtLoadrawProject,
+               'com.google.appinventor.shared.rpc.project.ProjectService-save' : gwtSaveProject,
+               'com.google.appinventor.shared.rpc.user.UserInfoService-storeUserSettings' : gwtStoreSettings,}
 
 if __name__ == '__main__':
     debug(True)

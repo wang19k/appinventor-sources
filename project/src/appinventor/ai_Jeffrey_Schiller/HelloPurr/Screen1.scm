@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"79","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"11","Uuid":"0","Title":"Screen1","$Components":[{"$Name":"Button1","$Type":"Button","$Version":"5","Uuid":"668896900","Image":"kitty.png","ShowFeedback":"False"},{"$Name":"CheckBox1","$Type":"CheckBox","$Version":"2","Uuid":"61800952","Text":"Text for CheckBox1"},{"$Name":"Label1","$Type":"Label","$Version":"2","Uuid":"946933799","Text":"Text for Label1"},{"$Name":"Button2","$Type":"Button","$Version":"5","Uuid":"-1528231400","Text":"Text for Button2"},{"$Name":"Label2","$Type":"Label","$Version":"2","Uuid":"-1360558872","Text":"Text for Label2"},{"$Name":"Sound1","$Type":"Sound","$Version":"3","Uuid":"-765948884","Source":"meow.mp3"},{"$Name":"Clock1","$Type":"Clock","$Version":"1","Uuid":"1986791797"}]}}
+|#
