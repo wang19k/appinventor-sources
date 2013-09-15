@@ -183,7 +183,7 @@ def gwtLoadrawProject(stringtable, args):
     retval = [_modulo(x) for x in retval]
     retval.append(datalen)
     retval.append(1)
-    retval.append('["[B/3308590456"]')
+    retval.append(["[B/3308590456",])
     retval.append(0)
     retval.append(7)
     return '//OK' + str(retval)
