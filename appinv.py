@@ -148,13 +148,13 @@ def gwthasUserFile(stringtable, args):
     return '//OK[1,[],0,7]'
 
 def gwtgetProjects(stringtable, args):
-    pass
+    return r'''//OK['GWQC','FGaw','BKOB','BGzR','w1B','b1R','Kvh','IDp',8,1,["[J/53942082"],0,7]'''
 
 def gwtgetProject(stringtable, args):
     return r'''//OK[0,28,27,-1,26,25,-7,24,23,-9,22,21,0,20,-9,19,18,0,17,-9,16,15,0,14,3,3,13,1,3,12,-1,11,10,-3,9,8,0,5,-3,7,6,0,5,2,3,4,2,3,2,'GWQC',1,["com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode/3999559536","YoungAndroid","java.util.ArrayList/4159755760","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder/3524809606","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode/3698939010","assets/kitty.png","kitty.png","assets/meow.mp3","meow.mp3","assets","Assets","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceFolderNode/1539202537","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode/404162700","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode/1973959899","src/appinventor/ai_test/HelloPurr/Screen1.bky","Screen1.bky","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode/3242031682","src/appinventor/ai_test/HelloPurr/Screen1.scm","Screen1.scm","com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode/3020652743","src/appinventor/ai_test/HelloPurr/Screen1.yail","Screen1.yail","src/appinventor/ai_test/HelloPurr","appinventor.ai_test.HelloPurr","src","Sources","1664002","HelloPurr"],0,7]'''
 
 def gwtloadProjectSettings(stringtable, args):
-    return '//OK[1,["{\"SimpleSettings\":{\"Icon\":\"\",\"ShowHiddenComponents\":\"False\",\"VersionCode\":\"1\",\"VersionName\":\"1.0\",\"UsesLocation\":\"False\"}}"],0,7]'
+    return r'''//OK[1,["{\"SimpleSettings\":{\"Icon\":\"\",\"ShowHiddenComponents\":\"False\",\"VersionCode\":\"1\",\"VersionName\":\"1.0\",\"UsesLocation\":\"False\"}}"],0,7]'''
 
 def gwtLoadProject(stringtable, args):
     pid = gwtConvertInt(args[-3])
