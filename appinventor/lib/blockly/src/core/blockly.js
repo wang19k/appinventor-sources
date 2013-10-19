@@ -756,7 +756,7 @@ Blockly.getMainWorkspaceMetrics_ = function() {
     var blockBox = Blockly.mainWorkspace.getCanvas().getBBox();
   } catch (e) {
     // Firefox has trouble with hidden elements (Bug 528969).
-    return null;
+    blockBox = { 'x' : 0, 'y' : 0, 'width' : 0, 'height' : 0};
   }
   if (Blockly.mainWorkspace.scrollbar) {
     // Add a border around the content that is at least half a screenful wide.
