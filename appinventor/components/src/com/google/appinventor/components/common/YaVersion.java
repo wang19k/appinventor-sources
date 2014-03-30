@@ -221,17 +221,37 @@ public class YaVersion {
   // - SLIDER_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 75:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
-  // - BARCODESCANNER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 76:
   // - PLAYER_COMPONENT_VERSION was incremented to 5
-  public static final int YOUNG_ANDROID_VERSION = 76;
+  // For YOUNG_ANDROID_VERSION 77:
+  // - TWITTER_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 78:
+  // - NEARFIELD_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 79:
+  // - FORM_COMPONENT_VERSION was incremented to 11.
+  // For YOUNG_ANDROID_VERSION 80:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 7.
+  // For YOUNG_ANDROID_VERSION 81:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 82:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 83:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
+  // For YOUNG_ANDROID_VERSION 84:
+  // - FORM_COMPONENT_VERSION was incremented to 12.
+  // For YOUNG_ANDROID_VERSION 85:
+  // - CAMERA_COMPONENT_VERSION was incremented to 2.
+
+    public static final int YOUNG_ANDROID_VERSION = 85;
 
   // ............................... Blocks Language Version Number ...............................
 
   // NOTE(lizlooney,user) - when the blocks language changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
-  // 3. Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
+  // 3. ***Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
   // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
+  // *** BlockSaveFile is no longer used in App Inventor 2 (Feb. 2014)
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -295,7 +315,9 @@ public class YaVersion {
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
   //   the minimum interval to elapse before calling a shaking event when necessary.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 2;
+  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
+  // - AccelerometerSensor.Sensitivty property was added.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 3;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
@@ -354,7 +376,9 @@ public class YaVersion {
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
-  public static final int CAMERA_COMPONENT_VERSION = 1;
+  // For CAMERA_COMPONENT_VERSION 2:
+  // - The UseFront property was added.
+   public static final int CAMERA_COMPONENT_VERSION = 2;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
@@ -412,7 +436,11 @@ public class YaVersion {
   // - The CloseScreenAnimation property was added
   // For FORM_COMPONENT_VERSION 10:
   // - The BackPressed event was added.
-  public static final int FORM_COMPONENT_VERSION = 10;
+  // For FORM_COMPONENT_VERSION 11:
+  // - OpenScreenAnimation and CloseScreenAnimation are now properties.
+  // For FORM_COMPONENT_VERSION 12:
+  // - AboutScreen property was added
+  public static final int FORM_COMPONENT_VERSION = 12;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -481,15 +509,25 @@ public class YaVersion {
   // For LISTPICKER_COMPONENT_VERSION 6:
   // - The getIntent method was modified to provide the ListPickerActivity
   //   with the parent Form's open screen animation.
-  public static final int LISTPICKER_COMPONENT_VERSION = 6;
+  // For LISTPICKER_COMPONENT_VERSION 7:
+  // - Added ShowFilterBar property
+  // For LISTPICKER_COMPONENT_VERSION 8:
+  // - Added title property
+
+  public static final int LISTPICKER_COMPONENT_VERSION = 8;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
 
+  // For NEARFIELD_COMPONENT_VERSION 1:
+  public static final int NEARFIELD_COMPONENT_VERSION = 1;
+
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
-  public static final int NOTIFIER_COMPONENT_VERSION = 2;
+  // For NOTIFIER_COMPONENT_VERSION 3:
+  // - Added NotifierColor, TextColor and NotifierLength options
+  public static final int NOTIFIER_COMPONENT_VERSION = 3;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
@@ -586,7 +624,12 @@ public class YaVersion {
   // - The friend timeline was changed to be a list of tuples (lists), where
   //   each sub-list is (username message). The old format was just a list
   //   of messages and didn't include the username associated with each message.
-  public static final int TWITTER_COMPONENT_VERSION = 2;
+  // For TWITTER_COMPONENT_VERSION 3:
+  // - The 'SetStatus' procedure has been changed to 'Tweet' to be more intuitive.
+  // - Added 'TweetWithImage' which uploads an image to TwitPic and adds it to
+  //   a tweet to allow a user to tweet with a picture. This requires a TwitPic_API_Key
+  //   property.
+  public static final int TWITTER_COMPONENT_VERSION = 3;
 
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
@@ -622,5 +665,28 @@ public class YaVersion {
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
+
+  // Companion Versions and Update Information
+
+  // The PREFERRED_COMPANION is displayed to the end-user if
+  // they ask (via the Help->About menu) and if they are told
+  // that they need to update their companion
+  //
+  // ACCEPTABLE_COMPANIONS is a list of Companion VersionNames
+  // which are usable with this version of the system.
+  //
+  // COMPANION_UPDATE_URL is the URL used by the Companion
+  // Update Mechanism to find the Companion to download.
+  // Note: This new Companion needs to be signed by the same
+  // key as the Companion it is replacing, as the Package Manager
+  // is invoked from the running Companion.
+
+  public static final String PREFERRED_COMPANION = "2.16ai2zx1";
+  public static final String COMPANION_UPDATE_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1" };
+
+  // Splash Screen Values
+  public static final int SPLASH_SURVEY = 1;
+
 
 }

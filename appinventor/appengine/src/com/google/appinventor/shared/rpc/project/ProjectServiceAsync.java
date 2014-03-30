@@ -55,19 +55,19 @@ public interface ProjectServiceAsync {
   void loadProjectSettings(long projectId, AsyncCallback<String> callback);
 
   /**
-   * @see ProjectService#storeProjectSettings(long, String)
+   * @see ProjectService#storeProjectSettings(String, long, String)
    */
-  void storeProjectSettings(long projectId, String settings, AsyncCallback<Void> callback);
+  void storeProjectSettings(String sessionId, long projectId, String settings, AsyncCallback<Void> callback);
 
   /**
-   * @see ProjectService#deleteFile(long, String)
+   * @see ProjectService#deleteFile(String, long, String)
    */
-  void deleteFile(long projectId, String fileId, AsyncCallback<Long> callback);
+  void deleteFile(String sessionId, long projectId, String fileId, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#deleteFiles(long, String)
+   * @see ProjectService#deleteFiles(String, long, String)
    */
-  void deleteFiles(long projectId, String directory, AsyncCallback<Long> callback);
+  void deleteFiles(String sessionId, long projectId, String directory, AsyncCallback<Long> callback);
 
   /**
    * @see ProjectService#load(long, String)
@@ -75,24 +75,34 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * @see ProjectService#loadraw(long, String)
+   */
+
+  void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+  /**
+   * @see ProjectService#loadraw2(long, String)
+   */
+  void loadraw2(long projectId, String fileId, AsyncCallback<String> callback);
+
+  /**
    * @see ProjectService#load(List)
    */
   void load(List<FileDescriptor> files, AsyncCallback<List<FileDescriptorWithContent>> callback);
 
   /**
-   * @see ProjectService#save(long, String, String)
+   * @see ProjectService#save(String, long, String, String)
    */
-  void save(long projectId, String fileId, String source, AsyncCallback<Long> callback);
+  void save(String sessionId, long projectId, String fileId, String source, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#save(List)
+   * @see ProjectService#save(String, List)
    */
-  void save(List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
+  void save(String sessionId, List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
 
   /**
-   * @see ProjectService#build(long, String)
+   * @see ProjectService#build(long, String, String)
    */
-  void build(long projectId, String target, AsyncCallback<RpcResult> callback);
+  void build(long projectId, String nonce, String target, AsyncCallback<RpcResult> callback);
 
   /**
    * @see ProjectService#getBuildResult(long, String)

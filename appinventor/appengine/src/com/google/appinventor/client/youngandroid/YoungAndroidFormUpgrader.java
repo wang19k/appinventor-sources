@@ -222,6 +222,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Camera")) {
+        srcCompVersion = upgradeCameraProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Canvas")) {
         srcCompVersion = upgradeCanvasProperties(componentProperties, srcCompVersion);
 
@@ -353,11 +356,16 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-          // The AccelerometerSensor.MinimumInterval property was added.
-          // No properties need to be modified to upgrade to version 2.
-          srcCompVersion = 2;
+      // The AccelerometerSensor.MinimumInterval property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
-        return srcCompVersion;
+    if (srcCompVersion < 3) {
+      // The AccelerometerSensor.Sensitivity property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
   }
 
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,
@@ -498,6 +506,16 @@ public final class YoungAndroidFormUpgrader {
       // The ShowFeedback property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeCameraProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The UseFront property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -651,6 +669,14 @@ public final class YoungAndroidFormUpgrader {
       // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // OpenScreenAnimation and CloseScreenAnimation are now properties.
+      srcCompVersion = 11;
+    }
+    if (srcCompVersion < 12) {
+      // The AboutScreen property was added.
+      srcCompVersion = 12;
+    }
     return srcCompVersion;
   }
 
@@ -764,6 +790,14 @@ public final class YoungAndroidFormUpgrader {
       // animation type. No properties need to be modified to upgrade to
       // version 6.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      //  Added ShowFilterBar property
+      srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      //  Added title property
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }
@@ -890,6 +924,11 @@ public final class YoungAndroidFormUpgrader {
       // and ShowTextDialog
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The BackgroundColor, NotifierLength, and TextColor options were added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 
@@ -921,6 +960,11 @@ public final class YoungAndroidFormUpgrader {
       // The designer properties ConsumerKey and ConsumerSecret were added
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The designer property TwitPic_API_Key was added
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

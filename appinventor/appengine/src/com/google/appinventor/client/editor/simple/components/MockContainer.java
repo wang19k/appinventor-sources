@@ -100,6 +100,15 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return itemNode;
   }
 
+  @Override
+  public void collectTypesAndIcons(Map<String, String> typesAndIcons) {
+    super.collectTypesAndIcons(typesAndIcons);
+    for (MockComponent child : children) {
+      child.collectTypesAndIcons(typesAndIcons);
+    }
+  }
+
+  
   /**
    * Adds a new component to the end of this container.
    *
@@ -302,6 +311,14 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     }
     targets.add(this);
     return targets;
+  }
+
+  @Override
+  public void onRemoved()
+  {
+    for (MockComponent child : children) {
+      getForm().fireComponentRemoved(child, true);
+    }
   }
 
   @Override

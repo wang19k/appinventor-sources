@@ -27,14 +27,13 @@ import android.content.ComponentName;
 import android.util.Log;
 
 /**
- * Component for using the Barcode Scanner (which must be
- * pre-installed) to scan a barcode and get back the resulting string.
+ * Component for scanning a barcode and getting back the resulting string.
  *
  * @author sharon@google.com (Sharon Perl)
  */
 @DesignerComponent(version = YaVersion.BARCODESCANNER_COMPONENT_VERSION,
     description = "Component for using the Barcode Scanner to read a barcode",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/barcodeScanner.png")
 @SimpleObject
@@ -68,7 +67,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
   /**
    * Result property getter method.
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "Text result of the previous scan.",
       category = PropertyCategory.BEHAVIOR)
   public String Result() {
     return result;
@@ -78,7 +77,8 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
    * Begins a barcode scan, using the camera. When the scan is complete, the
    * AfterScan event will be raised.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Begins a barcode scan, using the camera. When the scan " +
+      "is complete, the AfterScan event will be raised.")
   public void DoScan() {
     Intent intent = new Intent(SCAN_INTENT);
     if (!useExternalScanner && (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)) {  // Should we attempt to use an internal scanner?
@@ -111,7 +111,7 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
 
 
   /**
-   * Simple event to raise after the scanner activity has returned
+   * Indicates that the scanner has read a (text) result and provides the result 
    */
   @SimpleEvent
   public void AfterScan(String result) {

@@ -15,9 +15,10 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -42,9 +43,9 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     setStylePrimaryName("ode-DialogBox");
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
-    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
-      public void onKeyUp(KeyUpEvent event) {
+      public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
         if (keyCode == KeyCodes.KEY_ENTER) {
           handleOkClick();
@@ -71,16 +72,27 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
           NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
               packageName);
           NewProjectCommand callbackCommand = new NewProjectCommand() {
-            @Override
-            public void execute(Project project) {
-              Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-            }
-          };
+              @Override
+              public void execute(final Project project) {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                      if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
+                        Scheduler.get().scheduleDeferred(this); // on other project
+                      } else {
+                        Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+                      }
+                    }
+                  });
+              }
+            };
+
           createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
               parameters, callbackCommand);
           Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
         } else {
-          new NewYoungAndroidProjectWizard().center();
+          show();
+          center();
           return;
         }
       }

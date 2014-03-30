@@ -5,54 +5,36 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.boxes.MotdBox;
-import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.widgets.TextButton;
+import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.*;
+
+import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The top panel, which contains the main menu, various links plus ads.
  *
  */
 public class TopPanel extends Composite {
-  private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
-  private static final String KNOWN_ISSUES_LINK_URL =
-      Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
-  private static final String RELEASE_NOTES_LINK_URL =
-      Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
-  private static final String KNOWN_ISSUES_LINK_AND_TEXT =
-      "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
-  private static final String RELEASE_NOTES_LINK_AND_TEXT =
-      "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
-  private static final String GALLERY_LINK_AND_TEXT =
-      "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
-      "Try the App Inventor Community Gallery (Beta)</a>";
-
+  // Strings for links and dropdown menus:
+  private final DropDownButton accountButton;
+  private final String WIDGET_NAME_SIGN_OUT = "Signout";
+  private final String WIDGET_NAME_USER = "User";
+  private static final String SIGNOUT_URL = "/ode/_logout";
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
-  private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor beta release." +
-      " Be sure to check the list of " + KNOWN_ISSUES_LINK_AND_TEXT + " and " +
-      RELEASE_NOTES_LINK_AND_TEXT + ".  " + GALLERY_LINK_AND_TEXT);
-
-
-    //This is an experimental version of App Inventor. "
-    //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
-
-  private HTML divider() {
-    return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
-  }
+  final Ode ode = Ode.getInstance();
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -61,84 +43,107 @@ public class TopPanel extends Composite {
     /*
      * The layout of the top panel is as follows:
      *
-     *  +-- topPanel ------------------------------+
-     *  |+-- logo --++--middleLinks--++--account--+|
-     *  ||          ||               ||            |
-     *  |+----------++---------------++-----------+|
-     *  +------------------------------------------+
+     *  +-- topPanel ------------------------------------+
+     *  |+-- logo --++-----tools-----++--links/account--+|
+     *  ||          ||               ||                 ||
+     *  |+----------++---------------++-----------------+|
+     *  +------------------------------------------------+
      */
     HorizontalPanel topPanel = new HorizontalPanel();
     topPanel.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
-    // First row - right side is account, report bug, sign out
+    // Create the Tools
+    TopToolbar tools = new TopToolbar();
+    ode.setTopToolbar(tools);
+
+    // Create the Links
+    HorizontalPanel links = new HorizontalPanel();
+    links.setStyleName("ode-TopPanelLinks");
+    links.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+
+    // My Projects Link
+    TextButton myProjects = new TextButton(MESSAGES.tabNameProjects());
+    myProjects.setStyleName("ode-TopPanelButton");
+
+    myProjects.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        ode.switchToProjectsView();
+      }
+    });
+
+    myProjects.setStyleName("ode-TopPanelButton");
+    links.add(myProjects);
+
+    TextButton guideLink = new TextButton(MESSAGES.guideLink());
+    guideLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "scrollbars=1");
+      }
+    });
+
+    guideLink.setStyleName("ode-TopPanelButton");
+    links.add(guideLink);
+
+    // Feedback Link
+    TextButton feedbackLink = new TextButton(MESSAGES.feedbackLink());
+    feedbackLink.setStyleName("ode-TopPanelButton");
+
+    feedbackLink.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        Window.open("http://something.example.com", "_blank", "scrollbars=1");
+      }
+    });
+
+    feedbackLink.setStyleName("ode-TopPanelButton");
+    links.add(feedbackLink);
+
+    // Gallery Link
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      TextButton gallery = new TextButton(MESSAGES.galleryLink());
+      gallery.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent clickEvent) {
+          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
+        }
+      });
+
+      gallery.setStyleName("ode-TopPanelButton");
+      links.add(gallery);
+    }
+
+    // Create the Account Information
     rightPanel = new VerticalPanel();
     rightPanel.setHeight("100%");
+    rightPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+
     HorizontalPanel account = new HorizontalPanel();
     account.setStyleName("ode-TopPanelAccount");
-    account.add(userEmail);
-    account.add(divider());
 
-    if (AppInventorFeatures.sendBugReports()) {
-      HTML reportBugLink =
-          new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +
-              makeSpacesNonBreakable(MESSAGES.reportBugLink()) + "</a>");
-      account.add(reportBugLink);
-      account.add(divider());
-    }
+    // Account Drop Down Button
+    List<DropDownItem> userItems = Lists.newArrayList();
 
-    HTML signOutLink =
-        new HTML("<a href='/ode/_logout'>" +
-            makeSpacesNonBreakable(MESSAGES.signOutLink()) + "</a>");
-    account.add(signOutLink);
+    // Sign Out
+    userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
+
+    accountButton = new DropDownButton(WIDGET_NAME_USER, " " , userItems, true);
+    accountButton.setStyleName("ode-TopPanelButton");
+
+    account.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    account.add(links);
+    account.add(accountButton);
 
     rightPanel.add(account);
+
+    //topPanel.setWidth("width: 100%");
+
+    // Add the Logo, Tools, Links to the TopPanel
     addLogo(topPanel);
-
-    HorizontalPanel middleLinks = new HorizontalPanel();
-    middleLinks.setStyleName("ode-TopPanelMiddleLinks");
-    middleLinks.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
-
-    final Ode ode = Ode.getInstance();
-
-    Label myApps = new Label(MESSAGES.tabNameProjects());
-    myApps.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          ode.switchToProjectsView();
-        }
-      }
-    );
-    middleLinks.add(myApps);
-
-    Label design = new Label(MESSAGES.tabNameDesign());
-    design.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          ode.switchToDesignView();
-        }
-      }
-    );
-    middleLinks.add(design);
-
-    Anchor learn = new Anchor(MESSAGES.tabNameLearn(), LEARN_URL, "_blank");
-    middleLinks.add(learn);
-
-    if (AppInventorFeatures.hasDebuggingView()) {
-      Label debugging = new Label(MESSAGES.tabNameDebugging());
-      debugging.addClickHandler(new ClickHandler() {
-          public void onClick(ClickEvent event) {
-            ode.switchToDebuggingView();
-          }
-        }
-      );
-      middleLinks.add(debugging);
-    }
-
-    welcome.setStyleName("ode-TopPanelLabel");
-    middleLinks.add(welcome);
-
-    topPanel.add(middleLinks);
+    topPanel.add(tools);
     topPanel.add(rightPanel);
-
-    topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_TOP);
+    topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_MIDDLE);
     rightPanel.setCellHorizontalAlignment(account, HorizontalPanel.ALIGN_RIGHT);
     topPanel.setCellHorizontalAlignment(rightPanel, HorizontalPanel.ALIGN_RIGHT);
 
@@ -154,10 +159,28 @@ public class TopPanel extends Composite {
     // Add timestamp to logo url to get around browsers that agressively cache
     // the image! This same trick is used in StorageUtil.getFilePath().
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
+    logo.setSize("40px", "40px");
+    logo.setStyleName("ode-Logo");
+    logo.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        Window.open("http://appinventor.mit.edu", "_ai2", "scrollbars=1");
+      }
+    });
     panel.add(logo);
+    panel.setCellWidth(logo, "50px");
+    Label title = new Label("MIT App Inventor 2");
+    Label version = new Label("Beta");
+    title.setStyleName("ode-LogoText");
+    version.setStyleName("ode-LogoVersion");
+    VerticalPanel titleContainer = new VerticalPanel();
+    titleContainer.add(title);
+    titleContainer.add(version);
+    titleContainer.setCellHorizontalAlignment(version, HorizontalPanel.ALIGN_RIGHT);
+    panel.add(titleContainer);
+    panel.setCellWidth(titleContainer, "180px");
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
-    panel.setCellWidth(logo, "228px");
   }
 
   private void addMotd(VerticalPanel panel) {
@@ -173,7 +196,7 @@ public class TopPanel extends Composite {
    * @param email the email address
    */
   public void showUserEmail(String email) {
-    userEmail.setHTML(email);
+    accountButton.setCaption(email);
   }
 
   /**
@@ -183,7 +206,11 @@ public class TopPanel extends Composite {
     addMotd(rightPanel);
   }
 
-  private static String makeSpacesNonBreakable(String s) {
-    return s.replace(" ", "&nbsp;");
+  private static class SignOutAction implements Command {
+    @Override
+    public void execute() {
+      Window.Location.replace(SIGNOUT_URL);
+    }
   }
 }
+

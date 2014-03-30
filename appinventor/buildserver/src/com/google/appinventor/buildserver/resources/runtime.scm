@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2012 MIT, All rights reserved
+;;; Copyright 2011-2013 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
@@ -18,7 +18,10 @@
 ;;; but the top-level forms are evaluated in that run() function.
 ;;;
 
+;;; also see *debug-form* below
 (define *debug* #f)
+
+(define *this-is-the-repl* #f)
 
 (define (android-log message)
   (when *debug* (android.util.Log:i "YAIL" message)))
@@ -242,11 +245,17 @@
 ;;; Lexical variables
 ;;; A lexical variable is looked up in the current environment
 ;;; following Kawa's ordinary rules.
-;;; currently there are no setters for lexical variables
 (define-syntax lexical-value
   (syntax-rules ()
     ((_ var-name)
      var-name)))
+
+;;; Lexical Set Variable
+;;; (set-lexical! var 10)
+(define-syntax set-lexical!
+  (syntax-rules ()
+    ((_ var value)
+      (set! var value))))
 
 ;;; We can't use Kawa's and/or directly here, because we want to enforce that
 ;;; the argument types are booleans.  So we delay the arguments and check the types
@@ -270,16 +279,16 @@
 (define-syntax define-form
   (syntax-rules ()
     ((_ class-name form-name)
-     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form))))
+     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.Form #f))))
 
 (define-syntax define-repl-form
   (syntax-rules ()
     ((_ class-name form-name)
-     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.ReplForm))))
+     (define-form-internal class-name form-name 'com.google.appinventor.components.runtime.ReplForm #t))))
 
 (define-syntax define-form-internal
   (syntax-rules ()
-    ((_ class-name form-name subclass-name)
+    ((_ class-name form-name subclass-name isrepl)
      (begin
        (module-extends subclass-name)
        (module-name class-name)
@@ -367,31 +376,17 @@
                (cons thunk
                      form-do-after-creation)))
 
-       ;; This flag will be changed by setup to indicate that we're in the Repl
-       ;; TODO(jmorris) When we modify define-form to compile differently when
-       ;; creating AppInventorForPhone and a user's .apk, we should eliminate
-       ;; this flag (and *this-is-the-repl*) and the associated dynamic tests.
-       (add-to-form-environment 'repl #f)
+       (define (send-error error)
+         (com.google.appinventor.components.runtime.util.RetValManager:sendError error))
 
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
          ;; The call below is a no-op unless we are in the wireless repl
          (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
-         (if (lookup-in-form-environment 'repl)
+         (if isrepl
              (when ((this):toastAllowed)
-                   (begin
-                     ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)
-                     (display (string-append
-                               (*open-bracket*:get)
-                               "Problem"
-                               (*block-id-indicator*:get)
-                               "0"
-                               (*return-tag-ender*:get)
-                               (*failure*:get)
-                               (*result-indicator*:get)
-                               (ex:getMessage)
-                               (*close-bracket*:get)))
-                     (force-output)))
+                   (begin (send-error (ex:getMessage))
+                          ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)))
 
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
@@ -855,13 +850,13 @@
 ;;; Note that the result is coming back from a component, so we have to sanitize it
 ;;; Warning: We are living dangrously here by assuming that the component method can handle the
 ;;; args being passed to it.  We're relying on the coercion from coerce-args and Kawa's invoke
-;;; to deal with any weird Kawa types before passing them to the component.  A place where this 
+;;; to deal with any weird Kawa types before passing them to the component.  A place where this
 ;;; does not work is with TinyDB and TinyWebDB and the storeValue method, where the "value" arg is
-;;; type any on the Kawa side and type Object on the Java side, so no coercion get performed.  As a 
-;;; consequence, calling this method with value as the result of a division could wind up passing an 
+;;; type any on the Kawa side and type Object on the Java side, so no coercion get performed.  As a
+;;; consequence, calling this method with value as the result of a division could wind up passing an
 ;;; argument of class gnu.math.IntFraction, which the Json library can't handle, and so has to
-;;; be tested for in the Java implementation of this method in JsonUtils.getJsonRepresentation.  It might be 
-;;; more prudent to install an interface that is inverse of sanitize to check that all values being 
+;;; be tested for in the Java implementation of this method in JsonUtils.getJsonRepresentation.  It might be
+;;; more prudent to install an interface that is inverse of sanitize to check that all values being
 ;;; relayed by call-component-method at OK.  But for now, we'll try to get by with being careful.
 ;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
 ;;; values they will receive.
@@ -1113,8 +1108,8 @@
         ((not (= (length arglist) (length typelist)))
          (signal-runtime-error
           (string-append "The arguments " (show-arglist-no-parens arglist)
-                         " are the wrong number of arguments for " procedure-name)
-          (string-append "Wrong number of arguments for" procedure-name)))
+                         " are the wrong number of arguments for " (get-display-representation procedure-name))
+          (string-append "Wrong number of arguments for" (get-display-representation procedure-name))))
         (else (map coerce-arg arglist typelist))))
 
 (define (coerce-arg arg type)
@@ -1206,6 +1201,8 @@
       (cond ((= arg +inf) "+infinity")
             ((= arg -inf) "-infinity")
             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+            ((symbol? arg)
+             (symbol->string arg))
             ((string? arg)
              (if (string=? arg "")
                  *the-empty-string-printed-rep*
@@ -1899,16 +1896,20 @@ list, use the make-yail-list constructor with no arguments.
         ((or (and (< start end) (<= step 0))
              (and (> start end) (>= step 0))
              (and (not (= start end)) (= step 0)))
-         (signal-runtime-error
-          (string-append
-           "FOR RANGE was called with a start of "
-           (number->string start)
-           " and an end of "
-           (number->string end)
-           " and a step of "
-           (number->string step)
-           ". This would run forever.")
-          "Bad inputs to FOR RANGE"))
+         ;; (Hal) I am removing the error here, on the theory that
+         ;; in thse cases the loop should simply not run
+         ;; (signal-runtime-error
+         ;;  (string-append
+         ;;   "FOR RANGE was called with a start of "
+         ;;   (number->string start)
+         ;;   " and an end of "
+         ;;   (number->string end)
+         ;;   " and a step of "
+         ;;   (number->string step)
+         ;;   ". This would run forever.")
+         ;;  "Bad inputs to FOR RANGE")
+         *the-null-value*
+         )
         (else
          (let ((stop-comparison
                 (if (< step 0) < >)))
@@ -1966,7 +1967,7 @@ list, use the make-yail-list constructor with no arguments.
 (define (pair-ok? candidate-pair)
   (and (yail-list? candidate-pair)
        (= (length (yail-list-contents candidate-pair)) 2)))
-      
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation
@@ -1978,8 +1979,8 @@ list, use the make-yail-list constructor with no arguments.
 
 
 (define (make-disjunct x)
-  (cond ((null? (cdr x)) (car x))
-    (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
+  (cond ((null? (cdr x)) (Pattern:quote (car x)))
+        (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
 
 
 (define (array->list arr) (insert-yail-list-header (gnu.lists.LList:makeList arr 0)))
@@ -2006,7 +2007,7 @@ list, use the make-yail-list constructor with no arguments.
 
 (define (string-split text at)
   (array->list
-   ((text:toString):split (Pattern:quote at) -1)))
+   ((text:toString):split (Pattern:quote at))))
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))
@@ -2055,27 +2056,35 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;Color implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define *max-color-component* 255)
-(define *color-alpha-position* 24)
-(define *color-red-position* 16)
-(define *color-green-position* 8)
-(define *color-blue-position* 0)
-(define *alpha-opaque* 255)
+;;; explicit conversion to exact is redundant, because Kawa's
+;;; reader will return exact integers here.  But we'll
+;;; do it just to be conservative
+
+(define *max-color-component* (exact 255))
+(define *color-alpha-position* (exact 24))
+(define *color-red-position* (exact 16))
+(define *color-green-position* (exact 8))
+(define *color-blue-position* (exact 0))
+(define *alpha-opaque* (exact 255))
+
+(define (make-exact-yail-integer x)
+  (exact (round (coerce-to-number x))))
 
 ;;; Note that this procedure expects the color components in the order
 ;;; red, green, blue, alpha, even though they are combined into an integer
 ;;; ordered alpha, red, green, blue.  I chose the different ordering
 ;;; because I thought alpha would be less clear/important to users, and
 ;;; putting it at the end makes it easy to make optional.
+
 (define (make-color color-components)
   ;; The explict coercions to number are necessary because the ordinary
   ;; method call coercion mechanism won't convert a list of string to a
-  ;; list of number.
-  (let ((red (coerce-to-number (yail-list-get-item color-components 1)))
-        (green (coerce-to-number (yail-list-get-item color-components 2)))
-        (blue (coerce-to-number (yail-list-get-item color-components 3)))
+  ;; list of numbers.   Also note that Kawa bitwise operations require exact integers.
+  (let ((red (make-exact-yail-integer (yail-list-get-item color-components 1)))
+        (green (make-exact-yail-integer (yail-list-get-item color-components 2)))
+        (blue (make-exact-yail-integer (yail-list-get-item color-components 3)))
         (alpha (if (> (yail-list-length color-components) 3)
-                   (coerce-to-number (yail-list-get-item color-components 4))
+                   (make-exact-yail-integer (yail-list-get-item color-components 4))
                    *alpha-opaque*)))
     (bitwise-ior
      (bitwise-arithmetic-shift-left (bitwise-and alpha *max-color-component*)
@@ -2088,24 +2097,25 @@ list, use the make-yail-list constructor with no arguments.
                                     *color-blue-position*))))
 
 (define (split-color color)
+  (let ((intcolor (make-exact-yail-integer color)))
   (kawa-list->yail-list
    (list
     ;; red
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-red-position*)
                  *max-color-component*)
     ;; green
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-green-position*)
                  *max-color-component*)
     ;; blue
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-blue-position*)
                  *max-color-component*)
     ;; alpha
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-alpha-position*)
-                 *max-color-component*))))
+                 *max-color-component*)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2240,20 +2250,14 @@ list, use the make-yail-list constructor with no arguments.
       (android.content.Context:.WIFI_SERVICE)):getDhcpInfo))))
 
 ;;; process-repl-input
-;;; This wraps the input from the codeblocks compiler into the
-;;; form of the expression we want to execute within the phone's repl.
-;;; The extra CR at the end is to keep the Blocks Editor's Repl processor from printing #t,
-;;; which is the value returned by in-ui.   It also forces a return
-;;; in the case where the display doesn't print anything, as in evaluating
-;;; a set!, which returns a Kawa #!void.
-;;; The result of displaying this will be further post-processed at the codeblocks client end in
-;;; DeviceReplCommControl.java
-;;; One of the two tags should wrap the returned string.
+;;; Takes input from the blocks editor and arranges to run it on
+;;; the phone's UI thread. The result is then enqueued to be returned
+;;; to the phone via the "send-to-block" function.
+
 (define-syntax process-repl-input
   (syntax-rules ()
-    ((_ expr return-tag)
-     (begin (in-ui (delay expr) return-tag) "\n"))))
-
+    ((_ blockid expr)
+     (in-ui blockid (delay expr)))))
 
 ;; This code causes the evaluation of the code sent to the phone. Output
 ;; is normally generated by "Report Execution" balloons attached to blocks
@@ -2262,110 +2266,35 @@ list, use the make-yail-list constructor with no arguments.
 ;; However, if an exception occurs, this code sends back an error message
 ;; to the Do It block. (Someday, it might go to the offending block.)
 
-(define (in-ui promise return-tag)
-  (android-log "in-ui")
+(define (in-ui blockid promise)
+  (set! *this-is-the-repl* #t)          ;; Should do this somewhere else...
   (*ui-handler*:post
    (runnable (lambda ()
-               (android-log (string-append return-tag))
-               (send-to-block return-tag
-                              (try-catch
-                               (try-catch
-                                (string-append *success*
-                                               *result-indicator*
-                                               (get-display-representation (force promise)))
-                                (exception YailRuntimeError
-                                 (android-log (exception:getMessage))
-                                 (string-append
-                                  *failure*
-                                  *result-indicator*
-                                  (exception:getMessage))))
-                               (exception java.lang.Exception
-                                (android-log (exception:getMessage))
-                                (exception:printStackTrace)
-                                (string-append
-                                 *failure*
-                                 *result-indicator*
-                                 *java-exception-message*
-                                 (exception:getMessage)))))))))
-
-;; *last-reponse* is for testing
-(define *last-response* #!undefined)
+               (send-to-block blockid
+                (try-catch
+                 (try-catch
+                  (list "OK"
+                        (get-display-representation (force promise)))
+                  (exception YailRuntimeError
+                             (android-log (exception:getMessage))
+                             (list "NOK"
+                                   (exception:getMessage))))
+                 (exception java.lang.Exception
+                            (android-log (exception:getMessage))
+                            (exception:printStackTrace)
+                            (list
+                             "NOK"
+                             (exception:getMessage)))))))))
 
 ;; send-to-block is used for all communication back to the blocks editor
 ;; Calls on report are also generated for code from the blocks compiler
 ;; when a block is being watched.
 ;; send-to-block sends the result of the expression or an error message to the block editor
-(define (send-to-block return-tag message)
-  (set! *last-response* (string-append *open-bracket* return-tag *return-tag-ender* (encode message) *close-bracket*))
-  (display *last-response*)
-  (force-output))
-
-
-
-(define (report return-tag x)
-  (send-to-block return-tag (string-append *success* *result-indicator* (get-display-representation x)))
-  x)
-
-(define (encode s)
-  (define (encode-with map)
-     (if (null? map)
-         s
-         (((encode-with (cdr map)):toString):replace (caar map)(cadar map))))
-  (encode-with *encoding-map*))
-
-;; Call setup-repl-environment from a repl to enable getting component
-;; and procedure values directly by typing their name.
-;; Setup-repl-environment should be run only when starting up the REPL and never from
-;; the phone app.
-;;
-;; TODO(markf): I'm not sure that using *this-is-the-repl* in
-;; this way will work robustly.  I think it works now because we know
-;; that we've loaded the form before running any repls.  However,
-;; if we ever re-load the form then I think we'll get messed up.
-
-;; This flag is true if code was invoked from an attached blocks editor.
-(define *this-is-the-repl* #f)
-
-
-;; These globals are set by setup-the-repl-environment.
-(define *open-bracket* #!undefined)
-(define *block-id-indicator* #!undefined)
-(define *return-tag-ender* #!undefined)
-(define *success* #!undefined )
-(define *failure* #!undefined)
-(define *result-indicator* #!undefined)
-(define *close-bracket* #!undefined)
-(define *encoding-map* #!undefined)
-
-(define *testing* #f) ;; Set to #t from YailEvalTest.java
-
-;; set-up-repl-environment receives the punctuation strings it should use to return messages
-;; and a list of pairs for mapping strings so that the punctuation works.
-(define (setup-repl-environment open-bracket
-                                block-id-indicator
-                                return-tag-ender
-                                success
-                                failure
-                                result-indicator
-                                close-bracket
-                                encoding-map)
-  (android-log "setup")
-  (set! *open-bracket* open-bracket)
-  (set! *block-id-indicator* block-id-indicator)
-  (set! *return-tag-ender* return-tag-ender)
-  (set! *success* success)
-  (set! *failure* failure)
-  (set! *result-indicator* result-indicator)
-  (set! *close-bracket* close-bracket)
-  (set! *encoding-map* encoding-map)
-  (if (not *testing*)
-     (let ((form-env (*:.form-environment *this-form*)))
-        (*:addParent (KawaEnvironment:getCurrent) form-env)))
-  (set! *this-is-the-repl* #t)
-  (add-to-current-form-environment 'repl #t)
-  ;; this message should be grabbed by the other end of the repl
-  ;; connection and displayed for feedback
-  "The blocks editor (or telnet client) is connected to the phone.")
+(define (send-to-block blockid message)
+  (let* ((good (car message))
+         (value (cadr message)))
+    (com.google.appinventor.components.runtime.util.RetValManager:appendReturnValue blockid good value)
+    ))
 
 (define (clear-current-form)
   (when (not (eq? *this-form* #!null))

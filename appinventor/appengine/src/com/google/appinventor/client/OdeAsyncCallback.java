@@ -5,8 +5,10 @@
 
 package com.google.appinventor.client;
 
+import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
 
 /**
  * Provides common functionality for asynchronous callbacks from the ODE
@@ -45,6 +47,14 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
 
   @Override
   public void onFailure(Throwable caught) {
+    if (caught instanceof IncompatibleRemoteServiceException) {
+      ErrorReporter.reportError("App Inventor has just been upgraded, you will need to press the reload button in your browser window");
+      return;
+    }
+    if (caught instanceof InvalidSessionException) {
+      Ode.getInstance().invalidSessionDialog();
+      return;
+    }
     String errorMessage =
         (failureMessage == null) ? caught.getMessage() : failureMessage;
     ErrorReporter.reportError(errorMessage);

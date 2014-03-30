@@ -22,6 +22,7 @@ import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -210,8 +211,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
       storageIo.getUser(USER_ID);
       storageIo.createProject(USER_ID, project, SETTINGS);
     } catch (RuntimeException e) {
-      assertEquals(3, failingFileService.numBlobsCreated());
-      assertEquals(3, storageIo.numBlobsDeleted());
+      assertEquals(2, failingFileService.numBlobsCreated());
+      assertEquals(2, storageIo.numBlobsDeleted());
     }
   }
 
@@ -231,7 +232,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     } catch (RuntimeException e) {
       fail();
     }
-    assertEquals(5, failingFileService.numBlobsCreated());
+    assertEquals(4, failingFileService.numBlobsCreated());
     assertEquals(1, storageIo.numBlobsDeleted());
   }
 
@@ -297,8 +298,9 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     final String USER_ID = "1100";
     storage.getUser(USER_ID);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
-    long creationDate = storage.getProjectDateCreated(USER_ID, projectId);
-    long modificationDate = storage.getProjectDateModified(USER_ID, projectId);
+    UserProject uproject = storage.getUserProject(USER_ID, projectId);
+    long creationDate = uproject.getDateCreated();
+    long modificationDate = uproject.getDateModified();
     assertEquals(creationDate, modificationDate);
     long oldModificationDate = modificationDate;
 
@@ -475,7 +477,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         storage.downloadRawFile(USER_ID, projectId, BLOCK_FILE_NAME)));
     assertTrue(storage.isBlobFile(projectId, ASSET_FILE_NAME1));
     assertTrue(storage.isBlobFile(projectId, APK_FILE_NAME1));
-    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
+    assertTrue(!storage.isBlobFile(projectId, BLOCK_FILE_NAME)); // small block files now in datastore
 
     storage.removeSourceFilesFromProject(USER_ID, projectId, false, ASSET_FILE_NAME1);
     storage.removeOutputFilesFromProject(USER_ID, projectId, APK_FILE_NAME1);
@@ -492,7 +494,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // Create new storage object that forces storage in the datastore
     ObjectifyStorageIo oldStyleStorage = new ObjectifyStorageIo() {
       @Override
-      boolean useBlobstoreForFile(String fileName) {
+      boolean useBlobstoreForFile(String fileName, int length) {
         return false;
       }
     };
@@ -514,8 +516,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
                                        storage.downloadRawFile(
                                            USER_ID, projectId, BLOCK_FILE_NAME)));
     // Test that ordinary storage objects will still store the data in blobstore
-    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
-    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
+//    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+//    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME)); // small block files go to datastore now
  }
 
   public void testGetProject() {

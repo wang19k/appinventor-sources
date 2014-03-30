@@ -85,7 +85,7 @@ import java.util.List;
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
     "and circles.</p>",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.ANIMATION)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
                  "android.permission.WRITE_EXTERNAL_STORAGE")
@@ -107,6 +107,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int textAlignment;
 
   // Default values
+  private static final int MIN_WIDTH_HEIGHT = 1;
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
@@ -408,28 +409,43 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         // It's possible that the behavior could change in the future if they "fix" that bug.
         // Try Bitmap.createScaledBitmap, but if it gives us an immutable bitmap, we'll have to
         // create a mutable bitmap and scale the old bitmap using Canvas.drawBitmap.
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(oldBitmap, w, h, false);
-        if (scaledBitmap.isMutable()) {
-          // scaledBitmap is mutable; we can use it in a canvas.
-          bitmap = scaledBitmap;
-          // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-          // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
-          // canvas.
-          canvas = new android.graphics.Canvas(bitmap);
+        try {
+          // See comment at the catch below
+          Bitmap scaledBitmap = Bitmap.createScaledBitmap(oldBitmap, w, h, false);
 
-        } else {
-          // scaledBitmap is immutable; we can't use it in a canvas.
+          if (scaledBitmap.isMutable()) {
+            // scaledBitmap is mutable; we can use it in a canvas.
+            bitmap = scaledBitmap;
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // canvas.
+            canvas = new android.graphics.Canvas(bitmap);
 
-          bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-          // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-          // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
-          // canvas.
-          canvas = new android.graphics.Canvas(bitmap);
+          } else {
+            // scaledBitmap is immutable; we can't use it in a canvas.
 
-          // Draw the old bitmap into the new canvas, scaling as necessary.
-          Rect src = new Rect(0, 0, oldBitmapWidth, oldBitmapHeight);
-          RectF dst = new RectF(0, 0, w, h);
-          canvas.drawBitmap(oldBitmap, src, dst, null);
+            bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // canvas.
+            canvas = new android.graphics.Canvas(bitmap);
+
+            // Draw the old bitmap into the new canvas, scaling as necessary.
+            Rect src = new Rect(0, 0, oldBitmapWidth, oldBitmapHeight);
+            RectF dst = new RectF(0, 0, w, h);
+            canvas.drawBitmap(oldBitmap, src, dst, null);
+          }
+
+        } catch (IllegalArgumentException ioe) {
+          // There's some kind of order of events issue that results in w or h being zero.
+          // I'm guessing that this is a result of specifying width or height as FILL_PARRENT on an
+          // opening screen.   In any case, w<=0 or h<=0 causes the call to createScaledBitmap
+          // to throw an illegal argument.  If this happens we simply don't draw the bitmap
+          // (which would be of width or height 0)
+          // TODO(hal): Investigate this further to see what is causes the w=0 or h=0 and see if
+          // there is a more high-level fix.
+
+          Log.e(LOG_TAG, "Bad values to createScaledBimap w = " + w + ", h = " + h);
         }
 
         // The following has nothing to do with the scaling in this method.
@@ -812,6 +828,45 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   // Properties
 
+ /**
+  * Set the canvas width
+  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent).
+  *
+  * @param width
+  */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the width is set to 0
+  public void Width(int width) {
+    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED)) {
+       super.Width(width);
+    }
+    else {
+       container.$form().dispatchErrorOccurredEvent(this, "Width",
+            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
+    }
+  }
+
+  /**
+   * Set the canvas height
+   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent)
+   *
+   * @param height
+   */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the height is set to 0
+   public void Height(int height) {
+     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED)) {
+       super.Height(height);
+     }
+     else {
+       container.$form().dispatchErrorOccurredEvent(this, "Height",
+            ErrorMessages.ERROR_CANVAS_HEIGHT_ERROR);
+    }
+   }
+
+
   /**
    * Returns the button's background color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
@@ -1048,12 +1103,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
-   * @param heading  the heading of the fling 
+   * @param heading  the heading of the fling
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
    * @param flungSprite  {@code true} if a sprite was flung,
    *        {@code false} otherwise
-   * 
+   *
    */
   @SimpleEvent
   public void Flung(float x, float y, float speed, float heading,float xvel, float yvel,
@@ -1222,7 +1277,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @SimpleFunction
+    @SimpleFunction(description = "Saves a picture of this Canvas to the " +
+       "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
+       "event will be called.")
   public String Save() {
     try {
       File file = FileUtil.getPictureFile("png");
@@ -1245,7 +1302,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @SimpleFunction
+  @SimpleFunction(description =  "Saves a picture of this Canvas to the device's " +
+   "external storage in the file " +
+   "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
+   "which determines the file type.")
   public String SaveAs(String fileName) {
     // Figure out desired file format
     Bitmap.CompressFormat format;
@@ -1309,7 +1369,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         float velocityY) {
       float x = Math.max(0, (int) e1.getX()); // set to zero if negative
       float y = Math.max(0, (int) e1.getY()); // set to zero if negative
-      
+
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;
       float vy = velocityY / FLING_INTERVAL;
@@ -1342,3 +1402,4 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
+

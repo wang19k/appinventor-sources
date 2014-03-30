@@ -6,25 +6,15 @@
 package com.google.appinventor.client.explorer;
 
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.OpenEvent;
-import com.google.gwt.event.logical.shared.OpenHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.Iterator;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * This explorer is used to outline the structure of a source file. Note that
@@ -45,6 +35,7 @@ public class SourceStructureExplorer extends Composite {
   public SourceStructureExplorer() {
     // Initialize UI elements
     tree = new Tree(Ode.getImageBundle());
+    tree.setAnimationEnabled(true);
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {
@@ -80,18 +71,31 @@ public class SourceStructureExplorer extends Composite {
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             enableButtons(item);
+            //showBlocks(item);
             item.onSelected();
           } else {
             disableButtons();
+            //hideComponent();
           }
         } else {
           disableButtons();
         }
       }
     });
+    tree.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_BACKSPACE) {
+          event.preventDefault();
+          deleteItemFromTree();
+        }
+      }
+    });
+
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
-    scrollPanel.setWidth("250px");  // wide enough to avoid a horizontal scrollbar most of the time
+    scrollPanel.setWidth("200px");  // wide enough to avoid a horizontal scrollbar most of the time
     scrollPanel.setHeight("480px"); // approximately the same height as the viewer
 
     HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -114,27 +118,18 @@ public class SourceStructureExplorer extends Composite {
       }
     });
     buttonPanel.add(renameButton);
-    buttonPanel.setCellHorizontalAlignment(renameButton,
-                                           HorizontalPanel.ALIGN_RIGHT);
+    buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);
 
     deleteButton = new TextButton(MESSAGES.deleteButton());
     deleteButton.setEnabled(false);
     deleteButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        TreeItem treeItem = tree.getSelectedItem();
-        if (treeItem != null) {
-          Object userObject = treeItem.getUserObject();
-          if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.delete();
-          }
-        }
+        deleteItemFromTree();
       }
     });
     buttonPanel.add(deleteButton);
-    buttonPanel.setCellHorizontalAlignment(deleteButton,
-                                           HorizontalPanel.ALIGN_LEFT);
+    buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(scrollPanel);
@@ -142,6 +137,17 @@ public class SourceStructureExplorer extends Composite {
     panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
+  }
+
+  private void deleteItemFromTree() {
+    TreeItem treeItem = tree.getSelectedItem();
+    if (treeItem != null) {
+      Object userObject = treeItem.getUserObject();
+      if (userObject instanceof SourceStructureExplorerItem) {
+        SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+        item.delete();
+      }
+    }
   }
 
   private void enableButtons(SourceStructureExplorerItem item) {
@@ -154,6 +160,32 @@ public class SourceStructureExplorer extends Composite {
     deleteButton.setEnabled(false);
   }
 
+  
+  /* move this logic to declarations of SourceStructureExplorerItem subtypes
+  private void showBlocks(SourceStructureExplorerItem item) {
+    // are we showing the blocks editor?
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor = 
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log("Showing item " + item.getItemName());
+      if (item.isComponent()) {
+        editor.showComponentBlocks(item.getItemName());
+      } else {
+        editor.showBuiltinBlocks(item.getItemName());
+      }
+    }
+  }
+
+  private void hideComponent() {
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor =
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log("Hiding selected item");
+      editor.hideComponentBlocks();
+    }  
+  }
+   */  
+
   /**
    * Clears the tree.
    */
@@ -165,12 +197,27 @@ public class SourceStructureExplorer extends Composite {
   /**
    * Updates the tree
    *
-   * @param root the new root RreeItem
+   * @param root the new root TreeItem
    * @param itemToSelect item to select, or null for no selected item
    */
   public void updateTree(TreeItem root, SourceStructureExplorerItem itemToSelect) {
+    TreeItem items[] = new TreeItem[1];
+    items[0] = root;
+    updateTree(items, itemToSelect);
+  }
+
+  
+  /**
+   * Updates the tree
+   *
+   * @param roots An array of root items (all top level)
+   * @param itemToSelect item to select, or null for no selected item
+   */
+  public void updateTree(TreeItem[] roots, SourceStructureExplorerItem itemToSelect) {
     tree.clear();
-    tree.addItem(root);
+    for (TreeItem root : roots) {
+      tree.addItem(root);
+    }
     if (itemToSelect != null) {
       selectItem(itemToSelect, true);
     } else {
@@ -195,9 +242,11 @@ public class SourceStructureExplorer extends Composite {
         if (select) {
           tree.setSelectedItem(treeItem, false); // false means don't trigger a SelectionEvent
           enableButtons(item);
+          //showBlocks(item);
         } else {
           tree.setSelectedItem(null, false); // false means don't trigger a SelectionEvent
           disableButtons();
+          //hideComponent();
         }
         break;
       }
