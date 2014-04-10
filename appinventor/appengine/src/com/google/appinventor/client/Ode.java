@@ -1371,7 +1371,8 @@ public class Ode implements EntryPoint {
     VerticalPanel DialogBoxContents = new VerticalPanel();
     HTML message = new HTML("<p><b>We detected errors while reading in your project</b></p>" +
         "<p>To protect your project from damage, we have ended this session. You may close this " +
-        "window.</p>");
+        "window.</p>" +
+        "<p>For more information see <a href=\"http://appinventor.mit.edu/explore/ai2/support/troubleshooting.html#Corrupt\" target=\"_blank\">the Trouble Shooting Page</a></p>");
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
