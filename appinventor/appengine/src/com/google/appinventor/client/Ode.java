@@ -68,6 +68,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
@@ -1378,6 +1379,67 @@ public class Ode implements EntryPoint {
     dialogBox.setWidget(DialogBoxContents);
     dialogBox.show();
   }
+
+  public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback callback) {
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Blocks Workspace is Empty");
+    dialogBox.setHeight("150px");
+    dialogBox.setWidth("600px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    String [] fileParts = fileId.split("/");
+    String screenName = fileParts[fileParts.length - 1];
+    screenName = screenName.split("\\.")[0]; // Get rid of the .bky part
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>It appears that <b>" + screenName +
+        "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
+        "the result of a bug in our system.</p><p>" +
+        "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
+        "<li>Select \"No, Don't Save\" below to restore the previously saved version</li></ul></p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    final Button continueSession = new Button("OK, save the empty screen");
+    continueSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          // call save2 again, this time with force = true so the empty workspace will be written
+          getProjectService().save2(getSessionId(), projectId, fileId, true, content, callback);
+        }
+      });
+    holder.add(continueSession);
+    final Button cancelSession = new Button("No, Don't Save");
+    cancelSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          // Note: We do *not* remove the dialog, this locks the UI up (our intent)
+          // Wait for a few seconds for other I/O to complete
+          cancelSession.setEnabled(false); // Disable button to prevent further clicking
+          continueSession.setEnabled(false); // This one as well
+          Timer t = new Timer() {
+              int count = 5;
+              @Override
+              public void run() {
+                if (count > 0) {
+                  HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
+                  html.setHTML("Please wait " + count + " seconds...");
+                  count -= 1;
+                } else {
+                  this.cancel();
+                  reloadWindow();
+                }
+              }
+            };
+          t.scheduleRepeating(1000);     // Run every second
+        }
+      });
+    holder.add(cancelSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
 
   /**
    * recordCorruptProject -- Record that we received a corrupt read. This
