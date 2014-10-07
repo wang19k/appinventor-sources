@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - WEBMAP_VERSION was incremented to 1
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -861,6 +863,8 @@ public class YaVersion {
   // For WEB_COMPONENT_VERSION 4:
   // - Added method XMLTextDecode
   public static final int WEB_COMPONENT_VERSION = 4;
+
+  public static final int WEBMAP_COMPONENT_VERSION = 1;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

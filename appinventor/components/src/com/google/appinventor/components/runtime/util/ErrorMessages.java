@@ -177,11 +177,19 @@ public final class ErrorMessages {
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
+
   //TextToSpeech errors
   public static final int ERROR_TTS_NOT_READY = 2701;
 
-  // Please start the next group of error numbers at 2801.
+  // WebMap errors
+  public static final int ERROR_ILLEGAL_INITIAL_CORDS_FORMAT = 2801;
+  public static final int ERROR_ILLEGAL_COORDS_FORMAT = 2802;
+  public static final int ERROR_PARSING_MARKERS_LIST = 2803;
+  public static final int ERROR_INVALID_MARKER = 2804;
+  public static final int ERROR_INVALID_ZOOM_LEVEL = 2805;
+  public static final int ERROR_NO_GEOLOCATION_RESULTS = 2806;
 
+  // Please start the next group of error numbers at 2901.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -452,6 +460,18 @@ public final class ErrorMessages {
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    //WebMap errors
+    errorMessages.put(ERROR_ILLEGAL_INITIAL_CORDS_FORMAT, "The format for the initial location is " +
+        "invalid. Using default Initial Location.");
+    errorMessages.put(ERROR_ILLEGAL_COORDS_FORMAT, "The coordinates provided are invalid. Latitude" +
+        " range is [-90, 90] and longitude range is [-180, 180]");
+    errorMessages.put(ERROR_PARSING_MARKERS_LIST, "The list of markers provided is not in the " +
+        "right format; please check for invalid values or formatting issues.");
+    errorMessages.put(ERROR_INVALID_MARKER, "Marker to send to Map is not valid.");
+    errorMessages.put(ERROR_INVALID_ZOOM_LEVEL, "Zoom Level value ranges between 0 and 19, " +
+        "both inclusive.");
+    errorMessages.put(ERROR_NO_GEOLOCATION_RESULTS, "The address provided does not yield any " +
+        "results. Please try again with a different address.");
   }
 
   private ErrorMessages() {
@@ -462,4 +482,3 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
-
