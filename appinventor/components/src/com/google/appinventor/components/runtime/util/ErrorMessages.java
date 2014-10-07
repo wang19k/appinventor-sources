@@ -177,7 +177,15 @@ public final class ErrorMessages {
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
-  // Please start the next group of error numbers at 2701.
+  // Map errors
+  public static final int ERROR_ILLEGAL_INITIAL_CORDS_FORMAT = 2701;
+  public static final int ERROR_ILLEGAL_COORDS_FORMAT = 2702;
+  public static final int ERROR_PARSING_MARKERS_LIST = 2703;
+  public static final int ERROR_INVALID_MARKER = 2704;
+  public static final int ERROR_INVALID_ZOOM_LEVEL = 2705;
+  public static final int ERROR_NO_GEOLOCATION_RESULTS = 2706;
+
+  // Please start the next group of error numbers at 2801.
 
 
   // Mapping of error numbers to error message format strings.
@@ -446,6 +454,18 @@ public final class ErrorMessages {
     // FusiontablesControl error
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
+    //Map errors
+    errorMessages.put(ERROR_ILLEGAL_INITIAL_CORDS_FORMAT, "The format for the initial location is " +
+        "invalid. Using default Initial Location.");
+    errorMessages.put(ERROR_ILLEGAL_COORDS_FORMAT, "The coordinates provided are invalid. Latitude" +
+        " range is [-90, 90] and longitude range is [-180, 180]");
+    errorMessages.put(ERROR_PARSING_MARKERS_LIST, "The list of markers provided is not in the " +
+        "right format; please check for invalid values or formatting issues.");
+    errorMessages.put(ERROR_INVALID_MARKER, "Marker to send to Map is not valid.");
+    errorMessages.put(ERROR_INVALID_ZOOM_LEVEL, "Zoom Level value ranges between 0 and 19, " +
+        "both inclusive.");
+    errorMessages.put(ERROR_NO_GEOLOCATION_RESULTS, "The address provided does not yield any " +
+        "results. Please try again with a different address.");
   }
 
   private ErrorMessages() {
