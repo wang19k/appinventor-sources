@@ -1080,6 +1080,10 @@ public interface OdeMessages extends Messages {
   @Description("Caption and summary for Fill Parent choice")
   String fillParentCaption();
 
+  @DefaultMessage("percent")
+  @Description("Caption for percent label")  
+  String percentCaption();
+
   @DefaultMessage("pixels")
   @Description("Caption for pixels label")
   String pixelsCaption();
@@ -1087,6 +1091,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("{0} pixels")
   @Description("Summary for custom length in pixels")
   String pixelsSummary(String pixels);
+
+  @DefaultMessage("{0} percent")
+  @Description("Summary for length in percent")
+  String percentSummary(String percent);
 
   @DefaultMessage("The value must be a number greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
