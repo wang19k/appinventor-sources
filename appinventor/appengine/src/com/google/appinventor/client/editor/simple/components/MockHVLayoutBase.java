@@ -292,9 +292,12 @@ abstract class MockHVLayoutBase extends MockLayout {
       height += COMPONENT_SPACING;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the height is fill parent, use automatic height.
-      int childHeight = (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT)
-          ? childLayoutInfo.calculateAutomaticHeight()
-          : childLayoutInfo.height;
+      int childHeight = childLayoutInfo.height;
+      if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
+        childHeight = childLayoutInfo.calculateAutomaticHeight();
+      } else if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childHeight = convertFromPercent(containerLayoutInfo.height, childHeight);
+      }
       height += childHeight + BORDER_SIZE;
     }
     height += COMPONENT_SPACING;
@@ -315,10 +318,13 @@ abstract class MockHVLayoutBase extends MockLayout {
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       usedHeight += COMPONENT_SPACING;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
-      if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
+      int childHeight = childLayoutInfo.height;
+      if (childHeight < MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childHeight = convertFromPercent(containerLayoutInfo.height, childHeight);
+      if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
-        usedHeight += childLayoutInfo.height + BORDER_SIZE;
+        usedHeight += childHeight + BORDER_SIZE;
       }
     }
     usedHeight += COMPONENT_SPACING;
@@ -340,10 +346,16 @@ abstract class MockHVLayoutBase extends MockLayout {
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.width = containerLayoutInfo.width - BORDER_SIZE;
       }
+      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width);
+      }
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = remainingHeight / countFillParent - BORDER_SIZE;
         // if any component has height fill-parent then there's no remaining height
         finalRemainingHeight = 0;
+      }
+      if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+        childLayoutInfo.height = convertFromPercent(containerLayoutInfo.height, childLayoutInfo.height);
       }
 
       // If the child is a container call layoutChildren for it.
@@ -458,10 +470,13 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the width is fill parent, use automatic width.
-      int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
-          ? childLayoutInfo.calculateAutomaticWidth()
-              : childLayoutInfo.width;
-          width += childWidth + BORDER_SIZE;
+      int childWidth = childLayoutInfo.width;
+      if (childWidth <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childWidth = convertFromPercent(containerLayoutInfo.width, childWidth);
+      childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
+        ? childLayoutInfo.calculateAutomaticWidth()
+        : childWidth;
+      width += childWidth + BORDER_SIZE;
     }
     return width;
   }
@@ -523,9 +538,15 @@ abstract class MockHVLayoutBase extends MockLayout {
         // if any component has width fill parent then there will be no final remaining width
         finalRemainingWidth = 0;
       }
+      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width);
+
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = containerLayoutInfo.height - BORDER_SIZE;
       }
+
+      if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childLayoutInfo.height = convertFromPercent(containerLayoutInfo.height, childLayoutInfo.height);
 
       maxHeight = Math.max(maxHeight, childLayoutInfo.height + BORDER_SIZE);
 
@@ -726,6 +747,13 @@ abstract class MockHVLayoutBase extends MockLayout {
       // As above, this error should not happen
       ErrorReporter.reportError(MESSAGES.badValueForVerticalAlignment(alignment));
     }
+  }
+
+  private int convertFromPercent(int containerLength, int childLength) {
+    if (childLength > MockVisibleComponent.LENGTH_PERCENT_TAG)
+      return childLength;       // Shouldn't happen
+    childLength = containerLength * (- (childLength - MockVisibleComponent.LENGTH_PERCENT_TAG)) / 100;
+    return childLength;
   }
 
 }
