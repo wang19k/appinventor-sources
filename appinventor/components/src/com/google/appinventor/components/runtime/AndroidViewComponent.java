@@ -80,7 +80,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Width() {
-    return (int)(getView().getWidth() / container.$form().deviceDensity());
+    int zWidth = (int)(getView().getWidth() / container.$form().deviceDensity());
+    System.err.println("AndroidViewComponent: Width() Called, returning " + zWidth);
+    return zWidth;
   }
 
   /**

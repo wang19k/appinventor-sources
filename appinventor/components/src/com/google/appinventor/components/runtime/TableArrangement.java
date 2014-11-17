@@ -112,11 +112,17 @@ public class TableArrangement extends AndroidViewComponent
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
+    if (width <= LENGTH_PERCENT_TAG) {
+      width = Width() * (- (width - LENGTH_PERCENT_TAG)) / 100;
+    }
     ViewUtil.setChildWidthForTableLayout(component.getView(), width);
   }
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
+    if (height <= LENGTH_PERCENT_TAG) {
+      height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
+    }
     ViewUtil.setChildHeightForTableLayout(component.getView(), height);
   }
 
