@@ -103,6 +103,7 @@ public final class ViewUtil {
           linearLayoutParams.width = calculatePixels(view, width);
           break;
       }
+      System.err.println("ViewUtil: setChildWidthForVerticalLayout: view = " + view + " width = " + width);
       view.requestLayout();
     } else {
       Log.e("ViewUtil", "The view does not have linear layout parameters");
