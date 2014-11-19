@@ -1179,13 +1179,15 @@ public class Form extends Activity
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
+    int cWidth = Width();
+    System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
-      int cWidth = Width();
-      System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
       System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
-      component.setLastWidth(width);
     }
+
+    component.setLastWidth(width);
+
     // A form is a vertical layout.
     ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
   }
