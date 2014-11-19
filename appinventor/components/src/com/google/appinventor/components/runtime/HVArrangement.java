@@ -106,8 +106,11 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   public void setChildHeight(AndroidViewComponent component, int height) {
 
     if (height <= LENGTH_PERCENT_TAG) {
-      height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
+      int cHeight = getSetHeight();
+      height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
+
+    component.setLastHeight(height);
 
     if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildHeightForHorizontalLayout(component.getView(), height);

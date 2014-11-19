@@ -28,6 +28,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   protected final ComponentContainer container;
 
   private int percentWidthHolder = LENGTH_UNKNOWN;
+  private int percentHeightHolder = LENGTH_UNKNOWN;
   private int lastSetWidth = LENGTH_UNKNOWN;
   private int lastSetHeight = LENGTH_UNKNOWN;
 
@@ -109,6 +110,20 @@ public abstract class AndroidViewComponent extends VisibleComponent {
       return Width();           // best guess...
     } else {
       return percentWidthHolder;
+    }
+  }
+
+  public void setLastHeight(int height) {
+    System.err.println(this + " percentHeightHolder being set to " + height);
+    percentHeightHolder = height;
+  }
+
+  public int getSetHeight() {
+    System.err.println(this + " getSetHeight() percentHeightHolder = " + percentHeightHolder);
+    if (percentHeightHolder == LENGTH_UNKNOWN) {
+      return Height();           // best guess...
+    } else {
+      return percentHeightHolder;
     }
   }
 

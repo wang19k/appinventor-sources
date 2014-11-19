@@ -1194,9 +1194,13 @@ public class Form extends Activity
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
+    int cHeight = Height();
     if (height <= LENGTH_PERCENT_TAG) {
       height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
+
+    component.setLastHeight(height);
+
     // A form is a vertical layout.
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
