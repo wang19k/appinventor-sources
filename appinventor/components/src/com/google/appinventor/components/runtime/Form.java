@@ -1178,8 +1178,18 @@ public class Form extends Activity
   }
 
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
+  public void setChildWidth(final AndroidViewComponent component, int width) {
     int cWidth = Width();
+    if (cWidth == 0) {          // We're not really ready yet...
+      final int fWidth = width;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("Width not stable yet... trying again");
+            setChildWidth(component, fWidth);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
     System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
@@ -1193,8 +1203,18 @@ public class Form extends Activity
   }
 
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
+  public void setChildHeight(final AndroidViewComponent component, int height) {
     int cHeight = Height();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("Height not stable yet... trying again");
+            setChildHeight(component, fHeight);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
     if (height <= LENGTH_PERCENT_TAG) {
       height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
