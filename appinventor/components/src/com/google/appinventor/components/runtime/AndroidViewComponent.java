@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimplePropertyCopier;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.view.View;
 
@@ -99,6 +100,25 @@ public abstract class AndroidViewComponent extends VisibleComponent {
     lastSetWidth = width;
   }
 
+  /**
+   * Specifies the component's horizontal width as a percentage
+   * of the Width of its parent Component.
+   *
+   * @param width in percent
+   */
+
+  @Override
+  @SimpleProperty
+  public void WidthPercent(int pCent) {
+    if (pCent < 0 || pCent > 100) {
+      container.$form().dispatchErrorOccurredEvent(this, "WidthPercent",
+        ErrorMessages.ERROR_BAD_PERCENT, pCent);
+      return;
+    }
+    int v = -pCent + Component.LENGTH_PERCENT_TAG;
+    Width(v);
+  }
+
   public void setLastWidth(int width) {
     System.err.println(this + " percentWidthHolder being set to " + width);
     percentWidthHolder = width;
@@ -162,6 +182,25 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
+  }
+
+  /**
+   * Specifies the component's vertical height as a percentage
+   * of the height of its parent Component.
+   *
+   * @param height in percent
+   */
+
+  @Override
+  @SimpleProperty
+  public void HeightPercent(int pCent) {
+    if (pCent < 0 || pCent > 100) {
+      container.$form().dispatchErrorOccurredEvent(this, "HeightPercent",
+        ErrorMessages.ERROR_BAD_PERCENT, pCent);
+      return;
+    }
+    int v = -pCent + Component.LENGTH_PERCENT_TAG;
+    Height(v);
   }
 
   /**

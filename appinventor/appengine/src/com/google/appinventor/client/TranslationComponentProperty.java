@@ -59,6 +59,7 @@ public class TranslationComponentProperty {
     map.put("HasAltitude", MESSAGES.HasAltitudeProperties());
     map.put("HasLongitudeLatitude", MESSAGES.HasLongitudeLatitudeProperties());
     map.put("Height", MESSAGES.HeightProperties());
+    map.put("HeightPercent", MESSAGES.HeightPercentProperties());
     map.put("InstanceId", MESSAGES.InstanceIdProperties());
     map.put("InvitedInstances", MESSAGES.InvitedInstancesProperties());
     map.put("IsAccepting", MESSAGES.IsAcceptingProperties());
@@ -91,6 +92,7 @@ public class TranslationComponentProperty {
     map.put("YAccel", MESSAGES.YAccelProperties());
     map.put("ZAccel", MESSAGES.ZAccelProperties());
     map.put("Width", MESSAGES.WidthProperties());
+    map.put("WidthPercent", MESSAGES.WidthPercentProperties());
     map.put("WebViewString", MESSAGES.WebViewStringProperties());
     map.put("AboveRangeEventEnabled", MESSAGES.AboveRangeEventEnabledProperties());
     map.put("Action", MESSAGES.ActionProperties());

@@ -2890,6 +2890,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String HeightProperties();
 
+  @DefaultMessage("HeightPercent")
+  @Description("")
+  String HeightPercentProperties();
+
   @DefaultMessage("InstanceId")
   @Description("")
   String InstanceIdProperties();
@@ -3017,6 +3021,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Width")
   @Description("")
   String WidthProperties();
+
+  @DefaultMessage("WidthPercent")
+  @Description("")
+  String WidthPercentProperties();
 
   @DefaultMessage("WebViewString")
   @Description("")

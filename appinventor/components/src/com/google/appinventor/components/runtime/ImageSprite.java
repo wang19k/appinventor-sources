@@ -210,6 +210,11 @@ public class ImageSprite extends Sprite {
   }
 
   @Override
+  public void HeightPercent(int pCent) {
+    // Ignore
+  }
+
+  @Override
   @SimpleProperty
   public int Width() {
     if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
@@ -224,6 +229,11 @@ public class ImageSprite extends Sprite {
   public void Width(int width) {
     widthHint = width;
     registerChange();
+  }
+
+  @Override
+  public void WidthPercent(int pCent) {
+    // Ignore
   }
 
   /**
