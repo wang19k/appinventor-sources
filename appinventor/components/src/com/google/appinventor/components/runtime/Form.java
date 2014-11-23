@@ -12,6 +12,7 @@ package com.google.appinventor.components.runtime;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,6 +165,23 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
+  private static class PercentStorageRecord {
+    public enum Dim {
+      HEIGHT, WIDTH };
+
+    public PercentStorageRecord(AndroidViewComponent component, int length, Dim dim) {
+      this.component = component;
+      this.length = length;
+      this.dim = dim;
+    }
+
+    AndroidViewComponent component;
+    int length;
+    Dim dim;
+  }
+  private ArrayList<PercentStorageRecord> dimChanges = new ArrayList();
+
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -247,6 +265,8 @@ public class Form extends Activity
             }
           }
           if (dispatchEventNow) {
+            ReplayFormOrientation(); // Re-do Form layout because percentage code
+                                     // needs to recompute objects sizes etc.
             ScreenOrientationChanged();
           } else {
             // Try again later.
@@ -346,6 +366,22 @@ public class Form extends Activity
     }
     for (Integer key : keysToDelete) {
       activityResultMap.remove(key);
+    }
+  }
+
+  void ReplayFormOrientation() {
+    // We first make a copy of the existing dimChanges list
+    // because while we are replaying it, it is being appended to
+    ArrayList<PercentStorageRecord> temp = (ArrayList<PercentStorageRecord>) dimChanges.clone();
+    dimChanges.clear();         // Empties it out
+    for (int i = 0; i < temp.size(); i++) {
+      // Iterate over the list...
+      PercentStorageRecord r = temp.get(i);
+      if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
+        setChildHeight(r.component, r.length);
+      } else {
+        setChildWidth(r.component, r.length);
+      }
     }
   }
 
@@ -1192,6 +1228,7 @@ public class Form extends Activity
     }
     System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
+      dimChanges.add(new PercentStorageRecord(component, width, PercentStorageRecord.Dim.WIDTH));
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
 //      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
     }
@@ -1216,6 +1253,7 @@ public class Form extends Activity
         }, 100);                // Try again in 1/10 of a second
     }
     if (height <= LENGTH_PERCENT_TAG) {
+      dimChanges.add(new PercentStorageRecord(component, height, PercentStorageRecord.Dim.HEIGHT));
       height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
 
