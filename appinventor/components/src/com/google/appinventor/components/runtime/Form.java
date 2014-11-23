@@ -1185,7 +1185,7 @@ public class Form extends Activity
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("Width not stable yet... trying again");
+//            System.err.println("Width not stable yet... trying again");
             setChildWidth(component, fWidth);
           }
         }, 100);                // Try again in 1/10 of a second
@@ -1193,7 +1193,7 @@ public class Form extends Activity
     System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
-      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
+//      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
     }
 
     component.setLastWidth(width);
@@ -1210,7 +1210,7 @@ public class Form extends Activity
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("Height not stable yet... trying again");
+//            System.err.println("Height not stable yet... trying again");
             setChildHeight(component, fHeight);
           }
         }, 100);                // Try again in 1/10 of a second

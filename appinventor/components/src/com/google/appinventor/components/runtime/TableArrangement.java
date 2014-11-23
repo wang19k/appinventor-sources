@@ -115,7 +115,7 @@ public class TableArrangement extends AndroidViewComponent
 
     if (width <= LENGTH_PERCENT_TAG) {
       int cWidth = getSetWidth();
-      System.err.println("TableArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+//      System.err.println("TableArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
 
     }

@@ -84,7 +84,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @SimpleProperty
   public int Width() {
     int zWidth = (int)(getView().getWidth() / container.$form().deviceDensity());
-    System.err.println("AndroidViewComponent: Width() Called, returning " + zWidth);
+//    System.err.println("AndroidViewComponent: Width() Called, returning " + zWidth);
     return zWidth;
   }
 
@@ -120,12 +120,12 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   public void setLastWidth(int width) {
-    System.err.println(this + " percentWidthHolder being set to " + width);
+//    System.err.println(this + " percentWidthHolder being set to " + width);
     percentWidthHolder = width;
   }
 
   public int getSetWidth() {
-    System.err.println(this + " getSetWidth() percentWidthHolder = " + percentWidthHolder);
+//    System.err.println(this + " getSetWidth() percentWidthHolder = " + percentWidthHolder);
     if (percentWidthHolder == LENGTH_UNKNOWN) {
       return Width();           // best guess...
     } else {
@@ -134,12 +134,12 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   }
 
   public void setLastHeight(int height) {
-    System.err.println(this + " percentHeightHolder being set to " + height);
+//    System.err.println(this + " percentHeightHolder being set to " + height);
     percentHeightHolder = height;
   }
 
   public int getSetHeight() {
-    System.err.println(this + " getSetHeight() percentHeightHolder = " + percentHeightHolder);
+//    System.err.println(this + " getSetHeight() percentHeightHolder = " + percentHeightHolder);
     if (percentHeightHolder == LENGTH_UNKNOWN) {
       return Height();           // best guess...
     } else {
