@@ -503,6 +503,8 @@ abstract class MockHVLayoutBase extends MockLayout {
         usedWidth += COMPONENT_SPACING;
       }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
+      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG)
+        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width);
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
@@ -538,8 +540,6 @@ abstract class MockHVLayoutBase extends MockLayout {
         // if any component has width fill parent then there will be no final remaining width
         finalRemainingWidth = 0;
       }
-      if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG)
-        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width);
 
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = containerLayoutInfo.height - BORDER_SIZE;
