@@ -1235,7 +1235,7 @@ public class Form extends Activity
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-//            System.err.println("Width not stable yet... trying again");
+            System.err.println("(Form)Width not stable yet... trying again");
             setChildWidth(component, fWidth);
           }
         }, 100);                // Try again in 1/10 of a second
@@ -1260,7 +1260,7 @@ public class Form extends Activity
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-//            System.err.println("Height not stable yet... trying again");
+            System.err.println("(Form)Height not stable yet... trying again");
             setChildHeight(component, fHeight);
           }
         }, 100);                // Try again in 1/10 of a second

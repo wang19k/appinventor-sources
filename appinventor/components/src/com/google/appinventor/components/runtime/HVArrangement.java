@@ -7,6 +7,7 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+import android.os.Handler;
 import android.view.View;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -40,6 +41,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
   private int verticalAlignment;
+
+  private final Handler androidUIHandler = new Handler();
 
   /**
    * Creates a new HVArrangement component.
@@ -85,10 +88,19 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
-
+  public void setChildWidth(final AndroidViewComponent component, int width) {
+    int cWidth = getSetWidth();
+    if (cWidth == 0) {          // We're not really ready yet...
+      final int fWidth = width;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(HVArrangement)Width not stable yet... trying again");
+            setChildWidth(component, fWidth);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
     if (width <= LENGTH_PERCENT_TAG) {
-      int cWidth = getSetWidth();
       System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
@@ -103,10 +115,19 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
-
+  public void setChildHeight(final AndroidViewComponent component, int height) {
+    int cHeight = getSetHeight();
+    if (cHeight == 0) {         // Not ready yet...
+      final int fHeight = height;
+      androidUIHandler.postDelayed(new Runnable() {
+          @Override
+          public void run() {
+            System.err.println("(HVArrangement)Height not stable yet... trying again");
+            setChildHeight(component, fHeight);
+          }
+        }, 100);                // Try again in 1/10 of a second
+    }
     if (height <= LENGTH_PERCENT_TAG) {
-      int cHeight = getSetHeight();
       height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
 
