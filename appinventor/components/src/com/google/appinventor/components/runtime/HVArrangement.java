@@ -89,7 +89,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
     if (width <= LENGTH_PERCENT_TAG) {
       int cWidth = getSetWidth();
-//      System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
 

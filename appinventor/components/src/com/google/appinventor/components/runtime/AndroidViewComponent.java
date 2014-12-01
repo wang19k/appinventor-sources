@@ -98,6 +98,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Width(int width) {
     container.setChildWidth(this, width);
     lastSetWidth = width;
+    if (width <= Component.LENGTH_PERCENT_TAG)
+      container.$form().registerPercentLength(this, width, Form.PercentStorageRecord.Dim.WIDTH);
   }
 
   /**
@@ -182,6 +184,8 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
+    if (height <= Component.LENGTH_PERCENT_TAG)
+      container.$form().registerPercentLength(this, height, Form.PercentStorageRecord.Dim.HEIGHT);
   }
 
   /**

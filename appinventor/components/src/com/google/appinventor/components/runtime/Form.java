@@ -165,7 +165,7 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
-  private static class PercentStorageRecord {
+  public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
 
@@ -388,11 +388,15 @@ public class Form extends Activity
       // Iterate over the list...
       PercentStorageRecord r = temp.get(i);
       if (r.dim == PercentStorageRecord.Dim.HEIGHT) {
-        setChildHeight(r.component, r.length);
+        r.component.Height(r.length);
       } else {
-        setChildWidth(r.component, r.length);
+        r.component.Width(r.length);
       }
     }
+  }
+
+  public void registerPercentLength(AndroidViewComponent component, int length, PercentStorageRecord.Dim dim) {
+    dimChanges.add(new PercentStorageRecord(component, length, dim));
   }
 
   private static int generateNewRequestCode() {
@@ -1238,7 +1242,6 @@ public class Form extends Activity
     }
     System.err.println("Form.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
-      dimChanges.add(new PercentStorageRecord(component, width, PercentStorageRecord.Dim.WIDTH));
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
 //      System.err.println("Form.setChildWidth(): Setting " + component + " lastwidth to " + width);
     }
@@ -1263,7 +1266,6 @@ public class Form extends Activity
         }, 100);                // Try again in 1/10 of a second
     }
     if (height <= LENGTH_PERCENT_TAG) {
-      dimChanges.add(new PercentStorageRecord(component, height, PercentStorageRecord.Dim.HEIGHT));
       height = Height() * (- (height - LENGTH_PERCENT_TAG)) / 100;
     }
 
@@ -1485,6 +1487,7 @@ public class Form extends Activity
     // Set all screen properties to default values.
     defaultPropertyValues();
     screenInitialized = false;
+    dimChanges.clear();
   }
 
   public void deleteComponent(Object component) {
