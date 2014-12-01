@@ -197,7 +197,7 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
         // fall through with success == false
       }
       if (!success) {
-        Window.alert(MESSAGES.nonnumericInputError());
+        Window.alert(MESSAGES.nonvalidPercentValue());
         return false;
       }
     }

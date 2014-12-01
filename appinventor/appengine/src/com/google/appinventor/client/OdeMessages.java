@@ -1100,6 +1100,10 @@ public interface OdeMessages extends Messages {
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
 
+  @DefaultMessage("Percentage input values should be between 1 and 100")
+  @Description("Error shown after validation of percentage input fields.")
+  String nonvalidPercentValue();
+
   // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
 
   @DefaultMessage("Default")
