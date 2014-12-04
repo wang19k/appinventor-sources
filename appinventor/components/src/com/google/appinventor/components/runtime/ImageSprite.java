@@ -195,7 +195,7 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Height() {
-    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
+    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
       return drawable == null ? 0 : (int)(drawable.getBitmap().getHeight() / form.deviceDensity());
     }
@@ -217,7 +217,7 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Width() {
-    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
+    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
       return drawable == null ? 0 : (int)(drawable.getBitmap().getWidth() / form.deviceDensity());
     }
