@@ -168,6 +168,7 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_VCODE = "VersionCode";
   private static final String PROPERTY_NAME_VNAME = "VersionName";
   private static final String PROPERTY_NAME_COMPATIBILITY_MODE = "CompatibilityMode";
+  public static final String PROPERTY_NAME_USESCREENSIZE = "UseScreenSize"; // needs to be public
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -175,9 +176,9 @@ public final class MockForm extends MockContainer {
   private TitleBar titleBar;
   private MockComponent selectedComponent;
 
-  private int screenWidth;
+  int screenWidth;              // TEMP: Make package visible so we can use it MockHVLayoutBase
   private int screenHeight;
-  private int usableScreenHeight;
+  int usableScreenHeight;       // TEMP: Make package visible so we can use it MockHVLayoutBase
 
   // Set of listeners for any changes of the form
   final HashSet<FormChangeListener> formChangeListeners = new HashSet<FormChangeListener>();
@@ -405,6 +406,11 @@ public final class MockForm extends MockContainer {
 
     if (propertyName.equals(PROPERTY_NAME_COMPATIBILITY_MODE)) {
       // The VersionCode property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
+
+    if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
+      // UseScreenSize is application wide, so is only visible on Screen1
       return editor.isScreen1();
     }
 
@@ -715,11 +721,14 @@ public final class MockForm extends MockContainer {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
-    myLayout.setVAlignmentFlags(newValue);
-    refreshForm();
+      myLayout.setVAlignmentFlags(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
+      refreshForm();
     }
+
   }
-  
+
   // enableAndDisable It should not be called until the component is initialized.
   // Otherwise, we'll get NPEs in trying to use myAlignmentPropertyEditor.
   private void adjustAlignmentDropdowns() {
