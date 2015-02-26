@@ -98,6 +98,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.GenerateLightProperties();
     } else if (key.equals("GoogleVoiceEnabled")) {
       value = MESSAGES.GoogleVoiceEnabledProperties();
+    } else if (key.equals("HasMargins")) {
+      value = MESSAGES.HasMarginsProperties();
     } else if (key.equals("Heading")) {
       value = MESSAGES.HeadingProperties();
     } else if (key.equals("HighByteFirst")) {
@@ -264,6 +266,8 @@ public class TranslationDesignerProperties {
       value = MESSAGES.MinValueProperties();
     } else if (key.equals("ThumbPosition")) {
       value = MESSAGES.ThumbPositionProperties();
+    } else if (key.equals("ThumbEnabled")) {
+      value = MESSAGES.ThumbEnabled();
     } else if (key.equals("UseFront")) {
       value = MESSAGES.UseFrontProperties();
     } else if (key.equals("Day")) {
