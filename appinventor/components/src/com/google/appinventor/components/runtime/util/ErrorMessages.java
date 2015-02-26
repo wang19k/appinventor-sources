@@ -171,11 +171,16 @@ public final class ErrorMessages {
   // DatePicker errors
   public static final int ERROR_ILLEGAL_DATE = 2401;
 
+  // WebViewer errors
+  public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
+
+  //FusiontablesControl errors
+  public static final int FUSION_TABLES_QUERY_ERROR = 2601;
+
   // AndroidViewComponent errors
-  public static final int ERROR_BAD_PERCENT = 2501;
+  public static final int ERROR_BAD_PERCENT = 2701;
 
-  // Please start the next group of error numbers at 2601.
-
+  // Please start the next group of error numbers at 2801.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -439,6 +444,10 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_ILLEGAL_MINUTE, "The minute must be set to a value between 0 and 59.");
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
+    errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
+    // FusiontablesControl error
+    errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
+       "The response was: %s");
     errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
   }
 

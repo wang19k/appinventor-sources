@@ -93,6 +93,7 @@ public final class Compiler {
 
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";
   private static final String COMPATIBILITY_MIN_SDK = "3";
@@ -315,6 +316,7 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanVname(project.getVName());
+    String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : project.getAName();
     String compatible = project.getCompatible();
     String minSDK = (compatible == null || compatible.equals("False")) ? DEFAULT_MIN_SDK :
         COMPATIBILITY_MIN_SDK;
@@ -373,7 +375,11 @@ public final class Compiler {
       // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
       // risk for App Inventor App end-users.
       out.write("android:debuggable=\"false\" ");
-      out.write("android:label=\"" + projectName + "\" ");
+      if (aName.equals("")) {
+        out.write("android:label=\"" + projectName + "\" ");
+      } else {
+        out.write("android:label=\"" + aName + "\" ");
+      }
       out.write("android:icon=\"@drawable/ya\" ");
       if (isForCompanion) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
@@ -445,6 +451,16 @@ public final class Compiler {
         out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
         out.write("      </intent-filter>\n");
         out.write("    </activity>\n");
+      }
+
+      if (componentTypes.contains("BarcodeScanner")) {
+        // Barcode Activity
+        out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
+        out.write("              android:screenOrientation=\"landscape\"\n");
+        out.write("              android:stateNotNeeded=\"true\"\n");
+        out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
+        out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
+        out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
       }
 
       // BroadcastReceiver for Texting Component
