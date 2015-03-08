@@ -234,7 +234,6 @@ final class MockTableLayout extends MockLayout {
     // will be visible.
 
     MockForm form = container.getForm();
-    boolean useScreenSize = Boolean.parseBoolean(form.getPropertyValue(MockForm.PROPERTY_NAME_USESCREENSIZE));
 
     for (MockComponent child : tableLayoutInfo.visibleChildren) {
       Cell cell = getCellOfChild(child);
@@ -281,21 +280,8 @@ final class MockTableLayout extends MockLayout {
           int childWidth = childLayoutInfo.width;
           if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
             childWidth = childLayoutInfo.calculateAutomaticWidth();
-          else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG && !useScreenSize) {
-            int ourWidth = tableLayoutInfo.width;
-            if (ourWidth <= MockVisibleComponent.LENGTH_PERCENT_TAG) { // a percentage
-              int parentWidth = container.getContainer().getOffsetWidth();
-              OdeLog.log("MockTableLyout - 1: ourWidth = " + ourWidth);
-              OdeLog.log("MockTableLyout - 2: parentWidth = " + parentWidth);
-              ourWidth = (- (ourWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * parentWidth / 100;
-              OdeLog.log("MockTableLyout - 3: ourWidth = " + ourWidth);
-            }
-            childWidth = (- (childWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * ourWidth /100;
-            childLayoutInfo.width = childWidth; // Side effect it...
-            OdeLog.log("MockTableLayout: !useScreenSize our width = " + ourWidth + " childWith = " + childWidth);
-          }
           else if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
-            // If childWidth is a percent tag and we are based on screen size... do it
+            // If childWidth is a percent tag... do it
             childWidth = (- (childWidth - MockVisibleComponent.LENGTH_PERCENT_TAG)) * form.screenWidth /100;
             childLayoutInfo.width = childWidth; // Side effect it...
             OdeLog.log("MockTableLayout: form.screenWidth = " + form.screenWidth + " childWidth = " + childWidth);
@@ -311,21 +297,12 @@ final class MockTableLayout extends MockLayout {
           if (childLayoutInfo.height != MockVisibleComponent.LENGTH_FILL_PARENT) {
 
             int childHeight = childLayoutInfo.height;
-            if ((childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) && useScreenSize) {
+            if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
               childHeight = (- (childHeight - MockVisibleComponent.LENGTH_PERCENT_TAG) * form.usableScreenHeight) / 100;
               childLayoutInfo.height = childHeight; // Side effect it...
               rowAllFillParent[row] = false;
               OdeLog.log("MockTableLayout: form.usableScreenHeight = " + form.usableScreenHeight + " childHeight = " + childHeight);
               rowHeights[row] = Math.max(rowHeights[row], childHeight + BORDER_SIZE);
-            } else if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
-              rowAllFillParent[row] = false;
-              int ourHeight = tableLayoutInfo.height;
-              if (ourHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) { // A percentage
-                int parentHeight = container.getContainer().getOffsetHeight();
-                ourHeight = (- (ourHeight - MockVisibleComponent.LENGTH_PERCENT_TAG)) * parentHeight / 100;
-              }
-              childHeight = (- (childHeight - MockVisibleComponent.LENGTH_PERCENT_TAG)) * ourHeight / 100;
-              childLayoutInfo.height = childHeight;
             }
 
             if ((childHeight != MockVisibleComponent.LENGTH_FILL_PARENT)

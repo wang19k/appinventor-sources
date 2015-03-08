@@ -165,9 +165,6 @@ public class Form extends Activity
 
   private FullScreenVideoUtil fullScreenVideoUtil;
 
-  public static boolean useScreenSize = false; // Temporary hack to let people test measurements
-                                               // against screen size instead of container size
-
   public static class PercentStorageRecord {
     public enum Dim {
       HEIGHT, WIDTH };
@@ -1547,7 +1544,6 @@ public class Form extends Activity
     viewLayout.getLayoutManager().removeAllViews();
     // Set all screen properties to default values.
     defaultPropertyValues();
-    useScreenSize = false;
     screenInitialized = false;
     dimChanges.clear();
   }
@@ -1623,21 +1619,6 @@ public class Form extends Activity
       Log.i(LOG_TAG, "invoke exception: " + e.getMessage());
       throw e.getTargetException();
     }
-  }
-
-  /**
-   * Determines whether or not percentages are against the Screen
-   * Size or the size of the parent.
-   *
-   * @param useScreenSize true if use screen based percentage
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue= "False")
-  @SimpleProperty(userVisible = false,
-    description = "Set this to true to cause percentage measurements to be measured "
-    + "against the size of the screen instead of the size of the parent container.")
-  public void UseScreenSize(boolean useScreenSize) {
-    this.useScreenSize = useScreenSize;
   }
 
   /**

@@ -93,12 +93,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
-    int cWidth;
-    if (Form.useScreenSize) {
-      cWidth = container.$form().Width();
-    } else {
-      cWidth = getSetWidth();
-    }
+    int cWidth = container.$form().Width();
     if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
       final int fWidth = width;            // but give up after two tries...
       androidUIHandler.postDelayed(new Runnable() {
@@ -125,12 +120,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void setChildHeight(final AndroidViewComponent component, int height) {
-    int cHeight;
-    if (Form.useScreenSize) {
-      cHeight = container.$form().Height();
-    } else {
-      cHeight = getSetHeight();
-    }
+    int cHeight = container.$form().Height();
     if (cHeight == 0) {         // Not ready yet...
       final int fHeight = height;
       androidUIHandler.postDelayed(new Runnable() {

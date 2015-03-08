@@ -116,12 +116,7 @@ public class TableArrangement extends AndroidViewComponent
     System.err.println("TableArrangment.setChildWidth: width = " + width + " component = " + component);
     if (width <= LENGTH_PERCENT_TAG) {
 
-      int cWidth;
-      if (Form.useScreenSize) {
-        cWidth = container.$form().Width();
-      } else {
-        cWidth = getSetWidth();
-      }
+      int cWidth = container.$form().Width();
 
       if ((cWidth > LENGTH_PERCENT_TAG) && (cWidth <= 0)) {
         // FILL_PARENT OR LENGTH_PREFERRED
@@ -140,12 +135,7 @@ public class TableArrangement extends AndroidViewComponent
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
     if (height <= LENGTH_PERCENT_TAG) {
-      int cHeight;
-      if (Form.useScreenSize) {
-        cHeight = container.$form().Height();
-      } else {
-        cHeight = getSetHeight();
-      }
+      int cHeight = container.$form().Height();
 
       if ((cHeight > LENGTH_PERCENT_TAG) && (cHeight <= 0)) {
         // FILL_PARENT OR LENGTH_PREFERRED

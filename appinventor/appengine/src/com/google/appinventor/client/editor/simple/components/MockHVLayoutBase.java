@@ -297,7 +297,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childHeight = childLayoutInfo.calculateAutomaticHeight();
       } else if (childHeight <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
-        childHeight = convertFromPercent(containerLayoutInfo.height, childHeight, Dim.HEIGHT);
+        childHeight = convertFromPercent(childHeight, Dim.HEIGHT);
       }
       height += childHeight + BORDER_SIZE;
     }
@@ -321,7 +321,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       int childHeight = childLayoutInfo.height;
       if (childHeight < MockVisibleComponent.LENGTH_PERCENT_TAG)
-        childHeight = convertFromPercent(containerLayoutInfo.height, childHeight, Dim.HEIGHT);
+        childHeight = convertFromPercent(childHeight, Dim.HEIGHT);
       if (childHeight == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
@@ -348,7 +348,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         childLayoutInfo.width = containerLayoutInfo.width - BORDER_SIZE;
       }
       if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
-        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width, Dim.WIDTH);
+        childLayoutInfo.width = convertFromPercent(childLayoutInfo.width, Dim.WIDTH);
       }
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = remainingHeight / countFillParent - BORDER_SIZE;
@@ -356,7 +356,7 @@ abstract class MockHVLayoutBase extends MockLayout {
         finalRemainingHeight = 0;
       }
       if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
-        childLayoutInfo.height = convertFromPercent(containerLayoutInfo.height, childLayoutInfo.height, Dim.HEIGHT);
+        childLayoutInfo.height = convertFromPercent(childLayoutInfo.height, Dim.HEIGHT);
       }
 
       // If the child is a container call layoutChildren for it.
@@ -473,7 +473,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       // If the width is fill parent, use automatic width.
       int childWidth = childLayoutInfo.width;
       if (childWidth <= MockVisibleComponent.LENGTH_PERCENT_TAG)
-        childWidth = convertFromPercent(containerLayoutInfo.width, childWidth, Dim.WIDTH);
+        childWidth = convertFromPercent(childWidth, Dim.WIDTH);
       childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
         ? childLayoutInfo.calculateAutomaticWidth()
         : childWidth;
@@ -505,7 +505,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       if (childLayoutInfo.width <= MockVisibleComponent.LENGTH_PERCENT_TAG)
-        childLayoutInfo.width = convertFromPercent(containerLayoutInfo.width, childLayoutInfo.width, Dim.WIDTH);
+        childLayoutInfo.width = convertFromPercent(childLayoutInfo.width, Dim.WIDTH);
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
       } else {
@@ -547,7 +547,7 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
 
       if (childLayoutInfo.height <= MockVisibleComponent.LENGTH_PERCENT_TAG)
-        childLayoutInfo.height = convertFromPercent(containerLayoutInfo.height, childLayoutInfo.height, Dim.HEIGHT);
+        childLayoutInfo.height = convertFromPercent(childLayoutInfo.height, Dim.HEIGHT);
 
       maxHeight = Math.max(maxHeight, childLayoutInfo.height + BORDER_SIZE);
 
@@ -750,21 +750,18 @@ abstract class MockHVLayoutBase extends MockLayout {
     }
   }
 
-  private int convertFromPercent(int containerLength, int childLength, Dim dim) {
+  private int convertFromPercent(int childLength, Dim dim) {
     MockForm form = container.getForm();
-    boolean useScreenSize = Boolean.parseBoolean(form.getPropertyValue(MockForm.PROPERTY_NAME_USESCREENSIZE));
     int parentLength;
-    if (useScreenSize) {
-      if (dim == Dim.WIDTH) {
-        parentLength = form.screenWidth;
-      } else {
-        parentLength = form.usableScreenHeight;
-      }
+    if (dim == Dim.WIDTH) {
+      parentLength = form.screenWidth;
     } else {
-      parentLength = containerLength;
+      parentLength = form.usableScreenHeight;
     }
+
     if (childLength > MockVisibleComponent.LENGTH_PERCENT_TAG)
       return childLength;       // Shouldn't happen
+
     childLength = parentLength * (- (childLength - MockVisibleComponent.LENGTH_PERCENT_TAG)) / 100;
     return childLength;
   }

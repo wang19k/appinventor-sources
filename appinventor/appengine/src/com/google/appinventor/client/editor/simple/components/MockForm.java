@@ -169,7 +169,6 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_VNAME = "VersionName";
   private static final String PROPERTY_NAME_COMPATIBILITY_MODE = "CompatibilityMode";
   private static final String PROPERTY_NAME_ANAME = "AppName";
-  public static final String PROPERTY_NAME_USESCREENSIZE = "UseScreenSize"; // needs to be public
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -414,11 +413,6 @@ public final class MockForm extends MockContainer {
 
     if (propertyName.equals(PROPERTY_NAME_ANAME)) {
       // The AppName property actually applies to the application and is only visible on Screen1.
-      return editor.isScreen1();
-    }
-
-    if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
-      // UseScreenSize is application wide, so is only visible on Screen1
       return editor.isScreen1();
     }
 
@@ -743,10 +737,7 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
       myLayout.setVAlignmentFlags(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
-      refreshForm();
     }
-
   }
 
   // enableAndDisable It should not be called until the component is initialized.
