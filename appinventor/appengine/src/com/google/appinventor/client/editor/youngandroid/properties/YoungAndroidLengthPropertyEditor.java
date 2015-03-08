@@ -38,10 +38,17 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
   private final TextBox customLengthField;
   private final TextBox percentLengthField;
 
+
+  public YoungAndroidLengthPropertyEditor() {
+    this(true);
+  }
+
   /**
    * Creates a new length property editor.
+   *
+   * @param includePercent  whether to include percent of screen option
    */
-  public YoungAndroidLengthPropertyEditor() {
+  public YoungAndroidLengthPropertyEditor(boolean includePercent) {
     // The radio button group cannot be shared across all instances, so we append a unique id.
     int uniqueId = ++uniqueIdSeed;
     String radioButtonGroup = "LengthType-" + uniqueId;
@@ -74,7 +81,10 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     panel.add(automaticRadioButton);
     panel.add(fillParentRadioButton);
     panel.add(customRow);
-    panel.add(percentRow);
+
+    if ( includePercent ) {
+      panel.add(percentRow);
+    }
 
     automaticRadioButton.addValueChangeHandler(new ValueChangeHandler() {
       @Override
