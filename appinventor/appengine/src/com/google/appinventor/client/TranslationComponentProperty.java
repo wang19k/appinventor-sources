@@ -243,6 +243,10 @@ public class TranslationComponentProperty {
     map.put("ItemTextColor", MESSAGES.ItemTextColorProperties());
     map.put("ItemBackgroundColor", MESSAGES.ItemBackgroundColorProperties());
 
+    // ========== WebMap
+    map.put("GoogleMapsKey", MESSAGES.WebMapGoogleMapsKeyProperties());
+    map.put("InitialLocationLatLng", MESSAGES.WebMapInitialLocationLatLngProperties());
+
     return map;
   }
 }

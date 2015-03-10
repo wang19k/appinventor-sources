@@ -2017,6 +2017,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String tinyDBComponentPallette();
 
+  @DefaultMessage("WebMap")
+  @Description("")
+  String webMapComponentPallette();
+  
   // Media Pallette
   @DefaultMessage("Camcorder")
   @Description("")
@@ -3033,6 +3037,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("WebViewString")
   @Description("")
   String WebViewStringProperties();
+
+  @DefaultMessage("GoogleMapsKey")
+  @Description("")
+  String WebMapGoogleMapsKeyProperties();
+
+  @DefaultMessage("InitialLocationLatLng")
+  @Description("")
+  String WebMapInitialLocationLatLngProperties();
 
   //Params
   @DefaultMessage("xAccel")
