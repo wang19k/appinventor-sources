@@ -727,10 +727,17 @@ public class WebMap extends AndroidViewComponent {
         "      var androidObject = {\n" +
         "\n" +
         "        // CONSTANTS FOR ERRORS, As defined on the Android side.\n" +
+<<<<<<< HEAD
         "        ERROR_ILLEGAL_COORDS_FORMAT: 2702,\n" +
         "        ERROR_PARSING_MARKERS_LIST: 2703,\n" +
         "        ERROR_INVALID_MARKER: 2704,\n" +
         "        ERROR_NO_GEOLOCATION_RESULTS: 2706,\n" +
+=======
+        "        ERROR_ILLEGAL_COORDS_FORMAT: 2802,\n" +
+        "        ERROR_PARSING_MARKERS_LIST: 2803,\n" +
+        "        ERROR_INVALID_MARKER: 2804,\n" +
+        "        ERROR_NO_GEOLOCATION_RESULTS: 2806,\n" +
+>>>>>>> 63e63a54b9975b0ec2cce2ab92d659e0e9524fe0
         "\n" +
         "        /**\n" +
         "         * Function to dispatch errors to Android through the AppInventorMap interface. If this\n" +
