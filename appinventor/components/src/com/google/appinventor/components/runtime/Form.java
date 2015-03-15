@@ -139,6 +139,9 @@ public class Form extends Activity
   private FrameLayout frameLayout;
   private boolean scrollable;
 
+
+  public static boolean compatibilityMode;
+
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
@@ -1126,7 +1129,13 @@ public class Form extends Activity
   @SimpleProperty(userVisible = false,
       description = "If selected, the app will be built using compatibility mode")
   public void CompatibilityMode(boolean compatibilityMode) {
-    // We don't actually need to do anything. This is used by the project and build server.
+    // This is used by the project and build server.
+    // We also use it to adjust sizes
+    this.compatibilityMode = compatibilityMode;
+  }
+
+  public boolean CompatibilityMode() {
+    return this.compatibilityMode;
   }
 
 

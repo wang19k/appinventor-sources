@@ -7,13 +7,17 @@
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Component;
+import com.google.appinventor.components.runtime.Form;
 
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
+
+import java.lang.reflect.Field;
 
 /**
  * Helper methods for manipulating {@link View} objects.
@@ -34,8 +38,98 @@ public final class ViewUtil {
    * @return size in Pixels for the particular device running the app.
    */
   private static int calculatePixels(View view, int sizeInDP) {
+    if ( Form.compatibilityMode) {
+      DisplayMetrics modMet = new DisplayMetrics();
+      float scale = computeCompatibleScaling(view.getContext().getResources().getDisplayMetrics(),
+                               modMet);
+      float density = view.getContext().getResources().getDisplayMetrics().density;
+      Log.e("ViewUtil", "compat density calculated: " + scale);
+      return (int) (density * scale * sizeInDP);
+    }
+    else {
+      Log.e("ViewUtil", "normal density calculated: " + view.getContext().getResources().getDisplayMetrics().density);
       return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
+    }
   }
+
+
+
+  //Much of this compatibility scaling code is taken from the Android source code
+  public static final int DEFAULT_NORMAL_SHORT_DIMENSION = 320;
+  public static final float MAXIMUM_ASPECT_RATIO = (854f/480f); 
+
+  /**
+   * Compute the frame Rect for applications runs under compatibility mode.
+   * This code is taken from CompatibilityInfo.java from the Android 5.0 source
+   *
+   * @param dm the display metrics used to compute the frame size.
+   * @param orientation the orientation of the screen.
+   * @param outRect the output parameter which will contain the result.
+   * @return Returns the scaling factor for the window.
+   */
+  public static float computeCompatibleScaling(DisplayMetrics dm, DisplayMetrics outDm) {
+
+
+    // Some of these fields are hidden, so using reflection to get them back
+    // This is really ugly, replace if possible
+    int width = dm.widthPixels;
+    int height = dm.heightPixels;
+
+    try {
+      Field noncompatWidthField = DisplayMetrics.class.
+        getDeclaredField("noncompatWidthPixels");
+      Field noncompatHeightField = DisplayMetrics.class.
+        getDeclaredField("noncompatHeightPixels");
+      noncompatWidthField.setAccessible(true);
+      noncompatHeightField.setAccessible(true);
+      width = (Integer) noncompatWidthField.get(dm);
+      height = (Integer) noncompatHeightField.get(dm);
+    }
+    catch (Exception e) {
+      Log.e("ViewUtil", "field error", e);
+    }    
+    
+    //final int width = dm.noncompatWidthPixels;
+    //final int height = dm.noncompatHeightPixels; 
+
+    int shortSize, longSize;
+    if (width < height) {
+      shortSize = width;
+      longSize = height;
+    } else {
+      shortSize = height;
+      longSize = width;
+    }
+    int newShortSize = (int)(DEFAULT_NORMAL_SHORT_DIMENSION * dm.density + 0.5f);
+    float aspect = ((float)longSize) / shortSize;
+    if (aspect > MAXIMUM_ASPECT_RATIO) {
+      aspect = MAXIMUM_ASPECT_RATIO;
+    }
+    int newLongSize = (int)(newShortSize * aspect + 0.5f);
+    int newWidth, newHeight;
+    if (width < height) {
+      newWidth = newShortSize;
+      newHeight = newLongSize;
+    } else {
+      newWidth = newLongSize;
+      newHeight = newShortSize;
+    }
+
+    float sw = width/(float)newWidth;
+    float sh = height/(float)newHeight;
+    float scale = sw < sh ? sw : sh;
+    if (scale < 1) {
+      scale = 1;
+    }
+
+    if (outDm != null) {
+      outDm.widthPixels = newWidth;
+      outDm.heightPixels = newHeight;
+    }
+
+    return scale;
+  }
+
 
   public static void setChildWidthForHorizontalLayout(View view, int width) {
     // In a horizontal layout, if a child's width is set to fill parent, we must set the
