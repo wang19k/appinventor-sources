@@ -971,25 +971,33 @@ public class WebMap extends AndroidViewComponent {
   @SimpleFunction(description = "Adds a polygon to the map.")
   public void AddPolygonToMap(YailList polygon) {
     Log.i("aubrey polygon", polygon.toString());
-    Log.i("aubrey object0", polygon.getObject(0).toString());
+
     String[] polygonData = polygon.toStringArray();
-    polygon.getString(0);
+//    Log.i("aubrey polygonData", polygonData.toString());
+//    Log.i("aubrey get0 get0)", polygon.getString(0).get(0));
+//    for (String poly : polygonData) {
+//      Log.i("aubrey polyData", poly);
+//    }
 
     String pathval = new String();
 //    String pathsString = polygon.getObject(0).toString();
 
 //    String[] pathsArray = pathsString.split("\\.");
-    YailList pathlist = ElementsUtil.elementsFromString(polygon.getObject(0).toString());
-    pathlist.getObject()
-    String[] s = pathlist.toStringArray();
-    Log.i("aubrey pathlist", pathlist.toString());
-    for (int i = 0; i < s.length; i++) {
-      Log.i("aubrey " + i, s[i]);
+    YailList pathlist = ElementsUtil.elementsFromString(polygonData[0]);
+//    YailList pathlist2 = ElementsUtil.elementsFromString(polygon.get(0).toString());
+//    Log.i("aubrey polygon get0", polygon.get(0).toString());
+//    Log.i("aubrey getobject0", polygon.getObject(0).toString());
+//    pathlist.getObject()
+//    String[] s = pathlist.toStringArray();
+
+    for (int i = 1; i <= pathlist.size(); i++) {
+//      Log.i("aubreyGET "+i, pathlist2.get(i).toString());
+      Log.i("aubrey pathlist " + i, pathlist.get(i).toString());
 //      pathlist.getObject(i+1).toString().split("\\s+");
 //      pathval += "thisMap.getMarkerFunctions().locationFromLatLngCoords" + pathlist.getString(i) + ", " +
 //          pathlist.getString(i+1) + ",";
     }
-    Log.i("aubrey pathval", pathval);
+//    Log.i("aubrey pathval", pathval);
 //    Log.i("aubrey patharray", pathsArray.toString());
 //    Log.i("aubrey pathval", pathval);
 //    String javaScriptCommand = "javascript:thisMap.getMarkerFunctions().addAIPolygon([" +
