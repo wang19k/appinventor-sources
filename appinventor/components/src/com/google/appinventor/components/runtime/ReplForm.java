@@ -96,6 +96,9 @@ public class ReplForm extends Form {
 
   public void setFormName(String formName) {
     this.formName = formName;
+
+    //TODO: This is a hack, needs to be replaced
+    CompatibilityMode(false);
     Log.d("ReplForm", "formName is now " + formName);
   }
 

@@ -22,45 +22,36 @@ import java.lang.reflect.Method;
  *
  */
 public final class ScreenDensityUtil {
-    private ScreenDensityUtil() {
-    }
 
-      //Much of this compatibility scaling code is taken from the Android source code
+  private static final String LOG_TAG = "ScreenDensityUtil";
+
+  //Much of this compatibility scaling code is taken from the Android source code
   public static final int DEFAULT_NORMAL_SHORT_DIMENSION = 320;
   public static final float MAXIMUM_ASPECT_RATIO = (854f/480f); 
 
+
+  private ScreenDensityUtil() {
+  }
+
+
+
   /**
-   * Compute the frame Rect for applications runs under compatibility mode.
-   * This code is taken from CompatibilityInfo.java from the Android 5.0 source
+   * Compute the scaling for applications runs under compatibility mode.
+   * This code is partially taken from CompatibilityInfo.java from the Android 5.0 source
    *
-   * @param dm the display metrics used to compute the frame size.
+   * @param context Context in the screen to get the density of
    * @return Returns the scaling factor for the window.
    */
-  public static float computeCompatibleScaling(Context context, DisplayMetrics dm) {
-    // Some of these fields are hidden, so using reflection to get them back
-    // This is really ugly, replace if possible
-    int width = dm.widthPixels;
-    int height = dm.heightPixels;
+  public static float computeCompatibleScaling(Context context) {
+    DisplayMetrics dm = context.getResources().getDisplayMetrics();
 
     Point rawDims = new Point();
     getRawScreenDim(context, rawDims);
 
-    Log.e("ScreenDensityUtil", "raw width: " + rawDims.x + " height: " + rawDims.y);
+    Log.d(LOG_TAG, "raw width: " + rawDims.x + " height: " + rawDims.y);
 
-    try {
-      Field noncompatWidthField = DisplayMetrics.class.
-        getDeclaredField("noncompatWidthPixels");
-      Field noncompatHeightField = DisplayMetrics.class.
-        getDeclaredField("noncompatHeightPixels");
-      noncompatWidthField.setAccessible(true);
-      noncompatHeightField.setAccessible(true);
-      width = (Integer) noncompatWidthField.get(dm);
-      height = (Integer) noncompatHeightField.get(dm);
-      Log.e("ScreenDensityUtil", "width: " + width + " height: " + height);
-    }
-    catch (Exception e) {
-      Log.e("ScreenDensityUtil", "field error", e);
-    }
+    int width = rawDims.x;
+    int height = rawDims.y;
 
     int shortSize, longSize;
     if (width < height) {
@@ -101,6 +92,7 @@ public final class ScreenDensityUtil {
    * Determine the actual size of the screen in pixels.
    * Inspired by http://stackoverflow.com/a/17512853/135135
    *
+   * @param context context to get screen size of.
    * @param outSize Set to the real size of the display.
    */
   public static void getRawScreenDim(Context context, Point outSize) {
@@ -112,9 +104,12 @@ public final class ScreenDensityUtil {
 
     int sdkLevel = SdkLevel.getLevel();
     if (sdkLevel >= SdkLevel.LEVEL_JELLYBEAN_MR1) {
+      // On API level 17, a public method was added to get the actual sizes
       JellybeanUtil.getRealSize(display, outSize);
     } else if ( sdkLevel > SdkLevel.LEVEL_GINGERBREAD_MR1){
       // Before API level 17, the realsize method did not exist
+      // We use reflection instead to access some hidden methods
+      // Does not work for 3.x, will just error
       try {
         Method getRawH = Display.class.getMethod("getRawHeight");
         Method getRawW = Display.class.getMethod("getRawWidth");
@@ -122,14 +117,14 @@ public final class ScreenDensityUtil {
           outSize.x = (Integer) getRawW.invoke(display);
           outSize.y = (Integer) getRawH.invoke(display);
         } catch (IllegalArgumentException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "Error reading raw screen size", e);
         } catch (IllegalAccessException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "Error reading raw screen size", e);
         } catch (InvocationTargetException e) {
-          e.printStackTrace();
+          Log.e(LOG_TAG, "Error reading raw screen size", e);
         }
       } catch (NoSuchMethodException e) {
-        e.printStackTrace();
+        Log.e(LOG_TAG, "Error reading raw screen size", e);
       }
     } else {
       // The raw height and width functions were added after verison 10

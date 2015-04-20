@@ -96,9 +96,8 @@ public class TextViewUtil {
    * @return  font size in pixel
    */
   public static float getFontSize(TextView textview) {
-    if (Form.compatibilityMode) {
-      DisplayMetrics screenMetrics = textview.getContext().getResources().getDisplayMetrics();
-      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext(), screenMetrics);
+    if (Form.getActiveForm().CompatibilityMode()) {
+      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext());
       return textview.getTextSize() / scale;
     }
     else {
@@ -113,9 +112,8 @@ public class TextViewUtil {
    * @param size  font size in pixel
    */
   public static void setFontSize(TextView textview, float size) {
-    if (Form.compatibilityMode) {
-      DisplayMetrics screenMetrics = textview.getContext().getResources().getDisplayMetrics();
-      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext(), screenMetrics);
+    if (Form.getActiveForm().CompatibilityMode()) {
+      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext());
       textview.setTextSize(scale * size);
     }
     else {

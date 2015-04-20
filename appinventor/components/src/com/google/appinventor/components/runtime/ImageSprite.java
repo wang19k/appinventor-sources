@@ -89,10 +89,12 @@ public class ImageSprite extends Sprite {
    */
   public void onDraw(android.graphics.Canvas canvas) {
     if (unrotatedBitmap != null && visible) {
-      int xinit = (int) (Math.round(xLeft) * form.deviceDensity());
-      int yinit = (int) (Math.round(yTop) * form.deviceDensity());
-      int w = (int)(Width() * form.deviceDensity());
-      int h = (int)(Height() * form.deviceDensity());
+      float scale = form.CompatibilityMode() ? form.compatScalingFactor() : 1.0f;
+
+      int xinit = (int) (Math.round(xLeft) * scale * form.deviceDensity());
+      int yinit = (int) (Math.round(yTop) * scale * form.deviceDensity());
+      int w = (int)(Width() * scale * form.deviceDensity());
+      int h = (int)(Height() * scale * form.deviceDensity());
       // If the sprite doesn't rotate,  use the original drawable
       // otherwise use the bitmapDrawable
       if (!rotates) {
