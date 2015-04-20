@@ -33,6 +33,7 @@ import com.google.appinventor.components.runtime.util.AsynchUtil;
 
 import kawa.standard.Scheme;
 import gnu.expr.Language;
+import gnu.mapping.Environment;
 
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -43,6 +44,7 @@ public class AppInvHTTPD extends NanoHTTPD {
 
   private File rootDir;
   private Language scheme;
+  private Environment environment;
   private ReplForm form;
   private boolean secure;       // Should we only accept from 127.0.0.1?
 
@@ -58,7 +60,10 @@ public class AppInvHTTPD extends NanoHTTPD {
   {
     super(port, wwwroot);
     this.rootDir = wwwroot;
-    this.scheme = Scheme.getInstance("scheme");
+    Scheme.registerEnvironment();
+    this.scheme = new Scheme();
+    this.environment = this.scheme.getEnvironment();
+//    this.scheme = Scheme.getInstance("scheme");
     this.form = form;
     this.secure = secure;
     gnu.expr.ModuleExp.mustNeverCompile();
@@ -201,6 +206,19 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return(res);
+    } else if (uri.equals("/_eval")) {
+      String code = parms.getProperty("code");
+      Log.d(LOG_TAG, "To special eval: " + code);
+      Response res;
+      try {
+        Object result = Scheme.eval(code, environment);
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, result.toString());
+        return (res);
+      } catch (Throwable ex) {
+        Log.e(LOG_TAG, "special eval: Scheme Failure", ex);
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "Failure, check log: " + ex.toString());
+        return (res);
+      }
     } else if (uri.equals("/_values")) {
       Response res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(true)); // Blocking Fetch
       res.addHeader("Access-Control-Allow-Origin", "*");
