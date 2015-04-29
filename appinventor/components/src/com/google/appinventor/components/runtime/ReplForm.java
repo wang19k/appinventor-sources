@@ -96,7 +96,6 @@ public class ReplForm extends Form {
 
   public void setFormName(String formName) {
     this.formName = formName;
-
     Log.d("ReplForm", "formName is now " + formName);
   }
 

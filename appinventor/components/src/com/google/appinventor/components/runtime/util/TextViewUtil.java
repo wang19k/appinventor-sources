@@ -10,7 +10,6 @@ import com.google.appinventor.components.runtime.Component;
 
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.widget.TextView;
 

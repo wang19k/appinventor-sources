@@ -89,7 +89,6 @@ public class ImageSprite extends Sprite {
    */
   public void onDraw(android.graphics.Canvas canvas) {
     if (unrotatedBitmap != null && visible) {
-
       int xinit = (int) (Math.round(xLeft) * form.deviceDensity());
       int yinit = (int) (Math.round(yTop) * form.deviceDensity());
       int w = (int)(Width() * form.deviceDensity());

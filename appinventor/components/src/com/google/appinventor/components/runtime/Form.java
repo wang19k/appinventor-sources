@@ -143,7 +143,7 @@ public class Form extends Activity
   private boolean scrollable;
 
   private ScaledFrameLayout scaleLayout;
-  private boolean compatibilityMode;
+  private static boolean sCompatibilityMode;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -1140,13 +1140,12 @@ public class Form extends Activity
   public void CompatibilityMode(boolean compatibilityMode) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
-    this.compatibilityMode = compatibilityMode;
+    sCompatibilityMode = compatibilityMode;
     scaleLayout.setScale(compatibilityMode ? compatScalingFactor : 1.0f);
-
   }
 
-  public boolean CompatibilityMode() {
-    return this.compatibilityMode;
+  public static boolean CompatibilityMode() {
+    return sCompatibilityMode;
   }
 
 
