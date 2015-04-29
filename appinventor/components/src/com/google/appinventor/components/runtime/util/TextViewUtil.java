@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Component;
-import com.google.appinventor.components.runtime.Form;
 
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
@@ -96,13 +95,7 @@ public class TextViewUtil {
    * @return  font size in pixel
    */
   public static float getFontSize(TextView textview) {
-    if (Form.getActiveForm().CompatibilityMode()) {
-      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext());
-      return textview.getTextSize() / scale;
-    }
-    else {
-      return textview.getTextSize();
-    }
+    return textview.getTextSize();
   }
 
   /**
@@ -112,14 +105,7 @@ public class TextViewUtil {
    * @param size  font size in pixel
    */
   public static void setFontSize(TextView textview, float size) {
-    if (Form.getActiveForm().CompatibilityMode()) {
-      float scale = ScreenDensityUtil.computeCompatibleScaling(textview.getContext());
-      textview.setTextSize(scale * size);
-    }
-    else {
-      textview.setTextSize(size);
-    }
-
+    textview.setTextSize(size);
     textview.requestLayout();
   }
 

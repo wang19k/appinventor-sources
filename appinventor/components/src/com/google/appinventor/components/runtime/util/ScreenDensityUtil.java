@@ -25,15 +25,14 @@ public final class ScreenDensityUtil {
 
   private static final String LOG_TAG = "ScreenDensityUtil";
 
-  //Much of this compatibility scaling code is taken from the Android source code
+  // Much of this compatibility scaling code/constant is taken
+  // from the Android source code.
   public static final int DEFAULT_NORMAL_SHORT_DIMENSION = 320;
-  public static final float MAXIMUM_ASPECT_RATIO = (854f/480f); 
+  public static final float MAXIMUM_ASPECT_RATIO = (854f/480f);
 
 
   private ScreenDensityUtil() {
   }
-
-
 
   /**
    * Compute the scaling for applications runs under compatibility mode.
@@ -47,8 +46,6 @@ public final class ScreenDensityUtil {
 
     Point rawDims = new Point();
     getRawScreenDim(context, rawDims);
-
-    Log.d(LOG_TAG, "raw width: " + rawDims.x + " height: " + rawDims.y);
 
     int width = rawDims.x;
     int height = rawDims.y;
@@ -86,8 +83,6 @@ public final class ScreenDensityUtil {
     return scale;
   }
 
-
-
   /**
    * Determine the actual size of the screen in pixels.
    * Inspired by http://stackoverflow.com/a/17512853/135135
@@ -100,7 +95,6 @@ public final class ScreenDensityUtil {
     final DisplayMetrics metrics = new DisplayMetrics();
     final WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
     Display display = wm.getDefaultDisplay();
-
 
     int sdkLevel = SdkLevel.getLevel();
     if (sdkLevel >= SdkLevel.LEVEL_JELLYBEAN_MR1) {

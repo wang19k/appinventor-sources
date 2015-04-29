@@ -7,7 +7,6 @@
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Component;
-import com.google.appinventor.components.runtime.Form;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -18,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 
-import java.lang.reflect.Field;
-
 /**
  * Helper methods for manipulating {@link View} objects.
  *
@@ -29,33 +26,16 @@ public final class ViewUtil {
   private ViewUtil() {
   }
 
-
-  private static int calculatePixels(View view, int sizeInDP) {
-    return calculatePixels(view, sizeInDP, false);
-  }
-
   /**
    * Calculate the device dependent pixels to render this view. The size in the designer is given
    * in Density Independent Pixels, and we need to transform that to real pixels depending on the
    * device running the app. The formula is simple: "pixel_size * density".
-   * TODO (jos) This will need changes to create a 'compatibility mode' for the Companion.
    * @param view the view is needed to grab the Context object
    * @param sizeInDP the size (in DP) specified in the designer
-   * @param ignoreCompat if true, does not return compatibility scaled pixels
    * @return size in Pixels for the particular device running the app.
    */
-  private static int calculatePixels(View view, int sizeInDP, boolean ignoreCompat) {
-    Context context = view.getContext();
-    if ( !ignoreCompat && Form.getActiveForm().CompatibilityMode()) {
-      DisplayMetrics currentMet = context.getResources().getDisplayMetrics();
-      float scale = ScreenDensityUtil.computeCompatibleScaling(context);
-      float density = currentMet.density;
-      Log.e("ViewUtil", "compat density calculated: " + scale);
-      return (int) (density * scale * sizeInDP);
-    }
-    else {
-      return (int) (context.getResources().getDisplayMetrics().density * sizeInDP);
-    }
+  private static int calculatePixels(View view, int sizeInDP) {
+    return (int) (view.getContext().getResources().getDisplayMetrics().density * sizeInDP);
   }
 
 

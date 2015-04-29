@@ -142,6 +142,7 @@ public class Form extends Activity
   private FrameLayout frameLayout;
   private boolean scrollable;
 
+  private ScaledFrameLayout scaleLayout;
   private boolean compatibilityMode;
 
   // Application lifecycle related fields
@@ -236,6 +237,7 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
+    CompatibilityMode(false);
     BackgroundImage("");
     AboutScreen("");
     BackgroundColor(Component.COLOR_WHITE);
@@ -717,7 +719,12 @@ public class Form extends Activity
       ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
     }
 
-    setContentView(frameLayout);
+    scaleLayout = new ScaledFrameLayout(this);
+    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    setContentView(scaleLayout);
+
     frameLayout.requestLayout();
   }
 
@@ -1134,6 +1141,8 @@ public class Form extends Activity
     // This is used by the project and build server.
     // We also use it to adjust sizes
     this.compatibilityMode = compatibilityMode;
+    scaleLayout.setScale(compatibilityMode ? compatScalingFactor : 1.0f);
+
   }
 
   public boolean CompatibilityMode() {

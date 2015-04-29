@@ -62,11 +62,9 @@ public final class Ball extends Sprite {
   @Override
   protected void onDraw(Canvas canvas) {
     if (visible) {
-      float scale = form.CompatibilityMode() ? form.compatScalingFactor() : 1.0f;
-
-      float correctedXLeft = (float)(xLeft * scale * form.deviceDensity());
-      float correctedYTop =  (float)(yTop * scale * form.deviceDensity());
-      float correctedRadius = radius * scale * form.deviceDensity();
+      float correctedXLeft = (float)(xLeft * form.deviceDensity());
+      float correctedYTop =  (float)(yTop * form.deviceDensity());
+      float correctedRadius = radius * form.deviceDensity();
       canvas.drawCircle(correctedXLeft + correctedRadius, correctedYTop +
           correctedRadius, correctedRadius, paint);
     }
