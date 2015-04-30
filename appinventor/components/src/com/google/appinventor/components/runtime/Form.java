@@ -62,7 +62,9 @@ import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
+
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -99,6 +101,7 @@ public class Form extends Activity
   protected static Form activeForm;
 
   private float deviceDensity;
+  private float compatScalingFactor;
 
   // applicationIsBeingClosed is set to true during closeApplication.
   private static boolean applicationIsBeingClosed;
@@ -138,6 +141,9 @@ public class Form extends Activity
 
   private FrameLayout frameLayout;
   private boolean scrollable;
+
+  private ScaledFrameLayout scaleLayout;
+  private static boolean sCompatibilityMode;
 
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
@@ -197,7 +203,7 @@ public class Form extends Activity
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
 
     deviceDensity = this.getResources().getDisplayMetrics().density;
-
+    compatScalingFactor = ScreenDensityUtil.computeCompatibleScaling(this);
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
 
@@ -231,6 +237,7 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
+    CompatibilityMode(false);
     BackgroundImage("");
     AboutScreen("");
     BackgroundColor(Component.COLOR_WHITE);
@@ -712,7 +719,12 @@ public class Form extends Activity
       ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
     }
 
-    setContentView(frameLayout);
+    scaleLayout = new ScaledFrameLayout(this);
+    scaleLayout.addView(frameLayout, new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
+    setContentView(scaleLayout);
+
     frameLayout.requestLayout();
   }
 
@@ -1126,7 +1138,14 @@ public class Form extends Activity
   @SimpleProperty(userVisible = false,
       description = "If selected, the app will be built using compatibility mode")
   public void CompatibilityMode(boolean compatibilityMode) {
-    // We don't actually need to do anything. This is used by the project and build server.
+    // This is used by the project and build server.
+    // We also use it to adjust sizes
+    sCompatibilityMode = compatibilityMode;
+    scaleLayout.setScale(compatibilityMode ? compatScalingFactor : 1.0f);
+  }
+
+  public static boolean CompatibilityMode() {
+    return sCompatibilityMode;
   }
 
 
@@ -1282,6 +1301,10 @@ public class Form extends Activity
 
   public float deviceDensity(){
     return this.deviceDensity;
+  }
+
+  public float compatScalingFactor() {
+    return this.compatScalingFactor;
   }
 
   @Override

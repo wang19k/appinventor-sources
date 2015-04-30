@@ -407,7 +407,7 @@ public final class MockForm extends MockContainer {
     }
 
     if (propertyName.equals(PROPERTY_NAME_COMPATIBILITY_MODE)) {
-      // The VersionCode property actually applies to the application and is only visible on Screen1.
+      // The CompatiblityMode property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
