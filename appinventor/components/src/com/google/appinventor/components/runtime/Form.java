@@ -203,7 +203,9 @@ public class Form extends Activity
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
 
     deviceDensity = this.getResources().getDisplayMetrics().density;
+    Log.d(LOG_TAG, "deviceDensity = " + deviceDensity);
     compatScalingFactor = ScreenDensityUtil.computeCompatibleScaling(this);
+    Log.i(LOG_TAG, "compatScalingFactor = " + compatScalingFactor);
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
     alignmentSetter = new AlignmentUtil(viewLayout);
 
@@ -572,6 +574,7 @@ public class Form extends Activity
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
+          CompatibilityMode(sCompatibilityMode); // Make sure call to setLayout happens
           screenInitialized = true;
 
           //  Call all apps registered to be notified when Initialize Event is dispatched
@@ -1172,7 +1175,12 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen width (x-size).")
   public int Width() {
-    return (int)(frameLayout.getWidth() / this.deviceDensity);
+    int retval = (int)(scaleLayout.getWidth() / this.deviceDensity);
+    if (sCompatibilityMode) {
+      retval /= compatScalingFactor;
+    }
+    Log.d(LOG_TAG, "Width = " + retval);
+    return retval;
   }
 
   /**
@@ -1183,7 +1191,12 @@ public class Form extends Activity
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
     description = "Screen height (y-size).")
   public int Height() {
-    return (int)(frameLayout.getHeight() / this.deviceDensity);
+    int retval = (int)(scaleLayout.getHeight() / this.deviceDensity);
+    if (sCompatibilityMode) {
+      retval /= compatScalingFactor;
+    }
+    Log.d(LOG_TAG, "Height = " + retval);
+    return retval;
   }
 
   /**
