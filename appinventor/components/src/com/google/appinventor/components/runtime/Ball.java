@@ -84,12 +84,22 @@ public final class Ball extends Sprite {
   }
 
   @Override
+  public void HeightPercent(int pCent) {
+    // ignored
+  }
+
+  @Override
   public int Width() {
     return 2 * radius;
   }
 
   @Override
   public void Width(int width) {
+    // ignored
+  }
+
+  @Override
+  public void WidthPercent(int pCent) {
     // ignored
   }
 

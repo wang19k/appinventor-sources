@@ -10,8 +10,8 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -42,8 +42,7 @@ import com.google.appinventor.components.runtime.util.YailList;
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that displays a list of text elements." +
         " <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. <br> Warning: This component will" +
-        " not work correctly on Screens that are scrollable.</p>",
+        " or using the Elements block in the blocks editor. </p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -208,7 +207,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * @param itemsList a YailList containing the strings to be added to the ListView
    */
   @SimpleProperty(description="List of text elements to show in the ListView.  This will" +
-  		"signal an error if the elements are not text strings.",
+                "signal an error if the elements are not text strings.",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemsList) {
     items = ElementsUtil.elements(itemsList, "Listview");
@@ -254,8 +253,12 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     int size = items.size();
     Spannable [] objects = new Spannable[size];
     for (int i = 1; i <= size; i++) {
-      String itemString = items.get(i).toString();
-      // Is there a more efficient way to do this that does not
+      // Note that the ListPicker and otherPickers pickers convert Yail lists to string by calling
+      // YailList.ToStringArray.
+      // ListView however, does the string conversion via the adapter, so we must ensure
+      // that the adapter uses YailListElementToSring
+      String itemString = YailList.YailListElementToString(items.get(i));
+      // Is there a more efficient way to do conversion to spannable strings that does not
       // need to allocate new objects?
       Spannable chars = new SpannableString(itemString);
       chars.setSpan(new ForegroundColorSpan(textColor),0,chars.length(),0);

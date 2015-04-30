@@ -177,8 +177,13 @@ public final class ErrorMessages {
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
-  // Please start the next group of error numbers at 2701.
+  //TextToSpeech errors
+  public static final int ERROR_TTS_NOT_READY = 2701;
 
+  // AndroidViewComponent errors
+  public static final int ERROR_BAD_PERCENT = 2801;
+
+  // Please start the next group of error numbers at 2901.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -443,9 +448,13 @@ public final class ErrorMessages {
     //DatePicker errors
     errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
     errorMessages.put(ERROR_WEBVIEW_SSL_ERROR, "SSL Connection could not complete.");
-    // FusiontablesControl error
+    // FusiontablesControl errors
     errorMessages.put(FUSION_TABLES_QUERY_ERROR, "Fusion tables returned an error. The query was: %s. " +
        "The response was: %s");
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
+    // TextToSpeech errors
+    errorMessages.put(ERROR_TTS_NOT_READY,
+       "TextToSpeech is not yet ready to perform this operation");
   }
 
   private ErrorMessages() {
