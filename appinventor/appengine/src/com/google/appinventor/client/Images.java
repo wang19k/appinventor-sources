@@ -491,4 +491,16 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/proximitysensor.png")
   ImageResource proximitysensor();
 
+  /**
+    * Designer palette item: WICED Sense
+    */
+  @Source("com/google/appinventor/images/wicedSenseIcon.png")
+  ImageResource wicedSenseIcon();
+
+  /**
+    * Designer palette item: Filter
+    */
+  @Source("com/google/appinventor/images/butterworthFilterIcon.png")
+  ImageResource butterworthFilterIcon();
+
 }

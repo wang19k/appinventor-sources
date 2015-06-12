@@ -4080,6 +4080,27 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ShakingEvents();
 
+  // WICED Sense functions
+  @DefaultMessage("FoundDevice")
+  @Description("")
+  String FoundDeviceEvents();
+
+  @DefaultMessage("Connected")
+  @Description("")
+  String ConnectedEvents();
+
+  @DefaultMessage("SensorsUpdated")
+  @Description("")
+  String SensorsUpdatedEvents();
+
+  @DefaultMessage("RSSIUpdated")
+  @Description("")
+  String RSSIUpdatedEvents();
+
+  @DefaultMessage("BatteryLevelUpdated")
+  @Description("")
+  String BatteryLevelUpdatedEvents();
+
   //Methods
   @DefaultMessage("ResolveActivity")
   @Description("")
@@ -4905,6 +4926,157 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RequestTranslationMethods();
 
+  // Components for WICEDSense
+  @DefaultMessage("Scanning")
+  @Description("")
+  String ScanningProperties();
+
+  @DefaultMessage("IsEnabled")
+  @Description("")
+  String IsEnabledProperties();
+
+  @DefaultMessage("RSSI")
+  @Description("")
+  String RSSIProperties();
+
+  @DefaultMessage("DeviceServices")
+  @Description("")
+  String DeviceServicesProperties();
+
+  @DefaultMessage("SensorsEnabled")
+  @Description("")
+  String SensorsEnabledProperties();
+
+  @DefaultMessage("FoundServices")
+  @Description("")
+  String FoundServicesProperties();
+
+  @DefaultMessage("XGyro")
+  @Description("")
+  String XGyroProperties();
+
+  @DefaultMessage("YGyro")
+  @Description("")
+  String YGyroProperties();
+
+  @DefaultMessage("ZGyro")
+  @Description("")
+  String ZGyroProperties();
+
+  @DefaultMessage("XMagnetometer")
+  @Description("")
+  String XMagnetometerProperties();
+
+  @DefaultMessage("YMagnetometer")
+  @Description("")
+  String YMagnetometerProperties();
+
+  @DefaultMessage("ZMagnetometer")
+  @Description("")
+  String ZMagnetometerProperties();
+
+  @DefaultMessage("Humidity")
+  @Description("")
+  String HumidityProperties();
+
+  @DefaultMessage("Pressure")
+  @Description("")
+  String PressureProperties();
+
+  @DefaultMessage("Temperature")
+  @Description("")
+  String TemperatureProperties();
+
+  @DefaultMessage("Timestamp")
+  @Description("")
+  String TimestampProperties();
+
+  @DefaultMessage("TemperatureTimestamp")
+  @Description("")
+  String TemperatureTimestampProperties();
+
+  @DefaultMessage("UseFahrenheit")
+  @Description("")
+  String UseFahrenheitProperties();
+
+  @DefaultMessage("RunInBackground")
+  @Description("")
+  String RunInBackgroundProperties();
+
+  @DefaultMessage("ScanRSSI")
+  @Description("")
+  String ScanRSSIProperties();
+
+  @DefaultMessage("ScanRecords")
+  @Description("")
+  String ScanRecordsProperties();
+
+  // Butterworth Filter componets
+  @DefaultMessage("Order")
+  @Description("")
+  String OrderProperties();
+
+  @DefaultMessage("HighpassFreq")
+  @Description("")
+  String HighpassFreqProperties();
+
+  @DefaultMessage("LowpassFreq")
+  @Description("")
+  String LowpassFreqProperties();
+
+  @DefaultMessage("SamplingFreq")
+  @Description("")
+  String SamplingFreqProperties();
+
+  @DefaultMessage("Lowpass")
+  @Description("")
+  String LowpassProperties();
+
+  @DefaultMessage("Highpass")
+  @Description("")
+  String HighpassProperties();
+
+  @DefaultMessage("FilterDelay")
+  @Description("")
+  String FilterDelayProperties();
+
+  // Methods for Bluetooth Low Energy Components
+
+  @DefaultMessage("Filter")
+  @Description("")
+  String FilterMethods();
+
+  @DefaultMessage("FilterResponse")
+  @Description("")
+  String FilterResponseMethods();
+
+  @DefaultMessage("ConnectClosest")
+  @Description("")
+  String ConnectClosestMethods();
+
+  @DefaultMessage("ReadBatteryLevel")
+  @Description("")
+  String ReadBatteryLevelMethods();
+
+  @DefaultMessage("BatteryLevel")
+  @Description("")
+  String BatteryLevelProperties();
+
+  @DefaultMessage("ReadRSSI")
+  @Description("")
+  String ReadRSSIMethods();
+
+  @DefaultMessage("ResetTimestamp")
+  @Description("")
+  String ResetTimestampMethods();
+
+  @DefaultMessage("startLeScan")
+  @Description("")
+  String startLeScanMethods();
+
+  @DefaultMessage("stopLeScan")
+  @Description("")
+  String stopLeScanMethods();
 
   //Mock Components
   @DefaultMessage("add items...")

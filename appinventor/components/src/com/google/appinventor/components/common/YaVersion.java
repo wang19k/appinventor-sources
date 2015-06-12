@@ -322,8 +322,10 @@ public class YaVersion {
   // - PASSWORDTEXTBOX_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 123:
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 124:
+  // - The Bluetooth Low Energie Component(s) were added
 
-  public static final int YOUNG_ANDROID_VERSION = 123;
+  public static final int YOUNG_ANDROID_VERSION = 124;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -469,6 +471,15 @@ public class YaVersion {
   // For BLUETOOTHSERVER_COMPONENT_VERSION 5:
   // - The BluetoothServer.Secure property was added.
   public static final int BLUETOOTHSERVER_COMPONENT_VERSION = 5;
+
+  // David Garrett - start WICED Sense development
+  public static final int WICEDSENSE_COMPONENT_VERSION = 1;
+
+  // Tricia Divita - start BTLE Base and WICED Sense Child development
+  public static final int BTLE_WICEDSENSE_COMPONENT_VERSION = 1;
+
+  // David Garrett - start WICED Sense development
+  public static final int BUTTERWORTH_FILTER_COMPONENT_VERSION = 1;
 
   // For BUTTON_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

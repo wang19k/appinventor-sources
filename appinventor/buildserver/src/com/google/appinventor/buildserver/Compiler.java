@@ -536,6 +536,7 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
+
     setProgress(10);
 
     // Create anim directory and animation xml files
