@@ -167,8 +167,8 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_ICON = "Icon";
   private static final String PROPERTY_NAME_VCODE = "VersionCode";
   private static final String PROPERTY_NAME_VNAME = "VersionName";
-  private static final String PROPERTY_NAME_COMPATIBILITY_MODE = "CompatibilityMode";
   private static final String PROPERTY_NAME_ANAME = "AppName";
+  private static final String PROPERTY_NAME_SIZING = "Sizing"; // Don't show except on screen1
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -406,8 +406,8 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
-    if (propertyName.equals(PROPERTY_NAME_COMPATIBILITY_MODE)) {
-      // The CompatiblityMode property actually applies to the application and is only visible on Screen1.
+    if (propertyName.equals(PROPERTY_NAME_SIZING)) {
+      // The Sizing property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
@@ -715,8 +715,8 @@ public final class MockForm extends MockContainer {
       adjustAlignmentDropdowns();
     } else if (propertyName.equals(PROPERTY_NAME_TITLE)) {
       titleBar.changeTitle(newValue);
-    } else if (propertyName.equals(PROPERTY_NAME_COMPATIBILITY_MODE)) {
-      if (newValue.equals("True")){ // Disable Tablet Preview
+    } else if (propertyName.equals(PROPERTY_NAME_SIZING)) {
+      if (newValue.equals("Fixed")){ // Disable Tablet Preview
         editor.getVisibleComponentsPanel().enableTabletPreviewCheckBox(false);
       }
       else {

@@ -243,7 +243,8 @@ public class Form extends Activity
 
   private void defaultPropertyValues() {
     Scrollable(false); // frameLayout is created in Scrollable()
-    CompatibilityMode(false);
+    Sizing("Fixed");
+    BackgroundImage("");
     AboutScreen("");
     BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
@@ -580,7 +581,11 @@ public class Form extends Activity
       public void run() {
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
-          CompatibilityMode(sCompatibilityMode); // Make sure call to setLayout happens
+          if (sCompatibilityMode) { // Make sure call to setLayout happens
+            Sizing("Fixed");
+          } else {
+            Sizing("Responsive");
+          }
           screenInitialized = true;
 
           //  Call all apps registered to be notified when Initialize Event is dispatched
@@ -1191,26 +1196,34 @@ public class Form extends Activity
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
+
   /**
-   * Compatibility mode property setter method.
+   * Sizing Property Setter
    *
-   * @param compatibilityMode true sets API level to Compiler.COMPATIBILITY_MIN_SDK
+   * @param 
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
+      defaultValue = "Fixed")
   @SimpleProperty(userVisible = false,
-      description = "If selected, the app will be built using compatibility mode")
-  public void CompatibilityMode(boolean compatibilityMode) {
+    description = "Determine whether or not we will auto scale to make all devices appear the same size")
+  public void Sizing(String value) {
     // This is used by the project and build server.
     // We also use it to adjust sizes
-    sCompatibilityMode = compatibilityMode;
-    scaleLayout.setScale(compatibilityMode ? compatScalingFactor : 1.0f);
+    if (value.equals("Fixed")) {
+      sCompatibilityMode = true;
+    } else {
+      sCompatibilityMode = false;
+    }
+    scaleLayout.setScale(sCompatibilityMode ? compatScalingFactor : 1.0f);
   }
 
-  public static boolean CompatibilityMode() {
-    return sCompatibilityMode;
-  }
-
+  // public String Sizing() {
+  //   if (compatibilityMode) {
+  //     return "Fixed";
+  //   } else {
+  //     return "Responsive";
+  //   }
+  // }
 
   /**
    * Specifies the App Name.

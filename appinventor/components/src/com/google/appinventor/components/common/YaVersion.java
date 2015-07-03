@@ -338,8 +338,10 @@ public class YaVersion {
   // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 131:
   // - FORM_COMPONENT_VERSION was incremented to 17.
+  // For YOUNG_ANDROID_VERSION 132:
+  // - FORM_COMPONENT_VERSION was incremented to 16.
 
-  public static final int YOUNG_ANDROID_VERSION = 131;
+  public static final int YOUNG_ANDROID_VERSION = 132;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -609,7 +611,10 @@ public class YaVersion {
   // - TitleVisible property was added
   // For FORM_COMPONENT_VERSION 17:
   // - The Screen.CompatibilityMode property was added
-  public static final int FORM_COMPONENT_VERSION = 17;
+  // For FORM_COMPONENT_VERSION 18:
+  // - Screen.CompatibilityMode property morphed into the
+  //   Sizing property
+  public static final int FORM_COMPONENT_VERSION = 18;
 
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:

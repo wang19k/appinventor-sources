@@ -921,6 +921,16 @@ public interface OdeMessages extends Messages {
   @Description("Text for accelerometer sensitivity choice 'strong'")
   String strongAccelerometerSensitivity();
 
+  // Used in editor/youngandroid/properties/YoungAndroidSizingChoicePropertyEditor.java
+
+  @DefaultMessage("Fixed")
+  @Description("Text for Sizing choice 'fixed' -- scale to fit device screen")
+  String fixedSizing();
+
+  @DefaultMessage("Responsive")
+  @Description("Text for Sizing choice 'responsive' -- size based on device type")
+  String responsiveSizing();
+
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
   @DefaultMessage("left")
@@ -2746,9 +2756,9 @@ public interface OdeMessages extends Messages {
   @Description("")
   String VersionNameProperties();
 
-  @DefaultMessage("CompatibilityMode")
+  @DefaultMessage("Sizing")
   @Description("")
-  String CompatibilityModeProperties();
+  String SizingProperties();
 
   @DefaultMessage("Visible")
   @Description("")

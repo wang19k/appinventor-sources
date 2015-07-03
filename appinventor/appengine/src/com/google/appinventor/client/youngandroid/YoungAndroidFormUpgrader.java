@@ -811,6 +811,16 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 17;
     }
 
+    if (srcCompVersion < 18) {
+      // Compatilibity Mode property turned into the Sizing property
+      if (componentProperties.containsKey("CompatibilityMode")) {
+        componentProperties.remove("CompatibilityMode");
+      } else {
+        componentProperties.put("Sizing", new ClientJsonString("Responsive"));
+      }
+      srcCompVersion = 18;
+    }
+
     return srcCompVersion;
   }
 
