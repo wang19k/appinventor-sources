@@ -747,11 +747,13 @@ public final class MockForm extends MockContainer {
   }
 
   // Don't forget to call this on initialization!!!
-  // If scrollable is True, the selector for vertical alignment should be disabled. 
+  // If scrollable is True, the selector for vertical alignment should be disabled.
   private void enableAndDisableDropdowns() {
     String scrollable = properties.getProperty(PROPERTY_NAME_SCROLLABLE).getValue();
     if (scrollable.equals("True")) {
       myVAlignmentPropertyEditor.disable();
-    } else myVAlignmentPropertyEditor.enable();
+    } else {
+      myVAlignmentPropertyEditor.enable();
+    }
   }
 }
