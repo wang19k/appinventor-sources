@@ -678,6 +678,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public void uploadUserFile(final String userId, final String fileName,
       final String content, final String encoding) {
+    if (true) {                 // Read Only now
+      return;
+    }
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -701,6 +704,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public void uploadRawUserFile(final String userId, final String fileName,
       final byte[] content) {
+    if (true) {                 // Read only now
+      return;
+    }
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1003,6 +1009,9 @@ public class ObjectifyStorageIo implements  StorageIo {
   @Override
   public long uploadRawFile(final long projectId, final String fileName, final String userId,
       final byte[] content) {
+    if (true) {                 // Read Only Now
+      return 0;
+    }
     final Result<Long> modTime = new Result<Long>();
     final boolean useBlobstore = useBlobstoreForFile(fileName);
     final Result<String> oldBlobstorePath = new Result<String>();
@@ -1106,6 +1115,9 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public long deleteFile(final String userId, final long projectId, final String fileName) {
+    if (true) {                 // Read Only Now
+      return 0;
+    }
     if (!getProjects(userId).contains(projectId)) {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId),

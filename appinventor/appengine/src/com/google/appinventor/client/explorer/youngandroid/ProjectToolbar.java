@@ -54,11 +54,11 @@ public class ProjectToolbar extends Toolbar {
   public ProjectToolbar() {
     super();
 
-    addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
-        new NewAction()));
+/*    addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
+      new NewAction())); */
 
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
-        new DeleteAction()));
+/*    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
+      new DeleteAction())); */
 
     addButton(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
         new DownloadAllAction()));
@@ -66,15 +66,15 @@ public class ProjectToolbar extends Toolbar {
     List<ToolbarItem> otherItems = Lists.newArrayList();
     otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_SOURCE,
         MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_SOURCE,
-        MESSAGES.uploadSourceButton(), new UploadSourceAction()));
-    otherItems.add(null);
+/*    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_SOURCE,
+      MESSAGES.uploadSourceButton(), new UploadSourceAction()));
+      otherItems.add(null); */
     otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
         MESSAGES.downloadKeystoreButton(), new DownloadKeystoreAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_KEYSTORE,
-        MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
+/*    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_KEYSTORE,
+      MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
     otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
-        MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
+    MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction())); */
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
     if (Ode.getInstance().getUser().getIsAdmin()) {
       List<ToolbarItem> adminItems = Lists.newArrayList();
@@ -310,7 +310,7 @@ public class ProjectToolbar extends Toolbar {
 
     setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
 
-    setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
+/*    setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0); */
 
     setDropItemEnabled(WIDGET_NAME_DOWNLOAD_SOURCE, numSelectedProjects == 1);
   }
@@ -324,14 +324,14 @@ public class ProjectToolbar extends Toolbar {
       @Override
       public void onSuccess(Boolean keystoreFileExists) {
         setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+/*        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists); */
       }
 
       @Override
       public void onFailure(Throwable caught) {
         // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
         setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, true);
+/*        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, true); */
       }
     });
   }

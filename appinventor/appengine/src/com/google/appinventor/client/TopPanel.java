@@ -33,19 +33,14 @@ public class TopPanel extends Composite {
       "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
       "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
-  private static final String GALLERY_LINK_AND_TEXT =
-      "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
-      "Try the App Inventor Community Gallery (Beta)</a>";
+  private static final String GALLERY_LINK_AND_TEXT = "";
 
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor beta release." +
-      " Be sure to check the list of " + KNOWN_ISSUES_LINK_AND_TEXT + " and " +
-      RELEASE_NOTES_LINK_AND_TEXT + ".  " + GALLERY_LINK_AND_TEXT);
-
+  private final HTML welcome = new HTML("App Inventor Classic is READ ONLY.");
 
     //This is an experimental version of App Inventor. "
     //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");

@@ -65,6 +65,7 @@ public class DesignToolbar extends Toolbar {
     toolbar.insert(projectName, 0);
     toolbar.setCellWidth(projectName, "222px"); 
 
+    /*
     addButton(new ToolbarItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
         new SaveAction()));
     addButton(new ToolbarItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsButton(),
@@ -88,7 +89,7 @@ public class DesignToolbar extends Toolbar {
         MESSAGES.downloadToComputerButton(), new DownloadAction()));
     buildItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_TO_PHONE,
         MESSAGES.downloadToPhoneButton(), new DownloadToPhoneAction()));
-    addDropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(), buildItems, true);
+        addDropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(), buildItems, true); */
 
   }
 
@@ -252,14 +253,15 @@ public class DesignToolbar extends Toolbar {
   public void updateButtons() {
     YaFormEditor formEditor = Ode.getInstance().getCurrentYoungAndroidFormEditor();
     boolean enabled = (formEditor != null);
-    setButtonEnabled(WIDGET_NAME_SAVE, enabled);
+/*    setButtonEnabled(WIDGET_NAME_SAVE, enabled);
     setButtonEnabled(WIDGET_NAME_SAVE_AS, enabled);
     setButtonEnabled(WIDGET_NAME_CHECKPOINT, enabled);
     setDropItemEnabled(WIDGET_NAME_BARCODE, enabled);
     setDropItemEnabled(WIDGET_NAME_DOWNLOAD, enabled);
-    setDropItemEnabled(WIDGET_NAME_DOWNLOAD_TO_PHONE, enabled);
+    setDropItemEnabled(WIDGET_NAME_DOWNLOAD_TO_PHONE, enabled); */
 
-    if (AppInventorFeatures.allowMultiScreenApplications()) {
+    if (false) {                // Read Only
+/*    if (AppInventorFeatures.allowMultiScreenApplications()) { */
       setButtonEnabled(WIDGET_NAME_ADDFORM, enabled);
       enabled = (formEditor != null && !formEditor.isScreen1());
       setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);
@@ -282,9 +284,9 @@ public class DesignToolbar extends Toolbar {
    * {@link CodeblocksManager} can start (or cancel) codeblocks.
    */
   public void updateCodeblocksButton() {
-    setButtonEnabled(WIDGET_NAME_OPEN_BLOCKS_EDITOR, codeblocksButtonCancel
+/*    setButtonEnabled(WIDGET_NAME_OPEN_BLOCKS_EDITOR, codeblocksButtonCancel
         ? CodeblocksManager.getCodeblocksManager().canCancelCodeblocks()
-        : CodeblocksManager.getCodeblocksManager().canStartCodeblocks());
+        : CodeblocksManager.getCodeblocksManager().canStartCodeblocks()); */
   }
 
   /**
@@ -302,6 +304,6 @@ public class DesignToolbar extends Toolbar {
     } else {
       caption = MESSAGES.blocksEditorIsOpenButton();
     }
-    setButtonCaption(WIDGET_NAME_OPEN_BLOCKS_EDITOR, caption);
+/*    setButtonCaption(WIDGET_NAME_OPEN_BLOCKS_EDITOR, caption); */
   }
 }
