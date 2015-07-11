@@ -5,9 +5,19 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appengine.api.blobstore.BlobInfo;
+import com.google.appengine.api.blobstore.BlobInfoFactory;
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
@@ -1166,7 +1176,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (fileData != null) {
       if (fileData.isBlob) {
         try {
-          result.t = getBlobstoreBytes(fileData.blobstorePath);
+          result.t = getBlobstoreBytes(projectId, fileData.fileName);
         } catch (BlobReadException e) {
           throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(userId, projectId, fileName), e);
@@ -1182,20 +1192,33 @@ public class ObjectifyStorageIo implements  StorageIo {
     return result.t;
   }
 
-  // Note: this must be called outside of any transaction, since getBlobKey()
-  // uses the current transaction and it will most likely have the wrong
-  // entity group!
-  private byte[] getBlobstoreBytes(String blobstorePath) throws BlobReadException {
-    AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
-    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);
+  // In this version we do a query on the Blobstore using the filename
+  // we then take the blob with the latest modification time. This allows us to
+  // read blobs without knowing the BlobKey and without using the Files API
+  private byte[] getBlobstoreBytes(long projectId, String blobFileName) throws BlobReadException {
+    // We don't use Objectify because we are going to hit the blobstore...
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    BlobInfoFactory blobFactory = new BlobInfoFactory();
+    String fileName = projectId + "/" + blobFileName;
+    com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query("__BlobInfo__");
+    query.addFilter("filename", FilterOperator.EQUAL, fileName);
+    query.addSort("creation", SortDirection.DESCENDING);
+    PreparedQuery pq = datastore.prepare(query);
+    List<Entity> entityList = pq.asList(FetchOptions.Builder.withLimit(1));
+    if (entityList.isEmpty()) {
+      throw new BlobReadException("Could Not find Blob Entity for " + fileName);
+    }
+    Entity blobEntity = entityList.get(0);
+    BlobInfo blobInfo = blobFactory.createBlobInfo(blobEntity);
+    BlobKey blobKey = blobInfo.getBlobKey();
     if (blobKey == null) {
-      throw new BlobReadException("getBlobKey() returned null for " + blobstorePath);
+      throw new BlobReadException("new BlobKey(blobKeyString) returned null for " + fileName);
     }
     try {
       InputStream blobInputStream = new BlobstoreInputStream(blobKey);
       return ByteStreams.toByteArray(blobInputStream);
     } catch (IOException e) {
-      throw new BlobReadException(e, "Error trying to read blob from " + blobstorePath
+      throw new BlobReadException(e, "Error trying to read blob from " + fileName
           + ", blobkey = " + blobKey);
     }
   }
@@ -1265,7 +1288,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         byte[] data;
         if (fd.isBlob) {
           try {
-            data = getBlobstoreBytes(fd.blobstorePath);
+            data = getBlobstoreBytes(projectId, fd.fileName);
           } catch (BlobReadException e) {
             throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
