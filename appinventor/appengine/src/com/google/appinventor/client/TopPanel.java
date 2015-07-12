@@ -40,7 +40,7 @@ public class TopPanel extends Composite {
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private final HTML welcome = new HTML("App Inventor Classic is READ ONLY.");
+  private final HTML welcome = new HTML("App Inventor Classic HAS SHUTDOWN, You can download your project below.");
 
     //This is an experimental version of App Inventor. "
     //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
