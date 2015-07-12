@@ -59,6 +59,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -1214,13 +1215,22 @@ public class ObjectifyStorageIo implements  StorageIo {
     String fileName = projectId + "/" + blobFileName;
     com.google.appengine.api.datastore.Query query = new com.google.appengine.api.datastore.Query("__BlobInfo__");
     query.addFilter("filename", FilterOperator.EQUAL, fileName);
-    query.addSort("creation", SortDirection.DESCENDING);
     PreparedQuery pq = datastore.prepare(query);
-    List<Entity> entityList = pq.asList(FetchOptions.Builder.withLimit(1));
-    if (entityList.isEmpty()) {
-      throw new BlobReadException("Could Not find Blob Entity for " + fileName);
+    Iterable<Entity> entityIter = pq.asIterable();
+    Entity blobEntity = null;
+    Date saveDate = null;
+    for (Entity entity : entityIter) {
+      Date creation = (Date) entity.getProperty("creation");
+      LOG.info("getBlobstoreBytes: fileName = " + fileName + " creation = " + creation);
+      if (saveDate == null || creation.after(saveDate)) {
+        saveDate = creation;
+        blobEntity = entity;
+      }
     }
-    Entity blobEntity = entityList.get(0);
+    if (blobEntity == null) {
+      throw new BlobReadException("Did not find BlobInfo for " + fileName);
+    }
+    LOG.info("getBlobstoreBytes: chose the blob on " + saveDate + " for " + fileName);
     BlobInfo blobInfo = blobFactory.createBlobInfo(blobEntity);
     BlobKey blobKey = blobInfo.getBlobKey();
     if (blobKey == null) {
