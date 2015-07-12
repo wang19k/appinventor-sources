@@ -251,13 +251,14 @@ public class Ode implements EntryPoint {
   }
 
   public void openPreviousProject() {
-    if (userSettings == null) {
-      OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
-      return;
-    }
-    String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-        getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
-    openProject(value);
+    return;                     // Don't open previous project now that we are read-only
+    // if (userSettings == null) {
+    //   OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
+    //   return;
+    // }
+    // String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+    //     getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    // openProject(value);
   }
 
   private void openProject(String projectIdString) {
