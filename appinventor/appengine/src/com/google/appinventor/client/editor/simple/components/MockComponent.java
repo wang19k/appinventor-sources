@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.editor.simple.components;
 
@@ -11,6 +12,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
@@ -82,7 +84,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
     "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
     "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
-
+  private static final int ICON_IMAGE_WIDTH = 16;
+  private static final int ICON_IMAGE_HEIGHT = 16;
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
 
   /**
@@ -145,6 +148,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
 
     private void handleOkClick() {
       String newName = newNameTextBox.getText();
+      // Remove leading and trailing whitespace
+      // Replace nonempty sequences of internal spaces by underscores
+      newName = newName.trim().replaceAll("[\\s\\xa0]+", "_");
       if (newName.equals(getName())) {
         hide();
       } else if (validate(newName)) {
@@ -160,7 +166,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     private boolean validate(String newName) {
 
       // Check that it meets the formatting requirements.
-      if (!TextValidators.isValidIdentifier(newName)) {
+      if (!TextValidators.isValidComponentIdentifier(newName)) {
         Window.alert(MESSAGES.malformedComponentNameError());
         return false;
       }
@@ -248,7 +254,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       public void onSelected() {
         // are we showing the blocks editor? if so, toggle the component drawer
         if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
-          YaBlocksEditor blocksEditor = 
+          YaBlocksEditor blocksEditor =
               (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
           OdeLog.log("Showing item " + getName());
           blocksEditor.showComponentBlocks(getName());
@@ -375,20 +381,31 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns a unique default component name.
    */
   private String componentName() {
-    return getType() + getNextComponentIndex();
+    return TranslationDesignerPallete.getCorrespondingString(getType()) + getNextComponentIndex();
   }
 
   /**
    * All components have default names for new component instantiations,
    * usually consisting of the type name and an index. This method
    * returns the next available component index for this component's type.
+   *
+   * We lower case the typeName and cName so we don't wind up with
+   * components of the names 'fooComponent1' and 'FooComponent1' where
+   * the only difference is the case of the first (or other)
+   * letters. Ultimately the case does matter but when gensyming new
+   * component names components whose only difference is in case will
+   * still result in an incremented index. So if 'fooComponent1' exist
+   * the new component will be 'FooComponent2' instead of
+   * 'FooComponent1'. Hopefully this will be less confusing.
+   *
    */
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = getType();
+      final String typeName = TranslationDesignerPallete.getCorrespondingString(getType()).toLowerCase();
       final int nameLength = typeName.length();
       for (String cName : editor.getComponentNames()) {
+        cName = cName.toLowerCase();
         try {
           if (cName.startsWith(typeName)) {
             highIndex = Math.max(highIndex, Integer.parseInt(cName.substring(nameLength)));
@@ -650,13 +667,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     // used to get HTML for the iconImage. AbstractImagePrototype requires
     // an ImageResource, which we don't necessarily have.
     String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
-        iconImage.getOriginTop(), iconImage.getWidth(), iconImage.getHeight()).getHTML();
+        iconImage.getOriginTop(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT).getHTML();
     TreeItem itemNode = new TreeItem(
         new HTML("<span>" + imageHTML + getName() + "</span>"));
     itemNode.setUserObject(sourceStructureExplorerItem);
     return itemNode;
   }
-  
+
   /**
    * If this component isn't a Form, and this component's type isn't already in typesAndIcons,
    * adds this component's type name as a key to typesAndIcons, mapped to the HTML string used
@@ -668,7 +685,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     String name = getVisibleTypeName();
     if (!isForm() && !typesAndIcons.containsKey(name)) {
       String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
-          iconImage.getOriginTop(), iconImage.getWidth(), iconImage.getHeight()).getHTML();
+          iconImage.getOriginTop(), ICON_IMAGE_WIDTH, ICON_IMAGE_HEIGHT).getHTML();
       typesAndIcons.put(name, imageHTML);
     }
   }
@@ -689,7 +706,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected ProjectNode getAssetNode(String name) {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     if (project != null) {
-      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder = 
+      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder =
           (YoungAndroidProjectNode) project.getRootNode();
       for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
         if (asset.getName().equals(name)) {

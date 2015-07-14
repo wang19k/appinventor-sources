@@ -1,7 +1,8 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
-// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+// Released under the Apache License, Version 2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 
 package com.google.appinventor.client.wizards;
 
@@ -74,7 +75,7 @@ public abstract class Wizard extends DialogBox {
    */
   protected Wizard(String title, boolean modal, boolean adaptiveSizing) {
     // Initialize UI
-    // TODO(lizlooney) - investigate using built-in modality support. The 
+    // TODO(lizlooney) - investigate using built-in modality support. The
     // reasons for not using it initially are no longer valid.
     super(false, false);
 
@@ -272,6 +273,14 @@ public abstract class Wizard extends DialogBox {
       hideWizard();
       finishCommand.execute();
     }
+  }
+
+  protected void disableOkButton() {
+    okButton.setEnabled(false);
+  }
+
+  protected void enableOkButton() {
+    okButton.setEnabled(true);
   }
 
   /*
