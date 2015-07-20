@@ -1,4 +1,3 @@
 User-agent: *
-Allow: /
-Disallow: /ode
-Disallow: /ode2
+Disallow: /
+
