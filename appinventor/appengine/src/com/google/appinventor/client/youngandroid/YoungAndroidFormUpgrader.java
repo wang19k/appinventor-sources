@@ -808,6 +808,8 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 17) {
       // The CompatibilityMode property was added
+      // When upgrading projects, turn on Compatbility Mode
+      componentProperties.put("CompatibilityMode", new ClientJsonString("True"));
       srcCompVersion = 17;
     }
 
