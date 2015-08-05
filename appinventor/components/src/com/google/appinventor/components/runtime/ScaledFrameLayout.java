@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.google.appinventor.components.runtime.util.HoneycombUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * This is a FrameLayout that displays all content by a scaled amount.
@@ -132,8 +134,10 @@ public class ScaledFrameLayout extends ViewGroup {
         mLeftWidth += Math.max(maxWidth, child.getMeasuredWidth());
 
         maxHeight = Math.max(maxHeight, child.getMeasuredHeight());
-        childState = combineMeasuredStates(childState,
-                                           child.getMeasuredState());
+        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+          childState = HoneycombUtil.combineMeasuredStates(this, childState,
+            HoneycombUtil.getMeasuredState(child));
+        }
       }
     }
 
@@ -142,10 +146,16 @@ public class ScaledFrameLayout extends ViewGroup {
     maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
     maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
 
-    setMeasuredDimension(
-                         resolveSizeAndState(maxWidth, widthMeasureSpec, childState),
-                         resolveSizeAndState(maxHeight, heightMeasureSpec,
-                                             childState << MEASURED_HEIGHT_STATE_SHIFT));
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_HONEYCOMB) {
+      setMeasuredDimension(
+        HoneycombUtil.resolveSizeAndState(this, maxWidth, widthMeasureSpec, childState),
+        HoneycombUtil.resolveSizeAndState(this, maxHeight, heightMeasureSpec,
+          childState << HoneycombUtil.VIEWGROUP_MEASURED_HEIGHT_STATE_SHIFT));
+    } else {
+      setMeasuredDimension(
+        resolveSize(maxWidth, widthMeasureSpec),
+        resolveSize(maxHeight, heightMeasureSpec));
+    }
   }
 
   /**
