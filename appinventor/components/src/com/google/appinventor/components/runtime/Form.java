@@ -1200,7 +1200,7 @@ public class Form extends Activity
   /**
    * Sizing Property Setter
    *
-   * @param 
+   * @param
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SIZING,
       defaultValue = "Fixed")

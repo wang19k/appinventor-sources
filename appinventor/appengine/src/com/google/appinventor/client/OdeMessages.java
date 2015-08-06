@@ -1100,7 +1100,7 @@ public interface OdeMessages extends Messages {
   String fillParentCaption();
 
   @DefaultMessage("percent")
-  @Description("Caption for percent label")  
+  @Description("Caption for percent label")
   String percentCaption();
 
   @DefaultMessage("pixels")
