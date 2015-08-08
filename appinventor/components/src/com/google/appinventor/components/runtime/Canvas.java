@@ -23,7 +23,6 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
-import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -565,9 +564,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
     // These methods support SimpleFunctions.
     private void drawTextAtAngle(String text, int x, int y, float angle) {
-      float fontScalingFactor = $form().deviceDensity();
       canvas.save();
-      canvas.scale(fontScalingFactor, fontScalingFactor);
       canvas.rotate(-angle, x, y);
       canvas.drawText(text, x, y, paint);
       canvas.restore();
@@ -666,6 +663,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     container.$add(this);
 
     paint = new Paint();
+    paint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
     // Set default properties.
     paint.setStrokeWidth(DEFAULT_LINE_WIDTH);
@@ -984,14 +982,16 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       description = "The font size of text drawn on the canvas.",
       category = PropertyCategory.APPEARANCE)
   public float FontSize() {
-    return paint.getTextSize();
+    float scale = $form().deviceDensity();
+    return paint.getTextSize() / scale;
   }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
-    paint.setTextSize(size);
+    float scale = $form().deviceDensity();
+    paint.setTextSize(size * scale);
   }
 
   /**
@@ -1233,10 +1233,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     float fontScalingFactor = $form().deviceDensity();
     float correctedX = x * fontScalingFactor;
     float correctedY = y * fontScalingFactor;
-    view.canvas.save();
-    view.canvas.scale(fontScalingFactor, fontScalingFactor);
     view.canvas.drawText(text, correctedX, correctedY, paint);
-    view.canvas.restore();
     view.invalidate();
   }
 
