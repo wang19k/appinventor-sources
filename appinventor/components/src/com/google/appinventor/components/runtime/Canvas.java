@@ -23,6 +23,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.PaintUtil;
+import com.google.appinventor.components.runtime.util.ScreenDensityUtil;
 
 import android.app.Activity;
 import android.content.Context;
@@ -564,7 +565,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
     // These methods support SimpleFunctions.
     private void drawTextAtAngle(String text, int x, int y, float angle) {
+      float fontScalingFactor = $form().deviceDensity();
       canvas.save();
+      canvas.scale(fontScalingFactor, fontScalingFactor);
       canvas.rotate(-angle, x, y);
       canvas.drawText(text, x, y, paint);
       canvas.restore();
@@ -1227,9 +1230,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction(description = "Draws the specified text relative to the specified coordinates "
       + "using the values of the FontSize and TextAlignment properties.")
   public void DrawText(String text, int x, int y) {
-    float correctedX = x * $form().deviceDensity();
-    float correctedY = y * $form().deviceDensity();
+    float fontScalingFactor = $form().deviceDensity();
+    float correctedX = x * fontScalingFactor;
+    float correctedY = y * fontScalingFactor;
+    view.canvas.save();
+    view.canvas.scale(fontScalingFactor, fontScalingFactor);
     view.canvas.drawText(text, correctedX, correctedY, paint);
+    view.canvas.restore();
     view.invalidate();
   }
 
