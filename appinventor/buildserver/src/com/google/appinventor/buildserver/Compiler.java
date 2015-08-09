@@ -97,7 +97,6 @@ public final class Compiler {
   private static final String DEFAULT_APP_NAME = "";
 
   private static final String DEFAULT_MIN_SDK = "4";
-  private static final String COMPATIBILITY_MIN_SDK = "3";
 
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -319,8 +318,7 @@ public final class Compiler {
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : cleanName(project.getVName());
     String aName = (project.getAName() == null) ? DEFAULT_APP_NAME : cleanName(project.getAName());
     String compatible = project.getCompatible();
-    String minSDK = (compatible == null || compatible.equals("False")) ? DEFAULT_MIN_SDK :
-        COMPATIBILITY_MIN_SDK;
+    String minSDK = DEFAULT_MIN_SDK;
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
 
