@@ -339,7 +339,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 131:
   // - FORM_COMPONENT_VERSION was incremented to 17.
   // For YOUNG_ANDROID_VERSION 132:
-  // - FORM_COMPONENT_VERSION was incremented to 16.
+  // - FORM_COMPONENT_VERSION was incremented to 18.
 
   public static final int YOUNG_ANDROID_VERSION = 132;
 
