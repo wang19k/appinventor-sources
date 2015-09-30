@@ -598,6 +598,7 @@ public class BlocklyPanel extends HTMLPanel {
     }
     try {
       doSendJson(formName, formJson, packageName);
+      renderBlockly();
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
@@ -960,6 +961,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doRenderBlockly(String formName) /*-{
     $wnd.Blocklies[formName].BlocklyEditor.render();
+    $wnd.Blocklies[formName].WarningHandler.checkAllBlocksForWarningsAndErrors();
   }-*/;
 
   public static native void doToggleWarning(String formName) /*-{

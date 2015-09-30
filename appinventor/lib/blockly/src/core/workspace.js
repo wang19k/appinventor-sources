@@ -104,6 +104,12 @@ Blockly.Workspace.prototype.warningIndicator = null;
 Blockly.Backpack.prototype.backpack = null;
 
 /**
+ * The workspace's backpack (if any).
+ * @type {Blockly.Backpack}
+ */
+Blockly.Backpack.prototype.backpack = null;
+
+/**
  * PID of upcoming firing of a change event.  Used to fire only one event
  * after multiple changes.
  * @type {?number}
@@ -186,7 +192,8 @@ Blockly.Workspace.prototype.addWarningIndicator = function(getMetrics) {
   }
 };
 
-/* Add a backpack.
+/**
+ * Add a backpack.
  * @param {!Function} getMetrics A function that returns workspace's metrics.
  */
 Blockly.Workspace.prototype.addBackpack = function(getMetrics) {

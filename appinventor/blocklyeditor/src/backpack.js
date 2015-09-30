@@ -151,16 +151,19 @@ Blockly.Backpack.prototype.top_ = 0;
  * Starting x coordinate for snapping back
  * @type {number}
  * @private
-  
-Blockly.Backpack.prototype.startX = 0;
+ */
 
+// Commented out, not used
+// Blockly.Backpack.prototype.startX = 0;
 
+/**
  * Starting y coordinate for snapping back
  * @type {number}
  * @private
- 
-Blockly.Backpack.prototype.startY = 0;
 */
+
+// Commented out, not used
+// Blockly.Backpack.prototype.startY = 0;
 
 /**
  * Create the backpack SVG elements.
