@@ -78,6 +78,13 @@ function createHeader(breadcrumbs) {
     //breadcrumbs
     document.write(breadcrumbs);
     document.write('</div>');
+    document.write('<div>');
+    document.write('<h1 style="color: red;">This page is obsolete.</h1>');
+
+    document.write('<p>The information on this page is obsolete.  It pertains to MIT App Inventor Classic, which was shut down in July 2015.   The current MIT App Inventor system is AI2, at <a href="http://appinventor.mit.edu" target="_blank">http://appinventor.mit.edu</a></p>');
+    document.write('<p>For more information of App Inventor Classic and the transition to AI2, see  <a href="http://appinventor.mit.edu/explore/classic.html" target="_blank">http://appinventor.mit.edu/explore/classic.html</a></p>');
+
+    document.write('</div>');
 }
 function createFooter(){
     document.write('<p>');
