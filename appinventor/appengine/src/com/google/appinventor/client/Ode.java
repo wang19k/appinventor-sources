@@ -1439,7 +1439,7 @@ public class Ode implements EntryPoint {
     getProjectService().getProjects(new AsyncCallback<long[]>() {
         @Override
           public void onSuccess(long [] projectIds) {
-          if (projectIds.length == 0 && !templateLoadingFlag) {
+          if (projectIds.length == 0 && !templateLoadingFlag && !galleryIdLoadingFlag) {
             createNoProjectsDialog(true);
           }
         }
