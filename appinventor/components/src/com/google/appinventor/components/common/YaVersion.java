@@ -387,8 +387,10 @@ public class YaVersion {
   //   Sensor Ev3UI, Ev3Commands were added for EV3 support
   // For YOUNG_ANDROID_VERSION 154:
   // - PEDOMETER_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 155:
+  // - Extensions Support (non-visible only) added
 
-  public static final int YOUNG_ANDROID_VERSION = 154;
+  public static final int YOUNG_ANDROID_VERSION = 155;
 
   // ............................... Blocks Language Version Number ...............................
 
