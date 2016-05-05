@@ -127,9 +127,9 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +-----------------------------------------------------------------+
-     * | Project ▾ | Components ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
-     * +-----------------------------------------------------------------+
+     * +--------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
+     * +--------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
