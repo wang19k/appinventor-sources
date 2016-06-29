@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
+import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
@@ -42,8 +43,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Layout
   private final int orientation;
   private final LinearLayout viewLayout;
-  private ViewGroup scrollContainer;
-  private boolean scrollable;
+  private ViewGroup frameContainer;
+  private boolean scrollable = true;
   // translates App Inventor alignment codes to Android gravity
   private final AlignmentUtil alignmentSetter;
 
@@ -80,20 +81,24 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
 
     viewLayout.setBaselineAligned(false);
-    switch (orientation) {
+    if (scrollable) {
+      switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
-        scrollContainer = new ScrollView(context);
+        frameContainer = new ScrollView(context);
         break;
       case LAYOUT_ORIENTATION_HORIZONTAL:
-        scrollContainer = new HorizontalScrollView(context);
+        frameContainer = new FrameLayout(context);
+//        frameContainer = new HorizontalScrollView(context);
         break;
+      }
+    } else {
+      frameContainer = new FrameLayout(context);
     }
 
-    scrollContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
-//    if (scrollable)
-      scrollContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
-              ViewGroup.LayoutParams.MATCH_PARENT,
-              ViewGroup.LayoutParams.MATCH_PARENT));
+    frameContainer.setLayoutParams(new ViewGroup.LayoutParams(ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH, ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT));
+    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
 
     alignmentSetter = new AlignmentUtil(viewLayout);
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
@@ -187,7 +192,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public View getView() {
-    return scrollContainer; //: viewLayout.getLayoutManager();
+    return frameContainer; //: viewLayout.getLayoutManager();
   }
 
  // These property definitions are duplicated in Form.java
@@ -370,25 +375,24 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     this.scrollable = scrollable;
   }
 
-
-    // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
-    // Images take precedence over background colors.
-    private void updateAppearance() {
-        // If there is no background image,
-        // the appearance depends solely on the background color and shape.
-        if (backgroundImageDrawable == null) {
-                if (backgroundColor == Component.COLOR_DEFAULT) {
-                    // If there is no background image and color is default,
-                    // restore original 3D bevel appearance.
-                    ViewUtil.setBackgroundDrawable(getView(), defaultButtonDrawable);
-                } else {
-                    // Clear the background image.
-                    ViewUtil.setBackgroundDrawable(getView(), null);
-                    getView().setBackgroundColor(backgroundColor);
-                }
-        } else {
-            // If there is a background image
-            ViewUtil.setBackgroundImage(getView(), backgroundImageDrawable);
-        }
+  // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
+  // Images take precedence over background colors.
+  private void updateAppearance() {
+    // If there is no background image,
+    // the appearance depends solely on the background color and shape.
+    if (backgroundImageDrawable == null) {
+      if (backgroundColor == Component.COLOR_DEFAULT) {
+        // If there is no background image and color is default,
+        // restore original 3D bevel appearance.
+        ViewUtil.setBackgroundDrawable(viewLayout.getLayoutManager(), defaultButtonDrawable);
+      } else {
+        // Clear the background image.
+        ViewUtil.setBackgroundDrawable(viewLayout.getLayoutManager(), null);
+        viewLayout.getLayoutManager().setBackgroundColor(backgroundColor);
+      }
+    } else {
+      // If there is a background image
+      ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
     }
+  }
 }
