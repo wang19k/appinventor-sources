@@ -26,6 +26,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.io.IOException;
 
 /**
@@ -47,6 +49,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
+  private boolean _inited = false;
 
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
@@ -62,6 +65,10 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private Drawable defaultButtonDrawable;
 
   private final Handler androidUIHandler = new Handler();
+
+  // List of operations which we are deferring until after we have called
+  // init().
+  private final List<Runnable> deferredQueue = new ArrayList();
 
   /**
    * Creates a new HVArrangement component.
@@ -88,7 +95,10 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     alignmentSetter.setVerticalAlignment(verticalAlignment);
   }
 
-  public void Initialize() {
+  private void init() {
+    if (_inited) {
+      return;
+    }
     if (scrollable) {
       switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
@@ -113,6 +123,10 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     container.$add(this);
 
     BackgroundColor(Component.COLOR_DEFAULT);
+    _inited = true;
+    for (Runnable r : deferredQueue) {
+      r.run();
+    }
   }
 
   // ComponentContainer implementation
@@ -138,6 +152,16 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
+    if (!_inited) {
+      final int fWidth = width;
+      deferredQueue.add(new Runnable() {
+          @Override
+          public void run() {
+            setChildWidth(component, fWidth, trycount);
+          }
+        });
+      return;
+    }
     int cWidth = container.$form().Width();
     if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
       final int fWidth = width;            // but give up after two tries...
@@ -165,6 +189,16 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void setChildHeight(final AndroidViewComponent component, int height) {
+    if (!_inited) {
+      final int fHeight = height;
+      deferredQueue.add(new Runnable() {
+          @Override
+          public void run() {
+            setChildHeight(component, fHeight);
+          }
+        });
+      return;
+    }
     int cHeight = container.$form().Height();
     if (cHeight == 0) {         // Not ready yet...
       final int fHeight = height;
@@ -364,14 +398,17 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    *
    * @param scrollable  true if the screen should be vertically scrollable
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "False")
+  // NB: It is important that we do not define a default here. We want the
+  //     Scrollable property to always be set in the Yail
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable) {
+      init();
       return;
     }
     this.scrollable = scrollable;
+    init();
   }
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
@@ -393,6 +430,16 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       // If there is a background image
       ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
     }
+  }
+
+  @Override
+  public void Width(int width) {
+    super.Width(width);
+  }
+
+  @Override
+  public void Height(int height) {
+    super.Height(height);
   }
 
 }
