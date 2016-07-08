@@ -46,7 +46,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private ViewGroup frameContainer;
   private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity
-  private final AlignmentUtil alignmentSetter;
+  private AlignmentUtil alignmentSetter;
 
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
@@ -81,6 +81,14 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
 
     viewLayout.setBaselineAligned(false);
+    alignmentSetter = new AlignmentUtil(viewLayout);
+    horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
+    verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
+    alignmentSetter.setHorizontalAlignment(horizontalAlignment);
+    alignmentSetter.setVerticalAlignment(verticalAlignment);
+  }
+
+  public void Initialize() {
     if (scrollable) {
       switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
@@ -98,12 +106,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT));
-
-    alignmentSetter = new AlignmentUtil(viewLayout);
-    horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
-    verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
-    alignmentSetter.setHorizontalAlignment(horizontalAlignment);
-    alignmentSetter.setVerticalAlignment(verticalAlignment);
 
       // Save the default values in case the user wants them back later.
     defaultButtonDrawable = getView().getBackground();
@@ -370,22 +372,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       return;
     }
     this.scrollable = scrollable;
-    frameContainer.removeAllViews();
-    if (scrollable) {
-      switch (orientation) {
-      case LAYOUT_ORIENTATION_VERTICAL:
-        frameContainer = new ScrollView(context);
-        break;
-      case LAYOUT_ORIENTATION_HORIZONTAL:
-        frameContainer = new HorizontalScrollView(context);
-        break;
-      }
-    } else {
-      frameContainer = new FrameLayout(context);
-    }
-    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.MATCH_PARENT,
-        ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
