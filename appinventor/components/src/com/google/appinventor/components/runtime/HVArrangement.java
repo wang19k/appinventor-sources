@@ -44,7 +44,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private final int orientation;
   private final LinearLayout viewLayout;
   private ViewGroup frameContainer;
-  private boolean scrollable = true;
+  private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity
   private final AlignmentUtil alignmentSetter;
 
@@ -87,8 +87,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         frameContainer = new ScrollView(context);
         break;
       case LAYOUT_ORIENTATION_HORIZONTAL:
-        frameContainer = new FrameLayout(context);
-//        frameContainer = new HorizontalScrollView(context);
+        frameContainer = new HorizontalScrollView(context);
         break;
       }
     } else {
@@ -194,8 +193,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   public View getView() {
     return frameContainer; //: viewLayout.getLayoutManager();
   }
-
- // These property definitions are duplicated in Form.java
 
   // The numeric encodings are defined Component Constants
 
@@ -373,6 +370,22 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       return;
     }
     this.scrollable = scrollable;
+    frameContainer.removeAllViews();
+    if (scrollable) {
+      switch (orientation) {
+      case LAYOUT_ORIENTATION_VERTICAL:
+        frameContainer = new ScrollView(context);
+        break;
+      case LAYOUT_ORIENTATION_HORIZONTAL:
+        frameContainer = new HorizontalScrollView(context);
+        break;
+      }
+    } else {
+      frameContainer = new FrameLayout(context);
+    }
+    frameContainer.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
   }
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
@@ -395,4 +408,5 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
     }
   }
+
 }
