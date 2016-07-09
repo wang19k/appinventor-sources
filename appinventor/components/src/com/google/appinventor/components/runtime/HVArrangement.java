@@ -108,9 +108,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   private void init() {
-    Log.i(LOG_TAG, "init called.");
     if (_inited) {
       return;
+    }
+    try {
+      throw new RuntimeException("Init Called");
+    } catch (Exception e) {
+      Log.e(LOG_TAG, "Init Called Scrollable = " + scrollable, e);
     }
     if (scrollable) {
       switch (orientation) {
@@ -403,10 +407,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     defaultValue = "False")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
+    Log.d(LOG_TAG, "Scrollable Called(1)");
     if (this.scrollable == scrollable) {
       init();
       return;
     }
+    Log.d(LOG_TAG, "Scrollable Called(2) Scrollable = " + scrollable);
     this.scrollable = scrollable;
     init();
   }
