@@ -59,7 +59,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   private boolean scrollable = false;
   // translates App Inventor alignment codes to Android gravity
   private AlignmentUtil alignmentSetter;
-  private boolean _inited = false;
 
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
@@ -76,10 +75,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   private final Handler androidUIHandler = new Handler();
 
-  // List of operations which we are deferring until after we have called
-  // init().
-  private final List<Runnable> deferredQueue = new ArrayList();
-
   private static final String LOG_TAG = "HVArrangement";
 
   /**
@@ -90,11 +85,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
   */
-  public HVArrangement(ComponentContainer container, int orientation) {
+  public HVArrangement(ComponentContainer container, int orientation, boolean scrollable) {
     super(container);
     context = container.$context();
 
     this.orientation = orientation;
+    this.scrollable = scrollable;
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
@@ -105,17 +101,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
     alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     alignmentSetter.setVerticalAlignment(verticalAlignment);
-  }
 
-  private void init() {
-    if (_inited) {
-      return;
-    }
-    try {
-      throw new RuntimeException("Init Called");
-    } catch (Exception e) {
-      Log.e(LOG_TAG, "Init Called Scrollable = " + scrollable, e);
-    }
     if (scrollable) {
       switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
@@ -141,15 +127,11 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     defaultButtonDrawable = getView().getBackground();
 
     container.$add(this);
-
     BackgroundColor(Component.COLOR_DEFAULT);
-    _inited = true;
-    Log.i(LOG_TAG, "About to run the deferredQueue, Length = " + deferredQueue.size());
-    for (Runnable r : deferredQueue) {
-      Log.i(LOG_TAG, "Running the deferredQueue");
-      r.run();
-    }
+
   }
+
+
 
   // ComponentContainer implementation
 
@@ -165,7 +147,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void $add(AndroidViewComponent component) {
-    init();
     viewLayout.add(component);
   }
 
@@ -382,40 +363,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         updateAppearance();
     }
 
-  /**
-   * Scrollable property getter method.
-   *
-   * @return  true if the screen is vertically scrollable
-   */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
-    description = "When checked, the height and width of the contents in the arrangement "
-    + "can exceed size of the arrangement and the user can scroll "
-    + "the contents within the arrangement. AlignVertical and "
-    + "AlignHorizontal are inactive for scrollable arrangements.")
-  public boolean Scrollable() {
-    return scrollable;
-  }
-
-   /**
-   * Scrollable property setter method.
-   *
-   * @param scrollable  true if the screen should be vertically scrollable
-   */
-  // NB: It is important that we do not define a default here. We want the
-  //     Scrollable property to always be set in the Yail
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = "False")
-  @SimpleProperty
-  public void Scrollable(boolean scrollable) {
-    Log.d(LOG_TAG, "Scrollable Called(1)");
-    if (this.scrollable == scrollable) {
-      init();
-      return;
-    }
-    Log.d(LOG_TAG, "Scrollable Called(2) Scrollable = " + scrollable);
-    this.scrollable = scrollable;
-    init();
-  }
 
   // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
   // Images take precedence over background colors.
@@ -436,57 +383,6 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       // If there is a background image
       ViewUtil.setBackgroundImage(viewLayout.getLayoutManager(), backgroundImageDrawable);
     }
-  }
-
-  @SimpleProperty
-  @Override
-  public void Width(final int width) {
-    if (!_inited) {
-      deferredQueue.add(new Runnable() {
-          @Override
-          public void run() {
-            Width(width);
-          }
-        });
-      return;
-    }
-    super.Width(width);
-  }
-
-  @SimpleProperty
-  @Override
-  public void Height(final int height) {
-    if (!_inited) {
-      deferredQueue.add(new Runnable() {
-          @Override
-          public void run() {
-            Height(height);
-          }
-        });
-      return;
-    }
-    super.Height(height);
-  }
-
-  @SimpleProperty
-  @Override
-  public boolean Visible() {
-    return super.Visible();
-  }
-
-  @Override
-  public void Visible(final Boolean visible) {
-    if (!_inited) {
-      Log.i(LOG_TAG, "Adding Visible Call Visible(" + visible + ")");
-      deferredQueue.add(new Runnable() {
-          @Override
-          public void run() {
-            Visible(visible);
-          }
-        });
-      return;
-    }
-    super.Visible(visible);
   }
 
 }

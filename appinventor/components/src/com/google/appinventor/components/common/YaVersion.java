@@ -394,8 +394,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 157:
   // - LABEL_COMPONENT_VERSION was incremented to 4
   // For YOUNG_ANDROID_VERSION 158:
-  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 4
-  // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 4
+  // Added HorizontalScrollArrangement and VerticalScrollArrangement
 
   public static final int YOUNG_ANDROID_VERSION = 158;
 
@@ -701,11 +700,11 @@ public class YaVersion {
   // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:  
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 4:
-  // - The scrollable property was added
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 4;
+  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 3;
+
+  public static final int HORIZONTALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
 
   // For IMAGE_COMPONENT_VERSION 2:
   // - The RotationAngle property was added.
@@ -991,11 +990,11 @@ public class YaVersion {
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:  
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 3:
   // - Added background color & image
-    // For VERTICALARRANGEMENT_COMPONENT_VERSION 4:
-  // - The scrollable property was added
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 4;
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 3;
+
+  public static final int VERTICALSCROLLARRANGEMENT_COMPONENT_VERSION = 1;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.

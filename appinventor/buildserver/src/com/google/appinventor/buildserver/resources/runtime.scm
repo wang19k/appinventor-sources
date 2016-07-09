@@ -19,7 +19,7 @@
 ;;;
 
 ;;; also see *debug-form* below
-(define *debug* #t)
+(define *debug* #f)
 
 (define *this-is-the-repl* #f)
 
@@ -83,19 +83,16 @@
 ;; call-Initialize-of-components is called, which is done by the code
 ;; sent from the the blocks editor
 
-;; FIX COMMENT ABOVE (JIS)
-
 (define (add-component-within-repl container-name component-type component-name init-props-thunk)
-  (android-log (format #f "add-component-within-repl: ~A ~A ~A" container-name component-type component-name))
   (define-alias SimpleContainer <com.google.appinventor.components.runtime.ComponentContainer>)
   (define-alias SimplePropertyUtil <com.google.appinventor.components.runtime.util.PropertyUtil>)
   (let* ((container :: SimpleContainer (lookup-in-current-form-environment container-name))
          (existing-component (lookup-in-current-form-environment component-name))
          (component-to-add (make component-type container)))
     (add-to-current-form-environment component-name component-to-add)
-    (when init-props-thunk (init-props-thunk))
     (add-init-thunk component-name
      (lambda ()
+       (when init-props-thunk (init-props-thunk))
        (when existing-component
          (android-log (format #f "Copying component properties for ~A" component-name))
          (SimplePropertyUtil:copyComponentProperties existing-component component-to-add))))))
