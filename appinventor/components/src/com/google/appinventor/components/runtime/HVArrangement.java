@@ -115,13 +115,16 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     if (scrollable) {
       switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
+        Log.i(LOG_TAG, "Setting up frameContainer = ScrollView()");
         frameContainer = new ScrollView(context);
         break;
       case LAYOUT_ORIENTATION_HORIZONTAL:
+        Log.i(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
         frameContainer = new HorizontalScrollView(context);
         break;
       }
     } else {
+      Log.i(LOG_TAG, "Setting up frameContainer = FrameLayout()");
       frameContainer = new FrameLayout(context);
     }
 
