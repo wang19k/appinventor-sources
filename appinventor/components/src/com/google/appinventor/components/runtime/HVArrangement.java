@@ -7,28 +7,38 @@
 package com.google.appinventor.components.runtime;
 
 import android.app.Activity;
+
 import android.graphics.drawable.Drawable;
+
 import android.os.Handler;
+
+import android.util.Log;
+
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
+
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
+
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
+
 
 /**
  * A container for components that arranges them linearly, either
@@ -54,13 +64,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // the alignment for this component's LinearLayout
   private int horizontalAlignment;
   private int verticalAlignment;
-    // Backing for background color
-    private int backgroundColor;
-    // This is the Drawable corresponding to the Image property.
-    // If an Image has never been set or if the most recent Image could not be loaded, this is null.
-    private Drawable backgroundImageDrawable;
-    // Image path
-    private String imagePath = "";
+  // Backing for background color
+  private int backgroundColor;
+  // This is the Drawable corresponding to the Image property.
+  // If an Image has never been set or if the most recent Image could not be loaded, this is null.
+  private Drawable backgroundImageDrawable;
+  // Image path
+  private String imagePath = "";
 
   private Drawable defaultButtonDrawable;
 
@@ -69,6 +79,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // List of operations which we are deferring until after we have called
   // init().
   private final List<Runnable> deferredQueue = new ArrayList();
+
+  private static final String LOG_TAG = "HVArrangement";
 
   /**
    * Creates a new HVArrangement component.
@@ -96,6 +108,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   private void init() {
+    Log.i(LOG_TAG, "init called.");
     if (_inited) {
       return;
     }
@@ -124,7 +137,9 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
     BackgroundColor(Component.COLOR_DEFAULT);
     _inited = true;
+    Log.i(LOG_TAG, "About to run the deferredQueue, Length = " + deferredQueue.size());
     for (Runnable r : deferredQueue) {
+      Log.i(LOG_TAG, "Running the deferredQueue");
       r.run();
     }
   }
@@ -143,6 +158,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void $add(AndroidViewComponent component) {
+    init();
     viewLayout.add(component);
   }
 
@@ -152,29 +168,19 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   public void setChildWidth(final AndroidViewComponent component, int width, final int trycount) {
-    if (!_inited) {
-      final int fWidth = width;
-      deferredQueue.add(new Runnable() {
-          @Override
-          public void run() {
-            setChildWidth(component, fWidth, trycount);
-          }
-        });
-      return;
-    }
     int cWidth = container.$form().Width();
     if (cWidth == 0 && trycount < 2) {     // We're not really ready yet...
       final int fWidth = width;            // but give up after two tries...
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("(HVArrangement)Width not stable yet... trying again");
+            Log.i(LOG_TAG, "(HVArrangement)Width not stable yet... trying again");
             setChildWidth(component, fWidth, trycount + 1);
           }
         }, 100);                // Try again in 1/10 of a second
     }
     if (width <= LENGTH_PERCENT_TAG) {
-      System.err.println("HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      Log.i(LOG_TAG, "HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
 
@@ -189,23 +195,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
 
   @Override
   public void setChildHeight(final AndroidViewComponent component, int height) {
-    if (!_inited) {
-      final int fHeight = height;
-      deferredQueue.add(new Runnable() {
-          @Override
-          public void run() {
-            setChildHeight(component, fHeight);
-          }
-        });
-      return;
-    }
     int cHeight = container.$form().Height();
     if (cHeight == 0) {         // Not ready yet...
       final int fHeight = height;
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            System.err.println("(HVArrangement)Height not stable yet... trying again");
+            Log.i(LOG_TAG, "(HVArrangement)Height not stable yet... trying again");
             setChildHeight(component, fHeight);
           }
         }, 100);                // Try again in 1/10 of a second
@@ -400,7 +396,8 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    */
   // NB: It is important that we do not define a default here. We want the
   //     Scrollable property to always be set in the Yail
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable) {
@@ -433,13 +430,46 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   }
 
   @Override
-  public void Width(int width) {
+  public void Width(final int width) {
+    if (!_inited) {
+      deferredQueue.add(new Runnable() {
+          @Override
+          public void run() {
+            Width(width);
+          }
+        });
+      return;
+    }
     super.Width(width);
   }
 
   @Override
-  public void Height(int height) {
+  public void Height(final int height) {
+    if (!_inited) {
+      deferredQueue.add(new Runnable() {
+          @Override
+          public void run() {
+            Height(height);
+          }
+        });
+      return;
+    }
     super.Height(height);
+  }
+
+  @Override
+  public void Visible(final Boolean visible) {
+    if (!_inited) {
+      Log.i(LOG_TAG, "Adding Visible Call Visible(" + visible + ")");
+      deferredQueue.add(new Runnable() {
+          @Override
+          public void run() {
+            Visible(visible);
+          }
+        });
+      return;
+    }
+    super.Visible(visible);
   }
 
 }
