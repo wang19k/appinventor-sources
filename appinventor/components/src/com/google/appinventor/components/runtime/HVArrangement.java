@@ -429,6 +429,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     }
   }
 
+  @SimpleProperty
   @Override
   public void Width(final int width) {
     if (!_inited) {
@@ -443,6 +444,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     super.Width(width);
   }
 
+  @SimpleProperty
   @Override
   public void Height(final int height) {
     if (!_inited) {
@@ -455,6 +457,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       return;
     }
     super.Height(height);
+  }
+
+  @SimpleProperty
+  @Override
+  public boolean Visible() {
+    return super.Visible();
   }
 
   @Override
