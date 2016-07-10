@@ -1433,7 +1433,7 @@ Blockly.Versioning.AllUpgradeMaps =
 
   "HorizontalScrollArrangement": {
 
-    // This is initial version. Placeholder for future upgrades    
+    // This is initial version. Placeholder for future upgrades
     1: "noUpgrade"
 
   }, // End HorizontalScrollArrangement upgraders

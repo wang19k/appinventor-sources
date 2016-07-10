@@ -105,16 +105,16 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     if (scrollable) {
       switch (orientation) {
       case LAYOUT_ORIENTATION_VERTICAL:
-        Log.i(LOG_TAG, "Setting up frameContainer = ScrollView()");
+        Log.d(LOG_TAG, "Setting up frameContainer = ScrollView()");
         frameContainer = new ScrollView(context);
         break;
       case LAYOUT_ORIENTATION_HORIZONTAL:
-        Log.i(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
+        Log.d(LOG_TAG, "Setting up frameContainer = HorizontalScrollView()");
         frameContainer = new HorizontalScrollView(context);
         break;
       }
     } else {
-      Log.i(LOG_TAG, "Setting up frameContainer = FrameLayout()");
+      Log.d(LOG_TAG, "Setting up frameContainer = FrameLayout()");
       frameContainer = new FrameLayout(context);
     }
 
@@ -162,13 +162,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            Log.i(LOG_TAG, "(HVArrangement)Width not stable yet... trying again");
+            Log.d(LOG_TAG, "(HVArrangement)Width not stable yet... trying again");
             setChildWidth(component, fWidth, trycount + 1);
           }
         }, 100);                // Try again in 1/10 of a second
     }
     if (width <= LENGTH_PERCENT_TAG) {
-      Log.i(LOG_TAG, "HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+      Log.d(LOG_TAG, "HVArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
       width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
     }
 
@@ -189,7 +189,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       androidUIHandler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            Log.i(LOG_TAG, "(HVArrangement)Height not stable yet... trying again");
+            Log.d(LOG_TAG, "(HVArrangement)Height not stable yet... trying again");
             setChildHeight(component, fHeight);
           }
         }, 100);                // Try again in 1/10 of a second
