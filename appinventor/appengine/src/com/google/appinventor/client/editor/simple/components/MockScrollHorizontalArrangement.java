@@ -21,7 +21,7 @@ public final class MockScrollHorizontalArrangement extends MockHVArrangement {
    * Component type name.
    */
   public static final String TYPE = "HorizontalScrollArrangement";
-  
+
   /**
    * Creates a new MockHorizontalArrangement component.
    *
@@ -29,10 +29,8 @@ public final class MockScrollHorizontalArrangement extends MockHVArrangement {
    */
   public MockScrollHorizontalArrangement(SimpleEditor editor) {
     super(editor, TYPE, images.horizontal(),
-        ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL);
+      ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL,
+      ComponentConstants.SCROLLABLE_ARRANGEMENT);
   }
-  
-
-
 
 }

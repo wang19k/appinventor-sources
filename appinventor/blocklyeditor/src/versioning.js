@@ -1427,12 +1427,16 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade", 
-    
-    // - Added scrollable property
-    4: "noUpgrade"
+    3: "noUpgrade"
 
   }, // End HorizontalArrangement upgraders
+
+  "HorizontalScrollArrangement": {
+
+    // This is initial version. Placeholder for future upgrades    
+    1: "noUpgrade"
+
+  }, // End HorizontalScrollArrangement upgraders
 
   "Image": {
 
@@ -2266,12 +2270,16 @@ Blockly.Versioning.AllUpgradeMaps =
     2: "noUpgrade",
 
     // - Added background color & image
-    3: "noUpgrade", 
-
-    // - Added scrollable property
-    4: "noUpgrade", 
+    3: "noUpgrade"
 
   }, // End VerticalArrangement upgraders
+
+  "VerticalScrollArrangement": {
+
+    //This is initial version. Placeholder for future upgrades
+    1: "noUpgrade"
+
+  }, // End VerticalScrollArrangement upgraders
 
   "VideoPlayer": {
 

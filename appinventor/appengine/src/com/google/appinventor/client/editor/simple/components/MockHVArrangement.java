@@ -8,21 +8,27 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
+
 import com.google.appinventor.client.output.OdeLog;
+
 import com.google.appinventor.client.properties.BadPropertyEditorException;
+
 import com.google.appinventor.components.common.ComponentConstants;
+
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+
 import com.google.gwt.resources.client.ImageResource;
+
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Image;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-
 
 /**
  * Superclass for HVArrangement based mock components
@@ -48,23 +54,24 @@ public class MockHVArrangement extends MockContainer {
   private String backgroundColor;
 
   private MockHVLayout myLayout;
-  private boolean initialized = false;
 
   private static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
   private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
-  private static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
 
   private YoungAndroidHorizontalAlignmentChoicePropertyEditor myHAlignmentPropertyEditor;
   private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
-  
+
   private final Image image;
   private String imagePropValue;
+  private boolean scrollAble;
+  private int orientation;
 
 
  /**
    * Creates a new MockHVArrangement component.
    */
-  MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation) {
+  MockHVArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation,
+    boolean scrollable) {
     // Note(Hal): This helper thing is a kludge because I really want to write:
     // myLayout = new MockHVLayout(orientation);
     // super(editor, type, icon, myLayout);
@@ -75,7 +82,9 @@ public class MockHVArrangement extends MockContainer {
     // next instruction.  Note that the Helper methods are synchronized to avoid possible
     // future problems if we ever have threads creating arrangements in parallel.
     myLayout = MockHVArrangementHelper.getLayout();
-        
+    scrollAble = scrollable;
+    this.orientation = orientation;
+
     if (orientation != ComponentConstants.LAYOUT_ORIENTATION_VERTICAL &&
         orientation != ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       throw new IllegalArgumentException("Illegal orientation: " + orientation);
@@ -112,10 +121,9 @@ public class MockHVArrangement extends MockContainer {
       OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
       return;
     }
-    initialized = true;
+    adjustAlignmentDropdowns();
   }
 
-  
   @Override
   public void onPropertyChange(String propertyName, String newValue) {
     super.onPropertyChange(propertyName, newValue);
@@ -128,8 +136,6 @@ public class MockHVArrangement extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_IMAGE)) {
       setImageProperty(newValue);
       refreshForm();
-    } else if (propertyName.equals(PROPERTY_NAME_SCROLLABLE)) {
-      adjustAlignmentDropdowns();
     } else if (propertyName.equals(PROPERTY_NAME_BACKGROUNDCOLOR)) {
       setBackgroundColorProperty(newValue);
     } else {
@@ -140,32 +146,26 @@ public class MockHVArrangement extends MockContainer {
   }
 
   private void adjustAlignmentDropdowns() {
-    if (initialized) enableAndDisableDropdowns();
-  }
-
-
-  private void enableAndDisableDropdowns() {
-    if (initialized) {
-      String scrollable = properties.getProperty(PROPERTY_NAME_SCROLLABLE).getValue();
-      if (scrollable.equals("True")) {
+    if (scrollAble) {
+      if (orientation == ComponentConstants.LAYOUT_ORIENTATION_VERTICAL) {
         myLayout.setVAlignmentFlags(ComponentConstants.GRAVITY_TOP + "");
-        myLayout.setHAlignmentFlags(ComponentConstants.GRAVITY_LEFT + "");
         changeProperty(PROPERTY_NAME_VERTICAL_ALIGNMENT, ComponentConstants.GRAVITY_TOP + "");
-        changeProperty(PROPERTY_NAME_HORIZONTAL_ALIGNMENT, ComponentConstants.GRAVITY_LEFT+ "");
-
-        refreshForm();
         myVAlignmentPropertyEditor.disable();
-        myHAlignmentPropertyEditor.disable();
       } else {
-        myVAlignmentPropertyEditor.enable();
-        myHAlignmentPropertyEditor.enable();
+        myLayout.setHAlignmentFlags(ComponentConstants.GRAVITY_LEFT + "");
+        changeProperty(PROPERTY_NAME_HORIZONTAL_ALIGNMENT, ComponentConstants.GRAVITY_LEFT+ "");
+        myHAlignmentPropertyEditor.disable();
       }
+      refreshForm();
+    } else {
+      myVAlignmentPropertyEditor.enable();
+      myHAlignmentPropertyEditor.enable();
     }
   }
 
   /*
-* Sets the button's Image property to a new value.
-*/
+   * Sets the button's Image property to a new value.
+   */
   private void setImageProperty(String text) {
     imagePropValue = text;
     String url = convertImagePropertyValueToUrl(text);

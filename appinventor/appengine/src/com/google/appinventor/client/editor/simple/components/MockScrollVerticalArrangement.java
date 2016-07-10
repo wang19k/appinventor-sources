@@ -29,7 +29,8 @@ public final class MockScrollVerticalArrangement extends MockHVArrangement {
    */
   public MockScrollVerticalArrangement(SimpleEditor editor) {
     super(editor, TYPE, images.vertical(),
-        ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
+      ComponentConstants.LAYOUT_ORIENTATION_VERTICAL,
+      ComponentConstants.SCROLLABLE_ARRANGEMENT);
   }
-  
+
 }
