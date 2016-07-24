@@ -18,6 +18,7 @@
 ;;; but the top-level forms are evaluated in that run() function.
 ;;;
 
+;;; also see *debug-form* below
 (define *debug* #f)
 
 (define *this-is-the-repl* #f)
@@ -802,7 +803,6 @@
 (define-alias YailList <com.google.appinventor.components.runtime.util.YailList>)
 (define-alias YailNumberToString <com.google.appinventor.components.runtime.util.YailNumberToString>)
 (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
-(define-alias YailRuntimeFormError <com.google.appinventor.components.runtime.errors.YailRuntimeFormError>)
 
 (define-alias JavaCollection <java.util.Collection>)
 (define-alias JavaIterator <java.util.Iterator>)
@@ -1046,7 +1046,7 @@
 (define (signal-runtime-form-error function-name error-number message)
   ;; this is like signal-runtime-error, but it generates an error in
   ;; the current Screen that can be modified by the Screen.ErrorOccurred handler
-  (YailRuntimeFormError *this-form* function-name error-number message)
+  (*:runtimeFormErrorOccurredEvent *this-form* function-name error-number message)
 )
 
 
@@ -1463,12 +1463,6 @@
     (lambda (x)
       (max lowest (min x highest)))))
 
-
-
-;;; This must match the number in ErrorMessages.java
-;;(define ERROR_DIVISION_BY_ZERO 3200)
-
-
 (define-alias errorMessages <com.google.appinventor.components.runtime.util.ErrorMessages>)
 (define ERROR_DIVISION_BY_ZERO errorMessages:ERROR_DIVISION_BY_ZERO)
 
@@ -1477,12 +1471,11 @@
   ;; a result.  The app developer can
   ;; change the error  action using the Screen.ErrorOccurred event handler.
   (cond ((and (= d 0) (= n 0))
-         ;; Treat 0/0 as a special case, returning 0.  I (Hal) am confused by the need to
-         ;; do this, and not just rely on the next clause.   Something is triggering a
-         ;; runtime exception for 0/0.  I think it's in GWT.
+         ;; Treat 0/0 as a special case, returning 0.
+         ;; We do this because Kawa throws an exception of its own if you divide
+         ;; 0 by 0. Whereas it returns "1/0" or +-Inf.0 if the numerator is non-zero.
          (begin (signal-runtime-form-error "Division" ERROR_DIVISION_BY_ZERO n)
-                ;; return 0 in this case.  The zero was chosen arbitrarily.  Kawa division
-                ;; would return Nan.
+                ;; return 0 in this case.  The zero was chosen arbitrarily.
                 n))
         ((= d 0)
          (begin
