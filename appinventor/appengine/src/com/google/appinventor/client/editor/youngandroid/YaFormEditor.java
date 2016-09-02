@@ -49,6 +49,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 
@@ -181,24 +182,37 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
       public void onSuccess(ChecksumedLoadFile result) {
-        String contents;
+        final String contents;
         try {
+          Ode.consoleLog("load2 callback: " + fileId + " in callback");
           contents = result.getContent();
         } catch (ChecksumedFileException e) {
           this.onFailure(e);
           return;
         }
-        final FileContentHolder fileContentHolder = new FileContentHolder(contents);
-        upgradeFile(fileContentHolder, new Command() {
-          @Override
-          public void execute() {
-            onFileLoaded(fileContentHolder.getFileContent());
-            if (afterFileLoaded != null) {
-              afterFileLoaded.execute();
+
+
+        Scheduler.get().scheduleDeferred(new Command() {
+            @Override
+            public void execute() {
+              final FileContentHolder fileContentHolder = new FileContentHolder(contents);
+              Ode.consoleLog("load2 (Form): About to call upgradeFile");
+              upgradeFile(fileContentHolder, new Command() {
+                  @Override
+                  public void execute() {
+                    Ode.consoleLog("load2 (form): on upgradeFile callback.");
+                    onFileLoaded(fileContentHolder.getFileContent());
+                    Ode.consoleLog("load2 (form): after onFileLoaded.");
+                    if (afterFileLoaded != null) {
+                      afterFileLoaded.execute();
+                    }
+                  }
+                });
             }
-          }
-        });
+          });
+
       }
+
       @Override
       public void onFailure(Throwable caught) {
         if (caught instanceof ChecksumedFileException) {

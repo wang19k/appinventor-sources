@@ -18,6 +18,7 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.util.Base64Util;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * The base class for classes that provide project services for a specific
@@ -28,6 +29,9 @@ import java.util.List;
 public abstract class CommonProjectService {
   protected final String projectType;
   protected final StorageIo storageIo;
+
+  private static final Logger LOG =
+    Logger.getLogger(CommonProjectService.class.getName());
 
   protected CommonProjectService(String projectType, StorageIo storageIo) {
     this.projectType = projectType;
@@ -194,7 +198,9 @@ public abstract class CommonProjectService {
    */
   public ChecksumedLoadFile load2(String userId, long projectId, String fileId) throws ChecksumedFileException {
     ChecksumedLoadFile retval = new ChecksumedLoadFile();
+    LOG.info("load2: About to set content for " + fileId);
     retval.setContent(storageIo.downloadFile(userId, projectId, fileId, StorageUtil.DEFAULT_CHARSET));
+    LOG.info("load2: Return from Set Content for " + fileId);
     return retval;
   }
 

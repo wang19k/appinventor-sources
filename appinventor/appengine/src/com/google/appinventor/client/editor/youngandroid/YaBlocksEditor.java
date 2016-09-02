@@ -172,6 +172,7 @@ public final class YaBlocksEditor extends FileEditor
       public void onSuccess(ChecksumedLoadFile result) {
         String blkFileContent;
         try {
+          Ode.consoleLog("load2 callback: " + fileId + " in callback");
           blkFileContent = result.getContent();
         } catch (ChecksumedFileException e) {
           this.onFailure(e);
@@ -194,6 +195,7 @@ public final class YaBlocksEditor extends FileEditor
       }
     };
     Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
+    Ode.consoleLog("load2 called on " + fileId);
   }
 
   @Override

@@ -2243,4 +2243,8 @@ public class Ode implements EntryPoint {
     }
   }-*/;
 
+  public static native void consoleLog(String message) /*-{
+    console.log(message);
+  }-*/;
+
 }
