@@ -38,6 +38,7 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.ArrayList;
@@ -406,13 +407,23 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
         if (isScreen1(formName)) {
           screen1FormLoaded = true;
           if (readyToShowScreen1()) {
-            OdeLog.log("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen " 
+            Ode.consoleLog("YaProjectEditor.addFormEditor.loadFile.execute: switching to screen " 
                 + formName + " for project " + newFormEditor.getProjectId());
             Ode.getInstance().getDesignToolbar().switchToScreen(newFormEditor.getProjectId(),
                 formName, DesignToolbar.View.FORM);
+          } else {
+            Ode.consoleLog("readyToShowScreen1() returned false");
           }
         }
-        loadBlocksEditor(formName);
+        Ode.consoleLog("Going to wait 10 seconds... and then load the blocks editor");
+        Timer t = new Timer() {
+            @Override
+            public void run() {
+              Ode.consoleLog("... done");
+              loadBlocksEditor(formName);
+            }
+          };
+        t.schedule(10000);
       }
     });
   }

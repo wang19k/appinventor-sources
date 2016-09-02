@@ -123,7 +123,7 @@ public abstract class ProjectEditor extends Composite {
     openFileEditors.put(fileId, fileEditor);
     fileIds.add(beforeIndex, fileId);
     deckPanel.insert(fileEditor, beforeIndex);
-    OdeLog.log("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+    Ode.consoleLog("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
 
   }
 
