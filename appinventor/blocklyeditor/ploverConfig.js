@@ -16,6 +16,7 @@
     './src/msg/ru/_messages.js',
     './src/msg/sv/_messages.js',
     './src/msg/pt_br/_messages.js',
+    './src/msg/nl/_messages.js',
     './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code

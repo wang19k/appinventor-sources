@@ -20,6 +20,7 @@ goog.require('Blockly.Msg.ru');
 goog.require('Blockly.Msg.ko_kr');
 goog.require('Blockly.Msg.sv');
 goog.require('Blockly.Msg.pt_br');
+goog.require('Blockly.Msg.nl');
 
 Blockly.language_switch = {
   // Switch between languages
@@ -62,6 +63,9 @@ Blockly.language_switch = {
         break;
       case 'pt_BR':
         Blockly.Msg.pt_br.switch_language_to_portuguese_br.init();
+        break;
+      case 'nl':
+        Blockly.Msg.nl.switch_language_to_dutch.init();
     }
     if (Blockly.mainWorkspace) {
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
