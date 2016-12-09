@@ -282,6 +282,7 @@ public class ProjectServiceTest {
         "{\"authURL\":[]," +
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\"," +
+        "\"ShowListsAsJson\":\"True\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"0\"," +
         "\"Title\":\"Screen1\","+"\"AppName\":\"noname\"}}\n|#");
     assertEquals(expectedYaFiles, getTextFiles(USER_ID_ONE, yaProject));

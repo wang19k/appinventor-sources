@@ -208,6 +208,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "{\"authURL\":[]," +
         "\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+        "\"ShowListsAsJson\":\"True\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\",\"AppName\":\"" + packageName +"\"}}\n|#";
   }
