@@ -966,6 +966,17 @@ none
   <dd>The requested screen orientation, specified as a text value.  Commonly used values are landscape, portrait, sensor, user and unspecified.  See the Android developer documentation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
   <dt><code>Scrollable</code></dt>
   <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.</dd>
+  <dt><code>ShowListsAsJson</code> (designer only)</dt>
+
+  <dd>If set to true, lists will be converted to strings using Json
+  notatation, i.e., in Json/Python notataion, e.g. ["a", 1, "b", 2,
+  ["c", "d"]].  If false, lists will appear as in lisp syntax e.g., (a
+  1 b2 (c d).  This property appears only in Screen 1, and the value
+  for Screen 1 determines the bahavior for all screens.
+    <!-- After <date> newly created projects will have this property
+      initialized to True. Old projects will not be effected. Authors are
+      welcome to set this property on any project during development. -->
+  </dd>
   <dt><code><em>ShowStatusBar</em></code></dt>
   <dd>The status bar is the topmost bar on the screen. This property reports whether the status bar is visible.</dd>
   <dt><code>Sizing</code> (designer only)</dt>
