@@ -1023,6 +1023,12 @@ select.ode-PropertyEditor[disabled] {
   background-color: #E8E8E8;
 }
 
+/* This class ensures that Designer buttons scale with font size. It
+   cancels out the line-height: .ode-TextButton, .gwt-Button */
+button.gwt-Button.ode-SimpleMockButton {
+  line-height: initial;
+}
+
 /* class for the ListView Mock component */
 .listViewComponentStyle {
   width: 315px;
